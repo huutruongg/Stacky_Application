@@ -15,7 +15,6 @@ model Candidate {
   candidate_id          String    @id
   email                 String?   @unique
   username              String?
-  provider              String
   role                  String    @default("CANDIDATE")
   full_name             String?
   applied_position      String?
@@ -52,6 +51,7 @@ model C_Project {
   cp_id              Int      @id @default(autoincrement())
   project_name       String
   project_time       String
+  url_repo            String
   project_description String?
   candidate          Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id       String
@@ -101,8 +101,9 @@ model Oauth_Token {
   created_at   DateTime @default(now())
   candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id String
-}
 
+  @@unique([candidate_id, provider]) 
+}
 
 // 8. recruiters
 model Recruiter {

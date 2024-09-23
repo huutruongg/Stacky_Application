@@ -3,12 +3,13 @@ import dotenv from "dotenv";
 import emailRouter from "./routes/email.routes"
 import userRouter from "./routes/user.routes"
 import authRouter from "./routes/auth.routes"
+import githubRouter from "./routes/github.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"
 import { log } from "console";
 import { v4 as uuidv4 } from 'uuid';
-import './config/passport';
+import './config/passport-setup';
 dotenv.config();
 
 
@@ -39,6 +40,7 @@ app.use(passport.session());
 app.use('/auth/', authRouter)
 app.use('/api/', emailRouter)
 app.use('/api/', userRouter)
+app.use('/api', githubRouter)
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
 })

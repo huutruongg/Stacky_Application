@@ -2,37 +2,33 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import { CustomRequest, UserDataType } from "../utils/types/Custom";
+
 dotenv.config();
 
-const authenticate = (req: Request, res: Response, next: NextFunction): void | Response => {
-    try {
-        // Lấy token từ headers
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1]; 
+const authenticateJWT = (req: Request, res: Response, next: NextFunction): void => {
+    // Extract token from headers
+    const token = req.headers['authorization']?.split(' ')[1];
 
-        if (!token) {
-            // Nếu không có token, trả về lỗi 401 và dừng hàm tại đây
-            return res.status(401).json({ message: "Authentication required!" });
+    if (!token) {
+        res.status(401).json({ message: "Authentication required!" });
+        return;
+    }
+
+    // Verify the token
+    jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
+        if (err) {
+            return res.status(401).json({ message: "Authentication failed!" });
         }
 
-        // Xác minh token
-        jwt.verify(token, process.env.JWT_SECRET as string, (err: any, user: any) => {
-            if (err) {
-                // Nếu token không hợp lệ, trả về lỗi 401 và dừng hàm tại đây
-                return res.status(401).json({ message: "Authentication failed!" });
-            }
+        // Attach user data to the request
+        (req as CustomRequest).userData = user as UserDataType;
 
-            // Gán user data vào request
-            (req as CustomRequest).userData = user as UserDataType;
-            console.log((req as CustomRequest).userData.role);
+        // Log user role for debugging
+        console.log((req as CustomRequest).userData.role);
 
-            // Chuyển đến middleware tiếp theo
-            next();
-        });
-    } catch (error) {
-        // Bắt mọi lỗi không mong muốn và trả về lỗi 401
-        res.status(401).json({ message: "Authentication failed!" });
-    }
+        // Move to the next middleware
+        next();
+    });
 };
 
-export default authenticate;
+export default authenticateJWT;

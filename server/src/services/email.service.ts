@@ -1,27 +1,29 @@
 import { log } from "console";
-require('dotenv').config();
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import dotenv from 'dotenv';
 
-const sendEmail = async (to: string, subject: string, text: string) => {
+dotenv.config();
+
+const sendEmail = async (to: string, subject: string, text: string): Promise<boolean> => {
+    const transporter = nodemailer.createTransport({
+        service: process.env.EMAIL_SERVICE,
+        auth: {
+            user: process.env.EMAIL_ADDRESS,
+            pass: process.env.EMAIL_PASSWORD,
+        },
+    });
+
     try {
-        const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE,
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
-
         await transporter.sendMail({
             from: process.env.USER,
-            to: to,
-            subject: subject,
-            text: text,
+            to,
+            subject,
+            text,
         });
-        console.log("email sent sucessfully");
+        log("Email sent successfully to:", to);
         return true;
     } catch (error) {
-        console.log(error, "email not sent");
+        log("Error sending email:", error);
         return false;
     }
 };

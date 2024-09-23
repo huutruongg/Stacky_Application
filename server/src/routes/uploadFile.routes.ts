@@ -1,12 +1,13 @@
 import { Router, Request, Response } from "express";
 import multer from 'multer'
 import UploadFileController from "../controllers/uploadFile.controller";
+import authenticateJWT from "../middlewares/authenticate.m";
 // Configure Multer to store file in memory
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const router = Router();
 
-router.post('/upload-recruiter-image', upload.single('file'), async (req: Request, res: Response) => { UploadFileController.uploadRecuiterImage(req, res) });
-router.post('/upload-candidate-image', upload.single('file'), async (req: Request, res: Response) => { UploadFileController.uploadCandidateImage(req, res) });
+router.post('/upload-recruiter-image', authenticateJWT, upload.single('file'), UploadFileController.uploadRecruiterImage);
+router.post('/upload-candidate-image', authenticateJWT, upload.single('file'), UploadFileController.uploadCandidateImage);
 
 export default router;

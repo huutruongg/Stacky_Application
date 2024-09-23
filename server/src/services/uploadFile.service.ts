@@ -1,26 +1,35 @@
-const admin = require('firebase-admin');
-const serviceAccount = require('../config/firebase-admin.json');
+import admin, { ServiceAccount } from 'firebase-admin';
+import * as serviceAccount from '../config/firebase-admin.json';
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'gs://stackydemo-95381.appspot.com' 
+    credential: admin.credential.cert(serviceAccount as ServiceAccount), // Cast to ServiceAccount type
+    storageBucket: 'gs://stackydemo-95381.appspot.com',
 });
+
 const bucket = admin.storage().bucket();
 
 const UploadService = {
-    getPubicUrlImage: async (file: Express.Multer.File, folderName: string): Promise<string> => {
+    getPublicUrlImage: async (file: Express.Multer.File, folderName: string): Promise<string> => {
         const uniqueFileName = `${Date.now()}-${file.originalname}`;
+        const fileUpload = bucket.file(`${folderName}/${uniqueFileName}`);
 
-        // Upload the file to Firebase Storage
+        try {
+            // Upload the file to Firebase Storage
+            await fileUpload.save(file.buffer, {
+                metadata: {
+                    contentType: file.mimetype,
+                },
+            });
 
-        const fileUpload = bucket.file(`${folderName}/${uniqueFileName}`); // Specify the folder "Recruiters"
-        await fileUpload.save(file.buffer);  // Save buffer directly
-
-        // Get the public URL of the uploaded file
-        const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/Recruiters%2F${encodeURIComponent(uniqueFileName)}?alt=media`;
-        return publicUrl;
-    }
-}
+            // Get the public URL of the uploaded file
+            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(fileUpload.name)}?alt=media`;
+            return publicUrl;
+        } catch (error) {
+            console.error('Error uploading file to Firebase Storage:', error);
+            throw new Error('Failed to upload file');
+        }
+    },
+};
 
 export default UploadService;
