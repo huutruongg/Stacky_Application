@@ -1,52 +1,38 @@
-import { UserDataType } from '../utils/types/UserType';
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
-import { CustomRequest } from "../utils//types/Custom";
+import { CustomRequest, UserDataType } from "../utils/types/Custom";
 dotenv.config();
 
-const authenticate = (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-        res.status(403).setHeader('Location', 'api/login');
-        res.send(`
-                    <html>
-                    <head>
-                        <meta http-equiv="refresh" content="3;url=/login" />
-                    </head>
-                    <body>
-                        <p>Unauthorized: Invalid token. Redirecting to login page in 3 seconds...</p>
-                    </body>
-                    </html>
-                `);
-        return;
-    }
-
+const authenticate = (req: Request, res: Response, next: NextFunction): void | Response => {
     try {
-        jwt.verify(token, process.env.SECRET_KEY as string, (err, user) => {
+        // Lấy token từ headers
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1]; 
+
+        if (!token) {
+            // Nếu không có token, trả về lỗi 401 và dừng hàm tại đây
+            return res.status(401).json({ message: "Authentication required!" });
+        }
+
+        // Xác minh token
+        jwt.verify(token, process.env.JWT_SECRET as string, (err: any, user: any) => {
             if (err) {
-                res.status(403).setHeader('Location', 'api/login');
-                res.send(`
-                    <html>
-                    <head>
-                        <meta http-equiv="refresh" content="3;url=/login" />
-                    </head>
-                    <body>
-                        <p>Unauthorized: Invalid token. Redirecting to login page in 3 seconds...</p>
-                    </body>
-                    </html>
-                `);
-                return;
+                // Nếu token không hợp lệ, trả về lỗi 401 và dừng hàm tại đây
+                return res.status(401).json({ message: "Authentication failed!" });
             }
 
+            // Gán user data vào request
             (req as CustomRequest).userData = user as UserDataType;
-            console.log((req as CustomRequest).userData.role)
+            console.log((req as CustomRequest).userData.role);
+
+            // Chuyển đến middleware tiếp theo
             next();
-        })
+        });
     } catch (error) {
+        // Bắt mọi lỗi không mong muốn và trả về lỗi 401
         res.status(401).json({ message: "Authentication failed!" });
-        return;
     }
-}
+};
 
 export default authenticate;

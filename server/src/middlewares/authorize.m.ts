@@ -1,7 +1,7 @@
 // middleware/authorize.ts
 import { Request, Response, NextFunction } from "express";
 import { CustomRequest } from "../utils/types/Custom";
-import UserRole from "../utils/types/RoleType";
+import UserRole from "../utils/types/IUserRole";
 
 const authorize = (...allowedRoles: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {
