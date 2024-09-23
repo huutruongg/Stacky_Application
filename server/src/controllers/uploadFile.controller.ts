@@ -20,11 +20,11 @@ const UploadFileController = {
     },
 
     uploadRecruiterImage: function(req: Request, res: Response): Promise<void> {
-        return this.uploadImage(req, res, 'Recruiters');
+        return UploadFileController.uploadImage(req, res, 'Recruiters');
     },
 
     uploadCandidateImage: function(req: Request, res: Response): Promise<void> {
-        return this.uploadImage(req, res, 'Candidates');
+        return UploadFileController.uploadImage(req, res, 'Candidates');
     }
 };
 

@@ -4,6 +4,7 @@ import emailRouter from "./routes/email.routes"
 import userRouter from "./routes/user.routes"
 import authRouter from "./routes/auth.routes"
 import githubRouter from "./routes/github.routes"
+import uploadRouter from "./routes/uploadFile.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"
@@ -41,6 +42,7 @@ app.use('/auth/', authRouter)
 app.use('/api/', emailRouter)
 app.use('/api/', userRouter)
 app.use('/api', githubRouter)
+app.use('/api', uploadRouter)
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
 })
