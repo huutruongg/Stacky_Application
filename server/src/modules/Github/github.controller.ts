@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express';
 import CandidateService from '../Candidate/candidate.service';
-import JobPostingService from '../JobDescription/jobDescriptionData.service';
+import JobPostingService from '../JobPosting/jobPosting.service';
 import getMatchingLanguages from '../../utils/getProgrammingLanguages.util';
 import { GithubScore, GithubService } from './github.service';
 import { Repo } from '../../types/IGithub';

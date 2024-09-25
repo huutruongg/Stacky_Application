@@ -5,7 +5,7 @@ import UserRole from '../../types/IUserRole';
 const saltRounds = 10;
 const prisma = new PrismaClient();
 
-const Recruiter = {
+const RecruiterService = {
     // Recruiter
     getAllRecruiters: async (): Promise<Recruiter[]> => {
         return await prisma.recruiter.findMany();
@@ -19,7 +19,9 @@ const Recruiter = {
 
     getRecruiterByEmail: async (email: string): Promise<Recruiter | null> => {
         return await prisma.recruiter.findUnique({
-            where: { org_email: email }
+            where: {
+                org_email: email, 
+            },
         });
     },
 
@@ -41,7 +43,19 @@ const Recruiter = {
                 org_image: org_image_url
             }
         });
+    },
+
+    changePassword: async (userId: string, newPassword: string): Promise<void> => {
+        try {
+            const hashedPwd = await bcrypt.hash(newPassword, saltRounds);
+            await prisma.recruiter.update({
+                where: { recruiter_id: userId },
+                data: { org_password: hashedPwd },
+              })
+        } catch (error) {
+            
+        }
     }
 };
 
-export default Recruiter;
+export default RecruiterService;

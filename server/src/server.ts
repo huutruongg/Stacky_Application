@@ -5,6 +5,7 @@ import userRouter from "./routes/user.routes"
 import authRouter from "./routes/auth.routes"
 import githubRouter from "./routes/github.routes"
 import uploadRouter from "./routes/upload.routes"
+import recruiterRouter from "./routes/recruiter.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"
@@ -37,11 +38,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routing flow configuration
-app.use('/auth', authRouter)
-app.use('/email', emailRouter)
-app.use('/user', userRouter)
-app.use('/github', githubRouter)
-app.use('/upload', uploadRouter)
+app.use('/auth', authRouter);
+app.use('/email', emailRouter);
+app.use('/user', userRouter);
+app.use('/github', githubRouter);
+app.use('/upload', uploadRouter);
+app.use('/recruiter', recruiterRouter)
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
 })

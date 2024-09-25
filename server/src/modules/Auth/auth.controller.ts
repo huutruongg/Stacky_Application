@@ -2,9 +2,10 @@ import { Response, Request, NextFunction } from "express";
 import dotenv from 'dotenv';
 import { log } from 'console';
 import passport from 'passport';
-import Recruiter from '../Recruiter/recruiter.service';
 import AuthService from './auth.service';
 import { AuthUserType } from "../../types/Custom";
+import RecruiterService from "../Recruiter/recruiter.service";
+import { Recruiter } from "@prisma/client";
 
 dotenv.config();
 
@@ -13,13 +14,13 @@ const AuthController = {
         const { email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url } = req.body;
 
         try {
-            const existingUser: AuthUserType | null = await Recruiter.getRecruiterByEmail(email);
+            const existingUser: AuthUserType | null = await RecruiterService.getRecruiterByEmail(email);
             if (existingUser) {
                 res.status(401).json({ message: "This email already exists! Please enter another email." });
                 return;
             }
 
-            const recruiter: Recruiter | null = await Recruiter.createRecruiter(
+            const recruiter: Recruiter | null = await RecruiterService.createRecruiter(
                 email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url
             );
 
@@ -48,7 +49,7 @@ const AuthController = {
         const { email, password } = req.body;
 
         try {
-            const existingUser: Recruiter | null = await Recruiter.getRecruiterByEmail(email);
+            const existingUser: Recruiter | null = await RecruiterService.getRecruiterByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;
@@ -88,13 +89,15 @@ const AuthController = {
         })(req, res, next);
     },
 
-    logout: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        req.logout((err) => {
+    logout: async (req: Request, res: Response): Promise<void> => {
+        req.session.destroy(err => {
             if (err) {
-                return next(err);
+                res.status(500).json({ success: false, message: 'Something went wrong!' });
+                return;
             }
-            res.clearCookie("token");
-            return res.status(200).json({ success: true, message: "Logged out successfully" });
+            res.clearCookie('connect.sid');
+            res.status(200).json({ success: true, message: 'Logout successfull!' });
+            return;
         });
     }
 }

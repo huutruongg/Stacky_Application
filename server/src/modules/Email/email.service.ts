@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const sendEmail = async (to: string, subject: string, text: string): Promise<boolean> => {
+const sendEmail = async (to: string, subject: string, text: string, html: string = ""): Promise<boolean> => {
     const transporter = nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE,
         auth: {
@@ -19,6 +19,7 @@ const sendEmail = async (to: string, subject: string, text: string): Promise<boo
             to,
             subject,
             text,
+            html
         });
         log("Email sent successfully to:", to);
         return true;
