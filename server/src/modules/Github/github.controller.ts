@@ -1,17 +1,17 @@
-import { Repo } from './../utils/types/IGithub.d';
-import getMatchingLanguages from "../helper/getProgrammingLanguages.help";
-import CandidateDataService from "../services/candidateData.service";
-import JobPostingService from "../services/jobDescription.service";
-import UserService from "../services/user.service";
-import { GithubService, GithubScore } from "../services/github.service";
+
 import { Request, Response } from 'express';
+import CandidateService from '../Candidate/candidate.service';
+import JobPostingService from '../JobDescription/jobDescriptionData.service';
+import getMatchingLanguages from '../../utils/getProgrammingLanguages.util';
+import { GithubScore, GithubService } from './github.service';
+import { Repo } from '../../types/IGithub';
 
 const GithubController = {
     getGithubScore: async (req: Request, res: Response): Promise<void> => {
         const { candidate_id, job_id } = req.body;
 
         try {
-            const candidatePromise = UserService.getCandidateById(candidate_id);
+            const candidatePromise = CandidateService.getCandidateById(candidate_id);
             const jobDescriptionPromise = JobPostingService.getJDById(job_id);
             const [candidate, jobDescription] = await Promise.all([candidatePromise, jobDescriptionPromise]);
 
@@ -41,8 +41,8 @@ const GithubController = {
             }
 
             const username = selfCreatedRepoUrl.split('github.com/')[1];
-            const sharedRepoUrlPromise = CandidateDataService.getUrlReposSharedByCandidateId(candidate_id);
-            const tokenPromise = CandidateDataService.getAccessTokenGithub(candidate_id);
+            const sharedRepoUrlPromise = CandidateService.getUrlReposSharedByCandidateId(candidate_id);
+            const tokenPromise = CandidateService.getAccessTokenGithub(candidate_id);
             const [sharedRepoUrl, token] = await Promise.all([sharedRepoUrlPromise, tokenPromise]);
 
             if (!sharedRepoUrl) {

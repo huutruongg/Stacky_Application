@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import UploadService from '../services/uploadFile.service';
+import UploadService from './uploadFile.service';
 
 const UploadFileController = {
     uploadImage: async (req: Request, res: Response, role: 'Recruiters' | 'Candidates'): Promise<void> => {

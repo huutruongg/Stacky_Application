@@ -2,19 +2,19 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github';
 import axios from 'axios';
-import UserService from '../services/user.service';
 import { log } from 'console';
+import CandidateService from '../modules/Candidate/candidate.service';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
-  const user = await UserService.getCandidateByEmail(email);
+  const user = await CandidateService.getCandidateByEmail(email);
 
   if (user) {
-    await UserService.updateOauth(provider, providerId, accessToken, user.candidate_id);
+    await CandidateService.updateOauth(provider, providerId, accessToken, user.candidate_id);
     return user;
   } else {
-    const newUser = await UserService.createCandidate(email, displayName);
-    await UserService.updateOauth(provider, providerId, accessToken, newUser.candidate_id);
+    const newUser = await CandidateService.createCandidate(email, displayName);
+    await CandidateService.updateOauth(provider, providerId, accessToken, newUser.candidate_id);
     return newUser;
   }
 };
@@ -83,7 +83,7 @@ passport.serializeUser((user: any, done: Function) => {
 
 passport.deserializeUser(async (id: string, done: Function) => {
   try {
-    const user = await UserService.getCandidateById(id);
+    const user = await CandidateService.getCandidateById(id);
     done(null, user);
   } catch (err) {
     done(err);

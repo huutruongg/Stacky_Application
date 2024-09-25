@@ -1,11 +1,10 @@
-import { AuthUserType } from '../utils/types/Custom';
 import { Response, Request, NextFunction } from "express";
-import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
 import dotenv from 'dotenv';
 import { log } from 'console';
-import { Recruiter } from '@prisma/client';
 import passport from 'passport';
+import Recruiter from '../Recruiter/recruiter.service';
+import AuthService from './auth.service';
+import { AuthUserType } from "../../types/Custom";
 
 dotenv.config();
 
@@ -14,13 +13,13 @@ const AuthController = {
         const { email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url } = req.body;
 
         try {
-            const existingUser: AuthUserType | null = await UserService.getRecruiterByEmail(email);
+            const existingUser: AuthUserType | null = await Recruiter.getRecruiterByEmail(email);
             if (existingUser) {
                 res.status(401).json({ message: "This email already exists! Please enter another email." });
                 return;
             }
 
-            const recruiter: Recruiter | null = await UserService.createRecruiter(
+            const recruiter: Recruiter | null = await Recruiter.createRecruiter(
                 email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url
             );
 
@@ -49,7 +48,7 @@ const AuthController = {
         const { email, password } = req.body;
 
         try {
-            const existingUser: Recruiter | null = await UserService.getRecruiterByEmail(email);
+            const existingUser: Recruiter | null = await Recruiter.getRecruiterByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;

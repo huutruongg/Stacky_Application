@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
-import GithubController from "../controllers/github.controller";
 import authenticateJWT from "../middlewares/authenticate.m";
+import GithubController from "../modules/Github/github.controller";
 
 const router = Router();
 

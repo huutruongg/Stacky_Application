@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-
 }
 
 datasource db {
@@ -12,54 +11,55 @@ datasource db {
 // Models
 // 1. candidates
 model Candidate {
-  candidate_id          String    @id
-  email                 String?   @unique
-  username              String?
-  role                  String    @default("CANDIDATE")
-  full_name             String?
-  applied_position      String?
-  phone_number          String?
-  gender                Boolean?
-  birth_date            DateTime?
-  address               String?
-  linkedin_url          String?
-  github_url            String?
-  personal_description  String?
-  programming_skills    String?
-  created_at            DateTime  @default(now())
-  languages             C_Language[]
-  projects              C_Project[]
-  certificates          C_Certificate[]
-  educations            C_Education[]
-  experiences           C_Experience[]
-  applications          Application[]
-  job_saved             Job_Saved[]
-  oauth_tokens          Oauth_Token[]
+  candidate_id         String          @id
+  email                String?         @unique
+  username             String?
+  role                 String          @default("CANDIDATE")
+  full_name            String?
+  applied_position     String?
+  phone_number         String?
+  gender               Boolean?
+  birth_date           DateTime?
+  address              String?
+  linkedin_url         String?
+  github_url           String?
+  personal_description String?
+  programming_skills   String?
+  github_score         Float?
+  created_at           DateTime        @default(now())
+  languages            C_Language[]
+  projects             C_Project[]
+  certificates         C_Certificate[]
+  educations           C_Education[]
+  experiences          C_Experience[]
+  applications         Application[]
+  job_saved            Job_Saved[]
+  oauth_tokens         Oauth_Token[]
 }
 
 // 2. c_languages
 model C_Language {
-  cl_id       Int      @id @default(autoincrement())
-  language    String
-  level       String
-  candidate   Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  cl_id        Int       @id @default(autoincrement())
+  language     String
+  level        String
+  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id String
 }
 
 // 3. c_projects
 model C_Project {
-  cp_id              Int      @id @default(autoincrement())
-  project_name       String
-  project_time       String
+  cp_id               Int       @id @default(autoincrement())
+  project_name        String
+  project_time        String
   url_repo            String
   project_description String?
-  candidate          Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id       String
+  candidate           Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  candidate_id        String
 }
 
 // 4. c_certificates
 model C_Certificate {
-  cc_id              Int      @id @default(autoincrement())
+  cc_id              Int       @id @default(autoincrement())
   certificate_name   String
   date_of_receipt    DateTime
   certificate_detail String?
@@ -69,49 +69,48 @@ model C_Certificate {
 
 // 5. c_educations
 model C_Education {
-  ce_id       Int      @id @default(autoincrement())
-  school_name String
-  start_date  DateTime
-  finish_date DateTime
-  field_name  String
-  candidate   Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  ce_id        Int       @id @default(autoincrement())
+  school_name  String
+  start_date   DateTime
+  finish_date  DateTime
+  field_name   String
+  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id String
 }
 
 // 6. c_experiences
 model C_Experience {
-  cexp_id              Int      @id @default(autoincrement())
+  cexp_id              Int       @id @default(autoincrement())
   company_name         String
   start_date           DateTime
   end_date             DateTime
   job_position         String
   previous_job_details String?
-  github_score         Float?
   candidate            Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id         String
 }
 
 // 7. oauth_tokens
 model Oauth_Token {
-  token_id     Int      @id @default(autoincrement())
-  provider     String
-  provider_id  String
-  access_token String
+  token_id      Int       @id @default(autoincrement())
+  provider      String
+  provider_id   String
+  access_token  String
   refresh_token String?
-  created_at   DateTime @default(now())
-  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id String
+  created_at    DateTime  @default(now())
+  candidate     Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  candidate_id  String
 
-  @@unique([candidate_id, provider]) 
+  @@unique([candidate_id, provider])
 }
 
 // 8. recruiters
 model Recruiter {
-  recruiter_id   String    @id
-  org_email      String    @unique
+  recruiter_id   String     @id
+  org_email      String     @unique
   org_mobile     String?
   org_password   String
-  role           String    @default("RECRUITER")
+  role           String     @default("RECRUITER")
   org_tax_number String?
   org_name       String?
   org_field      String?
@@ -124,40 +123,40 @@ model Recruiter {
 
 // 9. job_posts
 model Job_Post {
-  job_id                String    @id
-  recruiter             Recruiter @relation(fields: [recruiter_id], references: [recruiter_id], onDelete: Cascade)
-  recruiter_id          String
-  job_title             String
-  job_image             String?
-  type_of_work          String?
-  location              String?
-  job_salary            String?
-  candidates_limit      Int?
-  education_required    String?
-  years_of_experience   String?
-  type_of_industry      String?
-  professional_skills   String?
-  certificate_required  String?
-  languages_required    String?
-  job_benefit           String?
-  leave_policy          String?
-  job_description       String?
-  work_enviroment       String?
-  job_schedule          String?
-  application_deadline  DateTime?
-  posted_at             DateTime  @default(now())
-  applications          Application[]
-  job_saved             Job_Saved[]
+  job_id               String        @id
+  recruiter            Recruiter     @relation(fields: [recruiter_id], references: [recruiter_id], onDelete: Cascade)
+  recruiter_id         String
+  job_title            String
+  job_image            String?
+  type_of_work         String?
+  location             String?
+  job_salary           String?
+  candidates_limit     Int?
+  education_required   String?
+  years_of_experience  String?
+  type_of_industry     String?
+  professional_skills  String?
+  certificate_required String?
+  languages_required   String?
+  job_benefit          String?
+  leave_policy         String?
+  job_description      String?
+  work_enviroment      String?
+  job_schedule         String?
+  application_deadline DateTime?
+  posted_at            DateTime      @default(now())
+  applications         Application[]
+  job_saved            Job_Saved[]
 }
 
 // 10. applications
 model Application {
-  candidate     Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id  String
-  job           Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
-  job_id        String
-  applied_at    DateTime   @default(now())
-  status        Status     @default(PENDING)
+  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  candidate_id String
+  job          Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
+  job_id       String
+  applied_at   DateTime  @default(now())
+  status       Status    @default(PENDING)
 
   @@id([candidate_id, job_id])
 }
@@ -174,21 +173,21 @@ model Payment {
   recruiter        Recruiter @relation(fields: [recruiter_id], references: [recruiter_id], onDelete: Cascade)
   recruiter_id     String
   pay_amount       Float
-  transaction_date DateTime @default(now())
+  transaction_date DateTime  @default(now())
 }
 
 // 12. revenue_reports
 model Revenue_Report {
-  report_id     String    @id
+  report_id     String   @id
   total_revenue Float
-  report_date   DateTime  @default(now())
+  report_date   DateTime @default(now())
 }
 
 // 13. job_saved
 model Job_Saved {
-  candidate   Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
+  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
   candidate_id String
-  job         Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
+  job          Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
   job_id       String
   saved_at     DateTime  @default(now())
 

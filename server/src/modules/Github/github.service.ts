@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CommitResponse, GitHubCommit, Repo, RepoDetails, Repository } from "../utils/types/IGithub";
+import { CommitResponse, GitHubCommit, Repo, RepoDetails, Repository } from "../../types/IGithub";
 
 const GithubService = {
     fetchUserRepositories: async (username: string, token: string): Promise<Repository[]> => {
