@@ -5,7 +5,7 @@ import UserRole from '../../types/IUserRole';
 const prisma = new PrismaClient();
 
 const CandidateService = {
-    getAllCandidates: async (): Promise<Candidate[]> => {
+    getCandidates: async (): Promise<Candidate[]> => {
         return await prisma.candidate.findMany();
     },
 
@@ -19,6 +19,26 @@ const CandidateService = {
         return await prisma.candidate.findUnique({
             where: { email }
         });
+    },
+
+    getCandidatesApplied: async (jobId: string): Promise<{ candidate: Candidate; appliedAt: Date }[] | null> => {
+        const applications = await prisma.application.findMany({
+            where: { job_id: jobId },
+            include: {
+                candidate: true
+            }
+        });
+
+        if (applications.length === 0) {
+            return null;
+        }
+
+        const result = applications.map(application => ({
+            candidate: application.candidate,
+            appliedAt: application.applied_at
+        }));
+
+        return result;
     },
 
     createCandidate: async (email: string, username: string): Promise<Candidate> => {
@@ -38,10 +58,10 @@ const CandidateService = {
             access_token: accessToken,
             created_at: new Date(),
         };
-    
+
         await prisma.oauth_Token.upsert({
-            where: { 
-                candidate_id_provider: { candidate_id: candidateId, provider } 
+            where: {
+                candidate_id_provider: { candidate_id: candidateId, provider }
             },
             update: data,
             create: {
@@ -51,7 +71,7 @@ const CandidateService = {
                 candidate_id: candidateId,
             },
         });
-    },  
+    },
 
     getCandidatesByPage: async (page: number, pageSize: number): Promise<Candidate[]> => {
         return await prisma.candidate.findMany({

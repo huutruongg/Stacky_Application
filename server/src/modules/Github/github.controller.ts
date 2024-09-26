@@ -5,6 +5,7 @@ import JobPostingService from '../JobPosting/jobPosting.service';
 import getMatchingLanguages from '../../utils/getProgrammingLanguages.util';
 import { GithubScore, GithubService } from './github.service';
 import { Repo } from '../../types/IGithub';
+import { log } from 'console';
 
 const GithubController = {
     getGithubScore: async (req: Request, res: Response): Promise<void> => {
@@ -12,11 +13,11 @@ const GithubController = {
 
         try {
             const candidatePromise = CandidateService.getCandidateById(candidate_id);
-            const jobDescriptionPromise = JobPostingService.getJDById(job_id);
+            const jobDescriptionPromise = JobPostingService.getJobPostingById(job_id);
             const [candidate, jobDescription] = await Promise.all([candidatePromise, jobDescriptionPromise]);
 
             if (!candidate || !jobDescription) {
-                res.status(404).json({ success: false, message: "Candidate or Job Description not found" });
+                res.status(500).json({ success: false, message: "Candidate or Job Description not found" });
                 return;
             }
 
@@ -24,7 +25,7 @@ const GithubController = {
             const jdText: string = jobDescription?.professional_skills || "";
 
             if (!jdText) {
-                res.status(400).json({ success: false, message: "Job description missing professional skills" });
+                res.status(500).json({ success: false, message: "Job description missing professional skills" });
                 return;
             }
 
@@ -36,7 +37,7 @@ const GithubController = {
 
             const selfCreatedRepoUrl = candidate?.github_url;
             if (!selfCreatedRepoUrl) {
-                res.status(400).json({ success: false, message: "Candidate GitHub URL missing or invalid" });
+                res.status(500).json({ success: false, message: "Candidate GitHub URL missing or invalid" });
                 return;
             }
 
@@ -46,7 +47,7 @@ const GithubController = {
             const [sharedRepoUrl, token] = await Promise.all([sharedRepoUrlPromise, tokenPromise]);
 
             if (!sharedRepoUrl) {
-                res.status(400).json({ success: false, message: "No shared repositories found" });
+                res.status(500).json({ success: false, message: "No shared repositories found" });
                 return;
             }
             if (!token) {
@@ -72,9 +73,9 @@ const GithubController = {
 
             res.json({ success: true, totalScore, allRepos });
 
-        } catch (error: any) {
-            console.error('Error:', error.message);
-            res.status(500).json({ success: false, message: "An error occurred while calculating the GitHub score", error: error.message });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ success: false, message: "An error occurred while calculating the GitHub score", error: error });
         }
     }
 };

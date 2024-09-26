@@ -1,11 +1,11 @@
 import express, { Application, Request, Response } from "express";
 import dotenv from "dotenv";
 import emailRouter from "./routes/email.routes"
-import userRouter from "./routes/user.routes"
 import authRouter from "./routes/auth.routes"
 import githubRouter from "./routes/github.routes"
 import uploadRouter from "./routes/upload.routes"
 import recruiterRouter from "./routes/recruiter.routes"
+import jobPostingRouter from "./routes/jobPosting.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"
@@ -40,10 +40,10 @@ app.use(passport.session());
 // Routing flow configuration
 app.use('/auth', authRouter);
 app.use('/email', emailRouter);
-app.use('/user', userRouter);
 app.use('/github', githubRouter);
 app.use('/upload', uploadRouter);
 app.use('/recruiter', recruiterRouter)
+app.use('/job-posting', jobPostingRouter);
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
 })

@@ -1,31 +1,55 @@
 import { Request, Response } from 'express';
-import UploadService from './uploadFile.service';
+import UploadService from './upload.service';
+import { log } from 'console';
 
 const UploadFileController = {
-    uploadImage: async (req: Request, res: Response, role: 'Recruiters' | 'Candidates'): Promise<void> => {
-        if (req.file) {
+    uploadImages: async (req: Request, res: Response, folderName: 'Recruiters' | 'Candidates'): Promise<void> => {
+        const files = req.files as Express.Multer.File[]; // Cascating req.files to File[]
+
+        if (files && files.length > 0) {
             try {
-                // Get the uploaded file
-                const file = req.file;
-                // Create a unique file name
-                const publicUrl: string = await UploadService.getPublicUrlImage(file, role);
-                res.status(200).json({ success: true, message: 'Image uploaded successfully', urlImage: publicUrl });
+                // Upload images and get public URLs
+                const publicUrls: string[] = await UploadService.getPublicUrlImages(files, folderName);
+                res.status(200).json({ success: true, message: 'Images uploaded successfully', urlImages: publicUrls });
             } catch (error) {
-                console.error(error);
-                res.status(500).json({ success: false, error: 'Failed to upload image' });
+                log(error);
+                res.status(500).json({ success: false, error: 'Failed to upload images' });
             }
         } else {
-            res.status(400).json({ success: false, error: 'No image file provided' });
+            res.status(400).json({ success: false, error: 'No image files provided' });
         }
     },
 
-    uploadRecruiterImage: function(req: Request, res: Response): Promise<void> {
-        return UploadFileController.uploadImage(req, res, 'Recruiters');
+    uploadRecruiterImages: function (req: Request, res: Response): Promise<void> {
+        return UploadFileController.uploadImages(req, res, 'Recruiters');
     },
 
-    uploadCandidateImage: function(req: Request, res: Response): Promise<void> {
-        return UploadFileController.uploadImage(req, res, 'Candidates');
-    }
+    uploadCandidateImages: function (req: Request, res: Response): Promise<void> {
+        return UploadFileController.uploadImages(req, res, 'Candidates');
+    },
+
+    deleteImage: async (req: Request, res: Response, folderName: 'Recruiters' | 'Candidates'): Promise<void> => {
+        try {
+            const { fileIds } = req.body;
+            const isDeleted = await UploadService.deleteImage(fileIds, folderName);
+            if (!isDeleted) {
+                res.status(500).json({ success: false, error: 'Failed to delete images' });
+                return;
+            }
+            res.status(200).json({ success: true, message: 'Images deleted successfully' });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ success: false, error: 'Failed to delete images' });
+        }
+    },
+
+    deleteRecruiterImages: function (req: Request, res: Response): Promise<void> {
+        return UploadFileController.deleteImage(req, res, 'Recruiters');
+    },
+
+    deleteCandidateImages: function (req: Request, res: Response): Promise<void> {
+        return UploadFileController.deleteImage(req, res, 'Candidates');
+    },
 };
 
 export default UploadFileController;

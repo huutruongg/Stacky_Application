@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 const RecruiterService = {
     // Recruiter
-    getAllRecruiters: async (): Promise<Recruiter[]> => {
+    getRecruiters: async (): Promise<Recruiter[]> => {
         return await prisma.recruiter.findMany();
     },
 
