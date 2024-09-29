@@ -33,7 +33,23 @@ const CandidateCotroller = {
         }
     },
 
-
+    submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition,
+                candidateId, languages, projects, certificates, programmingSkills, educations, experiences
+            } = req.body;
+            const personalProfile = await CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
+            const professionalProfile = await CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certificates, programmingSkills, educations, experiences);
+            if (!personalProfile || !professionalProfile) {
+                res.status(500).json({ succes: false, message: "Something went wrong!" });
+                return;
+            }
+            res.status(200).json({ succes: true, message: "Updated successfully!" });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ succes: false, message: "Internal server error!" });
+        }
+    }
 }
 
 export default CandidateCotroller;

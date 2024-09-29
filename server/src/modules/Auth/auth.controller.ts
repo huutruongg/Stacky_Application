@@ -105,6 +105,40 @@ const AuthController = {
         })(req, res, next);
     },
 
+    adminLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { email, password } = req.body;
+
+        try {
+            const existingUser = await AuthService.getAdminAccountByEmail(email);
+            log(existingUser)
+            if (!existingUser) {
+                res.status(401).json({ message: "User not found!" });
+                return;
+            }
+            const userPassword = existingUser.sensitiveInfo.password;
+            const isValidPassword = await AuthService.checkPassword(password, userPassword);
+            if (!isValidPassword) {
+                res.status(401).json({ message: "Invalid credentials!" });
+                return;
+            }
+
+            const jwtToken = AuthService.generateToken(existingUser.user.userId, existingUser.user.email, existingUser.user.role);
+            res.status(200).json({
+                success: true,
+                data: {
+                    userId: existingUser.user.userId,
+                    email: existingUser.user.email,
+                    role: existingUser.user.role,
+                    token: jwtToken,
+                },
+            });
+
+        } catch (err) {
+            console.error(err);
+            return next(new Error("Error! Something went wrong."));
+        }
+    },
+
     logout: async (req: Request, res: Response): Promise<void> => {
         req.session.destroy(err => {
             if (err) {

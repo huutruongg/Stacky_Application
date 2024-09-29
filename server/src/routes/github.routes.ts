@@ -4,7 +4,7 @@ import GithubController from "../modules/Github/github.controller";
 
 const router = Router();
 
-router.post('/calculate-score', authenticateJWT, (req: Request, res: Response) => { GithubController.getGithubScore(req, res)})
+router.post('/calculate-score', (req: Request, res: Response) => { GithubController.getGithubScore(req, res)})
 
 export default router;
 

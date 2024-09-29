@@ -4,12 +4,11 @@ import { Strategy as GitHubStrategy } from 'passport-github';
 import axios from 'axios';
 import { log } from 'console';
 import CandidateService from '../modules/Candidate/candidate.service';
-import { Candidate } from '@prisma/client';
+import Provider from '../types/IProvider';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
   const user = await CandidateService.getCandidateByEmail(email);
-
   if (user) {
     await CandidateService.updateOauth(provider, providerId, accessToken, user.candidate.candidateId);
     return user;
@@ -28,7 +27,7 @@ passport.use(new GoogleStrategy({
   scope: ['profile', 'email']
 }, async (accessToken: string, refreshToken: string, profile: any, done: Function) => {
   const email = profile.emails[0].value;
-  const provider = 'GOOGLE';
+  const provider = Provider.GOOGLE;
   const providerId = profile.id;
 
   try {
@@ -48,7 +47,7 @@ passport.use(new GitHubStrategy({
   scope: ['user:email', 'repo']
 }, async (accessToken: string, refreshToken: string, profile: any, done: Function) => {
   let email: string | null = null;
-  const provider = 'GITHUB';
+  const provider = Provider.GITHUB;
   const providerId = profile.id;
 
   if (profile.emails && profile.emails[0]) {
@@ -78,7 +77,7 @@ passport.use(new GitHubStrategy({
   }
 }));
 
-passport.serializeUser((user:  any, done: Function) => {
+passport.serializeUser((user: any, done: Function) => {
   done(null, user.candidateId);
 });
 

@@ -1,4 +1,3 @@
-
 import { Request, Response } from 'express';
 import CandidateService from '../Candidate/candidate.service';
 import JobPostingService from '../JobPosting/jobPosting.service';
@@ -9,11 +8,11 @@ import { log } from 'console';
 
 const GithubController = {
     getGithubScore: async (req: Request, res: Response): Promise<void> => {
-        const { candidate_id, job_id } = req.body;
-
+        const { candidateId, jobId } = req.body;
+        log(candidateId, jobId)
         try {
-            const candidatePromise = CandidateService.getCandidateById(candidate_id);
-            const jobDescriptionPromise = JobPostingService.getJobPostingById(job_id);
+            const candidatePromise = CandidateService.getCandidateById(candidateId);
+            const jobDescriptionPromise = JobPostingService.getJobPostingById(jobId);
             const [candidateData, jobDescription] = await Promise.all([candidatePromise, jobDescriptionPromise]);
 
             if (!candidateData || !jobDescription) {
@@ -42,25 +41,28 @@ const GithubController = {
             }
 
             const username = selfCreatedRepoUrl.split('github.com/')[1];
-            const sharedRepoUrlPromise = CandidateService.getUrlReposSharedByCandidateId(candidate_id);
-            const tokenPromise = CandidateService.getAccessTokenGithub(candidate_id);
+            const sharedRepoUrlPromise = CandidateService.getUrlReposSharedByCandidateId(candidateId);
+            const tokenPromise = CandidateService.getAccessTokenGithub(candidateId);
             const [sharedRepoUrl, token] = await Promise.all([sharedRepoUrlPromise, tokenPromise]);
 
-            if (!sharedRepoUrl) {
-                res.status(500).json({ success: false, message: "No shared repositories found" });
-                return;
-            }
             if (!token) {
                 res.status(401).json({ success: false, message: "GitHub access token not found" });
                 return;
             }
 
-            // const selfCreatedRepos = await GithubService.fetchUserRepositories(username, token);
-            const [selfCreatedRepos, sharedRepos] = await Promise.all([
-                GithubService.fetchUserRepositories(username, token),
-                GithubService.fetchCollaboratedRepositories(sharedRepoUrl, token)
-            ]);
+            const selfCreatedReposPromise = GithubService.fetchUserRepositories(username, token);
+            let sharedRepos: Repo[] = [];
 
+            if (sharedRepoUrl) {
+                try {
+                    sharedRepos = await GithubService.fetchCollaboratedRepositories(sharedRepoUrl, token);
+                } catch (sharedRepoError) {
+                    log("Error fetching shared repositories:", sharedRepoError);
+                    // If shared repos fail to fetch, continue with personal repos
+                }
+            }
+
+            const selfCreatedRepos = await selfCreatedReposPromise;
             const allRepos: Repo[] = [...selfCreatedRepos, ...sharedRepos];
 
             const totalScore: number = await GithubScore.calculateTotalScore(

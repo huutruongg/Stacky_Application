@@ -15,14 +15,15 @@ model User {
   createdAt     DateTime       @default(now())
   candidate     Candidate?
   recruiter     Recruiter?
-  sensitiveInfo SensitiveInfo?
+  sensitiveInfo SensitiveInfo? // Admin và Recruiter có thể có mật khẩu
   publicProfile PublicProfile?
+  images        Image[]
 }
 
 model Candidate {
   candidateId       String        @id @default(uuid())
   programmingSkills String?
-  user              User          @relation(fields: [userId], references: [userId])
+  user              User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId            String        @unique
   oauthTokens       OauthToken[]
   languages         Language[]
@@ -36,11 +37,9 @@ model Candidate {
 
 model SensitiveInfo {
   sensitiveId String     @id @default(uuid())
-  password    String
-  user        User       @relation(fields: [userId], references: [userId])
+  password    String     // Mật khẩu để đăng nhập
+  user        User       @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId      String     @unique
-  recruiter   Recruiter? @relation(fields: [recruiterId], references: [recruiterId])
-  recruiterId String?    @unique // Add @unique here
 }
 
 model Recruiter {
@@ -49,22 +48,20 @@ model Recruiter {
   orgField      String?
   orgScale      String?
   orgAddress    String?
-  orgTaxNumber String?
-  user          User           @relation(fields: [userId], references: [userId])
+  orgTaxNumber  String?
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId        String         @unique
   balance       Float          @default(0)
-  sensitiveInfo SensitiveInfo?
-  images        Image[]
   jobPosts      JobPost[]
   payments      Payment[]
 }
 
 model Image {
-  imageId     String    @id @default(uuid())
-  imageUrl    String
-  uploadedAt  DateTime  @default(now())
-  recruiter   Recruiter @relation(fields: [recruiterId], references: [recruiterId])
-  recruiterId String
+  imageId    String   @id @default(uuid())
+  imageUrl   String
+  uploadedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId     String
 }
 
 model PublicProfile {
@@ -77,7 +74,7 @@ model PublicProfile {
   githubUrl           String?
   personalDescription String?
   jobPosition         String?
-  user                User      @relation(fields: [userId], references: [userId])
+  user                User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId              String    @unique
 }
 
@@ -88,7 +85,7 @@ model OauthToken {
   accessToken  String
   refreshToken String?
   createdAt    DateTime  @default(now())
-  candidate    Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate    Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId  String
 
   @@unique([candidateId, provider])
@@ -98,7 +95,7 @@ model Language {
   languageId  String    @id @default(uuid())
   language    String
   level       String
-  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId String
 }
 
@@ -108,7 +105,7 @@ model Project {
   projectTime        String
   urlRepo            String?
   projectDescription String?
-  candidate          Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate          Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId        String
 }
 
@@ -117,7 +114,7 @@ model Certificate {
   certificateName   String
   dateOfReceipt     DateTime
   certificateDetail String?
-  candidate         Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate         Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId       String
 }
 
@@ -127,7 +124,7 @@ model Education {
   startDate   DateTime
   finishDate  DateTime
   fieldName   String?
-  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId String
 }
 
@@ -138,7 +135,7 @@ model Experience {
   endDate            DateTime?
   jobPosition        String
   previousJobDetails String?
-  candidate          Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate          Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId        String
 }
 
@@ -162,17 +159,18 @@ model JobPost {
   workEnvironment     String?
   jobSchedule         String?
   applicationDeadline DateTime
+  postStatus          PostStatus    @default(PENDING)
   postedAt            DateTime      @default(now())
-  recruiter           Recruiter     @relation(fields: [recruiterId], references: [recruiterId])
+  recruiter           Recruiter     @relation(fields: [recruiterId], references: [recruiterId], onDelete: Cascade)
   recruiterId         String
-  jobsSaved           JobSaved[]
+  jobsSaved           JobSaved[]  
   applications        Application[]
 }
 
 model JobSaved {
-  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId String
-  jobPost     JobPost   @relation(fields: [jobId], references: [jobId])
+  jobPost     JobPost   @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
   jobId       String
   savedAt     DateTime  @default(now())
 
@@ -180,9 +178,9 @@ model JobSaved {
 }
 
 model Application {
-  candidate   Candidate         @relation(fields: [candidateId], references: [candidateId])
+  candidate   Candidate         @relation(fields: [candidateId], references: [candidateId], onDelete: Cascade)
   candidateId String
-  jobPost     JobPost           @relation(fields: [jobId], references: [jobId])
+  jobPost     JobPost           @relation(fields: [jobId], references: [jobId], onDelete: Cascade)
   jobId       String
   appliedAt   DateTime          @default(now())
   status      ApplicationStatus @default(PENDING)
@@ -195,7 +193,7 @@ model Payment {
   id              String    @id @default(uuid())
   payAmount       Float
   transactionDate DateTime  @default(now())
-  recruiter       Recruiter @relation(fields: [recruiterId], references: [recruiterId])
+  recruiter       Recruiter @relation(fields: [recruiterId], references: [recruiterId], onDelete: Cascade)
   recruiterId     String
 }
 
@@ -219,5 +217,11 @@ enum Role {
 enum ApplicationStatus {
   PENDING
   ACCEPTED
+  REJECTED
+}
+
+enum PostStatus {
+  PENDING
+  APPROVED
   REJECTED
 }

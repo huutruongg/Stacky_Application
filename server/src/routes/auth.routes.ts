@@ -4,7 +4,7 @@ import AuthController from "../modules/Auth/auth.controller";
 
 const router = Router();
 
-router.post('/login/admin', AuthController.login);
+router.post('/login/admin', AuthController.adminLogin);
 
 router.post('/signup/recruiter', AuthController.signupRecruiter);
 router.post('/login/recruiter', AuthController.login);

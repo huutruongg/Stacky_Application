@@ -2,6 +2,7 @@ import { PrismaClient, Recruiter, SensitiveInfo, User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from "bcrypt";
 import UserRole from '../../types/IUserRole';
+import { log } from 'console';
 const saltRounds = 10;
 const prisma = new PrismaClient();
 
@@ -36,8 +37,6 @@ const RecruiterService = {
 
     createRecruiter: async (email: string, mobile: string, password: string, tax_number: string, org_name: string, org_field: string, org_scale: string, org_address: string): Promise<Recruiter> => {
         const hashedPwd = await bcrypt.hash(password, saltRounds);
-
-        // Tạo User trước
         const user = await prisma.user.create({
             data: {
                 email,
@@ -76,4 +75,5 @@ const RecruiterService = {
     }
 };
 
+RecruiterService.getRecruiterByEmail("conghuu1423@gmail.com").then((data) => log(data)).catch((e) => log(e))
 export default RecruiterService;

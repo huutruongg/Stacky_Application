@@ -32,7 +32,7 @@ const JobController = {
         }
     },
 
-    getJobPostingSaved : async (req: Request, res: Response): Promise<void> => {
+    getJobPostingSaved: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
             const data: JobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
@@ -46,7 +46,7 @@ const JobController = {
         }
     },
 
-    getJobsApplied : async (req: Request, res: Response): Promise<void> => {
+    getJobsApplied: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
             const data: JobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
@@ -93,7 +93,8 @@ const JobController = {
     filterByLocation: async (req: Request, res: Response): Promise<void> => {
         try {
             const { locationSelection } = req.query;
-            const data: JobPost[] | null = await JobPostingService.filterJobPostingByLocation((locationSelection as string));
+            log(locationSelection)
+            const data: JobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
             if (!data) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -125,11 +126,14 @@ const JobController = {
     createJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
             const {
-                recruiter_id, job_title, job_image, type_of_work, location, job_salary, candidates_limit, education_required, years_of_experience, type_of_industry,
-                professional_skills, certificate_required, languages_required, job_benefit, leave_policy, job_description, work_enviroment, job_schedule, application_deadline
+                recruiterId, jobTitle, jobImage, typeOfWork, location, jobSalary, candidatesLimit, educationRequired, yearsOfExperience, typeOfIndustry, professionalSkills,
+                certificateRequired, languagesRequired, jobBenefit, leavePolicy, jobDescription, workEnvironment, jobSchedule, applicationDeadline
             } = req.body;
-            const isCreated: boolean | null = await JobPostingService.createJobPosting(recruiter_id, job_title, job_image, type_of_work, location, job_salary, candidates_limit, education_required, years_of_experience, type_of_industry,
-                professional_skills, certificate_required, languages_required, job_benefit, leave_policy, job_description, work_enviroment, job_schedule, application_deadline);
+
+            const isCreated: boolean | null = await JobPostingService.createJobPosting(
+                recruiterId, jobTitle, jobImage, typeOfWork, location, jobSalary, candidatesLimit, educationRequired, yearsOfExperience, typeOfIndustry, professionalSkills,
+                certificateRequired, languagesRequired, jobBenefit, leavePolicy, jobDescription, workEnvironment, jobSchedule, applicationDeadline
+            );
             if (!isCreated) {
                 res.status(500).json({ success: false, message: "Job not created!" });
                 return;

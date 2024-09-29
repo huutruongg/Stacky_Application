@@ -10,6 +10,7 @@ const RecruiterController = {
         try {
             const { email } = req.body;
             const data = await RecruiterService.getRecruiterByEmail(email);
+            // log(data)
             if (!data) {
                 res.status(500).json({ success: false, message: "Email not found!" });
                 return;

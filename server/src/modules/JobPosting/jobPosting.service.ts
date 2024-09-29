@@ -15,7 +15,6 @@ const JobPostingService = {
             if (!jobPost) {
                 console.warn(`Job posting with ID ${id} not found.`);
             }
-
             return jobPost;
         } catch (error) {
             log(error);
@@ -106,20 +105,17 @@ const JobPostingService = {
 
     filterJobPostingByLocation: async (location: string): Promise<JobPost[] | null> => {
         try {
+            // Adjusting the query structure to correctly reference the nested relation
             const data: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
-                    recruiter: {
-                        orgAddress: location
-                    }
-                },
-                include: {
-                    recruiter: {
-                        select: {
-                            orgAddress: true,
-                        }
+                    location: {
+                        contains: location,
+                        mode: 'insensitive'
                     }
                 }
             });
+
+            log(data);
             return data;
         } catch (error) {
             log(error);
@@ -131,7 +127,10 @@ const JobPostingService = {
         try {
             const data: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
-                    typeOfIndustry: industry
+                    typeOfIndustry: {
+                        contains: industry,
+                        mode: 'insensitive',
+                    }
                 },
             });
             return data;
