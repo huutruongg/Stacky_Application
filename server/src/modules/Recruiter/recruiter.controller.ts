@@ -1,3 +1,4 @@
+import { Candidate } from '@prisma/client';
 import { Request, Response } from "express";
 import RecruiterService from "./recruiter.service";
 import { log } from "console";
@@ -8,13 +9,13 @@ const RecruiterController = {
     forgotPassword: async (req: Request, res: Response): Promise<void> => {
         try {
             const { email } = req.body;
-            const user = await RecruiterService.getRecruiterByEmail(email);
-            if (!user) {
+            const data = await RecruiterService.getRecruiterByEmail(email);
+            if (!data) {
                 res.status(500).json({ success: false, message: "Email not found!" });
                 return;
             }
-            const companyName = user.org_name || "you";
-            const url = `http://localhost:4080/recruiter/reset-password/${user.recruiter_id}`;
+            const companyName = data.recruiter.orgName || "you";
+            const url = `http://localhost:4080/recruiter/reset-password/${data.user.userId}`;
             const htmlContent = resetPasswordTemplate(companyName, url);
 
             await EmailService.sendEmail(email, "Reset your password!", "", htmlContent);

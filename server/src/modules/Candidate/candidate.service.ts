@@ -1,29 +1,115 @@
 import { v4 as uuidv4 } from 'uuid';
-import { C_Project, Candidate, PrismaClient } from "@prisma/client";
+import { Candidate, Certificate, Education, Experience, Language, OauthToken, PrismaClient, Project, PublicProfile, User } from "@prisma/client";
 import UserRole from '../../types/IUserRole';
+import { CandidateInfo } from '../../types/ICandidateInfo';
 
 const prisma = new PrismaClient();
 
 const CandidateService = {
-    getCandidates: async (): Promise<Candidate[]> => {
-        return await prisma.candidate.findMany();
+    getFullCandidateInfo: async (user: User, candidate: Candidate, publicProfile?: PublicProfile, oauthToken?: OauthToken, project?: Project, language?: Language, certificate?: Certificate, education?: Education, experience?: Experience): Promise<CandidateInfo> => {
+        return {
+            user,
+            candidate,
+            publicProfile,
+            oauthToken,
+            project,
+            language,
+            certificate,
+            education,
+            experience
+        }
     },
 
-    getCandidateById: async (id: string): Promise<Candidate | null> => {
-        return await prisma.candidate.findUnique({
-            where: { candidate_id: id }
+    getCandidates: async (): Promise<CandidateInfo[] | null> => {
+        const candidates = await prisma.candidate.findMany({
+            include: {
+                user: {
+                    include: {
+                        publicProfile: true,
+                    },
+                },
+            },
         });
+        if (!candidates) {
+            return null;
+        }
+        const candidateInfos = await Promise.all(
+            candidates.map(async (candidate) => {
+                const { user, ...restCandidate } = candidate;
+                if (!user || !user.publicProfile) {
+                    return null;
+                }
+                return await CandidateService.getFullCandidateInfo(
+                    user,
+                    restCandidate,
+                    user.publicProfile
+                );
+            })
+        );
+        return candidateInfos.filter(info => info !== null) as CandidateInfo[];
     },
 
-    getCandidateByEmail: async (email: string): Promise<Candidate | null> => {
-        return await prisma.candidate.findUnique({
-            where: { email }
+    getCandidateById: async (id: string): Promise<CandidateInfo | null> => {
+        // Truy xuất candidate
+        const candidate = await prisma.candidate.findUnique({
+            where: { candidateId: id }
         });
+
+        if (!candidate) {
+            return null;
+        }
+
+        const [user, publicProfile] = await Promise.all([
+            prisma.user.findUnique({
+                where: { userId: candidate.userId }
+            }),
+            prisma.publicProfile.findUnique({
+                where: { userId: candidate.userId }
+            })
+        ]);
+
+        if (!user || !publicProfile) {
+            return null;
+        }
+
+        const data = await CandidateService.getFullCandidateInfo(
+            user,
+            candidate,
+            publicProfile
+        );
+        return data;
     },
+
+
+
+    getCandidateByEmail: async (email: string): Promise<CandidateInfo | null> => {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+                candidate: true,
+            }
+        });
+        if (!user || !user.candidate) {
+            return null;
+        }
+        const publicProfile = await prisma.publicProfile.findUnique({
+            where: { userId: user.userId }
+        })
+        if (!publicProfile) {
+            return null;
+        }
+        const data = await CandidateService.getFullCandidateInfo(
+            user,
+            user.candidate,
+            publicProfile
+        );
+        return data;
+    },
+
 
     getCandidatesApplied: async (jobId: string): Promise<{ candidate: Candidate; appliedAt: Date }[] | null> => {
         const applications = await prisma.application.findMany({
-            where: { job_id: jobId },
+            where: { jobId: jobId },
             include: {
                 candidate: true
             }
@@ -35,42 +121,66 @@ const CandidateService = {
 
         const result = applications.map(application => ({
             candidate: application.candidate,
-            appliedAt: application.applied_at
+            appliedAt: application.appliedAt
         }));
-
         return result;
     },
 
-    createCandidate: async (email: string, username: string): Promise<Candidate> => {
-        const candidateId = uuidv4();
-        return await prisma.candidate.create({
+    createCandidate: async (email: string, username: string): Promise<CandidateInfo> => {
+        const userPromise = prisma.user.create({
             data: {
-                candidate_id: candidateId,
-                email,
-                username,
-                role: UserRole.CANDIDATE
-            }
+                email: email,
+                role: UserRole.CANDIDATE,
+            },
         });
+        const user = await userPromise;
+
+        const [candidate, publicProfile] = await Promise.all([
+            prisma.candidate.create({
+                data: {
+                    userId: user.userId,
+                },
+            }),
+            prisma.publicProfile.create({
+                data: {
+                    fullName: username,
+                    userId: user.userId,
+                },
+            }),
+        ]);
+        const data = await CandidateService.getFullCandidateInfo(user, candidate, publicProfile);
+        return data;
     },
+
 
     updateOauth: async (provider: string, providerId: string, accessToken: string, candidateId: string): Promise<void> => {
         const data = {
-            access_token: accessToken,
-            created_at: new Date(),
+            accessToken: accessToken,
+            createdAt: new Date(),
         };
 
-        await prisma.oauth_Token.upsert({
+        await prisma.oauthToken.upsert({
             where: {
-                candidate_id_provider: { candidate_id: candidateId, provider }
+                candidateId_provider: { candidateId: candidateId, provider }
             },
             update: data,
             create: {
                 provider,
-                provider_id: providerId,
+                providerId: providerId,
                 ...data,
-                candidate_id: candidateId,
+                candidateId: candidateId,
             },
         });
+    },
+
+    updateCandidatePersonalProfile: async (
+
+    ): Promise<void> => {
+
+    },
+
+    updateCandidateProfessionalProfile: async (): Promise<void> => {
+
     },
 
     getCandidatesByPage: async (page: number, pageSize: number): Promise<Candidate[]> => {
@@ -81,26 +191,27 @@ const CandidateService = {
     },
 
     getUrlReposSharedByCandidateId: async (id: string): Promise<string[] | null> => {
-        const projects = await prisma.c_Project.findMany({
-            where: { candidate_id: id },
-            select: { url_repo: true }
+        const projects = await prisma.project.findMany({
+            where: { candidateId: id },
+            select: { urlRepo: true }
         });
-
-        // Return the extracted urls or null if no projects found
-        return projects.length > 0 ? projects.map(p => p.url_repo) : null;
+        const urls = projects
+            .map(p => p.urlRepo)
+            .filter((url): url is string => url !== null);
+        return urls.length > 0 ? urls : null;
     },
 
     getAccessTokenGithub: async (id: string): Promise<string | null> => {
         try {
-            const { access_token } = await prisma.oauth_Token.findFirst({
+            const { accessToken } = await prisma.oauthToken.findFirst({
                 where: {
-                    candidate_id: id,
+                    candidateId: id,
                     provider: "GITHUB"
                 },
-                select: { access_token: true }
+                select: { accessToken: true }
             }) || {}; // Use destructuring to handle the case where data is null
 
-            return access_token || null; // Return access_token or null if it doesn't exist
+            return accessToken || null; // Return access_token or null if it doesn't exist
         } catch (error) {
             console.error("Error fetching GitHub access token:", error);
             return null; // Return null if there's an error

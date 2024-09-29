@@ -5,13 +5,16 @@ import passport from 'passport';
 import AuthService from './auth.service';
 import { AuthUserType } from "../../types/Custom";
 import RecruiterService from "../Recruiter/recruiter.service";
-import { Recruiter } from "@prisma/client";
+import { Candidate, Recruiter } from "@prisma/client";
+import UserRole from "../../types/IUserRole";
+import CandidateService from "../Candidate/candidate.service";
+import { CandidateInfo } from "../../types/ICandidateInfo";
 
 dotenv.config();
 
 const AuthController = {
     signupRecruiter: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url } = req.body;
+        const { email, mobile, password, tax_number, org_name, org_field, org_scale, org_address } = req.body;
 
         try {
             const existingUser: AuthUserType | null = await RecruiterService.getRecruiterByEmail(email);
@@ -21,7 +24,7 @@ const AuthController = {
             }
 
             const recruiter: Recruiter | null = await RecruiterService.createRecruiter(
-                email, mobile, password, tax_number, org_name, org_field, org_scale, org_address, org_image_url
+                email, mobile, password, tax_number, org_name, org_field, org_scale, org_address
             );
 
             if (!recruiter) {
@@ -29,12 +32,12 @@ const AuthController = {
                 return;
             }
 
-            const token = AuthService.generateToken(recruiter.recruiter_id, recruiter.org_email, recruiter.role);
+            const token = AuthService.generateToken(recruiter.recruiterId, email, UserRole.RECRUITER);
             res.status(200).json({
                 success: true,
                 data: {
-                    userId: recruiter.recruiter_id,
-                    email: recruiter.org_email,
+                    userId: recruiter.recruiterId,
+                    email: email,
                     token,
                 },
             });
@@ -49,25 +52,25 @@ const AuthController = {
         const { email, password } = req.body;
 
         try {
-            const existingUser: Recruiter | null = await RecruiterService.getRecruiterByEmail(email);
+            const existingUser = await RecruiterService.getRecruiterByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;
             }
-
-            const isValidPassword = await AuthService.checkPassword(password, existingUser.org_password);
+            const userPassword = existingUser.sensitiveInfo?.password as string;
+            const isValidPassword = await AuthService.checkPassword(password, userPassword);
             if (!isValidPassword) {
                 res.status(401).json({ message: "Invalid credentials!" });
                 return;
             }
 
-            const jwtToken = AuthService.generateToken(existingUser.recruiter_id as string, existingUser.org_email, existingUser.role);
+            const jwtToken = AuthService.generateToken(existingUser.recruiter.recruiterId as string, existingUser.user.email, existingUser.user.role);
             res.status(200).json({
                 success: true,
                 data: {
-                    userId: existingUser.recruiter_id,
-                    email: existingUser.org_email,
-                    role: existingUser.role,
+                    userId: existingUser.recruiter.recruiterId,
+                    email: existingUser.user.email,
+                    role: existingUser.user.role,
                     token: jwtToken,
                 },
             });
@@ -78,14 +81,27 @@ const AuthController = {
         }
     },
 
-    loginCandidateOAuth: (provider: 'google' | 'github') => (req: Request, res: Response, next: NextFunction): void => {
-        passport.authenticate(provider, { session: false }, (err: any, user: any) => {
+    loginCandidateOAuth: (provider: 'google' | 'github') => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        passport.authenticate(provider, { session: false }, async (err: any, user: CandidateInfo) => {
             if (err || !user) {
-                return res.status(401).json({ success: false, message: 'Authentication failed' });
+                log(err)
+                res.status(401).json({ success: false, message: 'Authentication failed' });
+                return;
             }
 
-            const jwtToken = AuthService.generateToken(user.candidate_id, user.email, user.role);
-            return res.status(200).json({ success: true, token: jwtToken });
+            try {
+                const candidate = await CandidateService.getCandidateById(user.candidate.candidateId);
+                if (!candidate || !candidate.user?.email) {
+                    res.status(401).json({ success: false, message: 'Authentication failed' });
+                    return;
+                }
+
+                const jwtToken = AuthService.generateToken(user.candidate.candidateId, candidate.user.email, candidate.user.role);
+                res.status(200).json({ success: true, token: jwtToken });
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ success: false, message: 'Internal server error' });
+            }
         })(req, res, next);
     },
 

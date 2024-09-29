@@ -14,15 +14,15 @@ const GithubController = {
         try {
             const candidatePromise = CandidateService.getCandidateById(candidate_id);
             const jobDescriptionPromise = JobPostingService.getJobPostingById(job_id);
-            const [candidate, jobDescription] = await Promise.all([candidatePromise, jobDescriptionPromise]);
+            const [candidateData, jobDescription] = await Promise.all([candidatePromise, jobDescriptionPromise]);
 
-            if (!candidate || !jobDescription) {
+            if (!candidateData || !jobDescription) {
                 res.status(500).json({ success: false, message: "Candidate or Job Description not found" });
                 return;
             }
 
-            const candidateLanguages: string[] = candidate?.programming_skills?.split(', ') || [];
-            const jdText: string = jobDescription?.professional_skills || "";
+            const candidateLanguages: string[] = candidateData.candidate.programmingSkills?.split(', ') || [];
+            const jdText: string = jobDescription?.professionalSkills || "";
 
             if (!jdText) {
                 res.status(500).json({ success: false, message: "Job description missing professional skills" });
@@ -35,7 +35,7 @@ const GithubController = {
                 return;
             }
 
-            const selfCreatedRepoUrl = candidate?.github_url;
+            const selfCreatedRepoUrl = candidateData?.publicProfile?.githubUrl;
             if (!selfCreatedRepoUrl) {
                 res.status(500).json({ success: false, message: "Candidate GitHub URL missing or invalid" });
                 return;

@@ -4,17 +4,18 @@ import { Strategy as GitHubStrategy } from 'passport-github';
 import axios from 'axios';
 import { log } from 'console';
 import CandidateService from '../modules/Candidate/candidate.service';
+import { Candidate } from '@prisma/client';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
   const user = await CandidateService.getCandidateByEmail(email);
 
   if (user) {
-    await CandidateService.updateOauth(provider, providerId, accessToken, user.candidate_id);
+    await CandidateService.updateOauth(provider, providerId, accessToken, user.candidate.candidateId);
     return user;
   } else {
     const newUser = await CandidateService.createCandidate(email, displayName);
-    await CandidateService.updateOauth(provider, providerId, accessToken, newUser.candidate_id);
+    await CandidateService.updateOauth(provider, providerId, accessToken, newUser.candidate.candidateId);
     return newUser;
   }
 };
@@ -77,8 +78,8 @@ passport.use(new GitHubStrategy({
   }
 }));
 
-passport.serializeUser((user: any, done: Function) => {
-  done(null, user.candidate_id);
+passport.serializeUser((user:  any, done: Function) => {
+  done(null, user.candidateId);
 });
 
 passport.deserializeUser(async (id: string, done: Function) => {

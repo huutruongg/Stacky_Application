@@ -1,4 +1,4 @@
-import { Job_Post, PrismaClient } from "@prisma/client";
+import { JobPost, PrismaClient } from "@prisma/client";
 import { log } from "console";
 import { v4 as uuidv4 } from "uuid"
 const prisma = new PrismaClient();
@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 const JobPostingService = {
 
 
-    getJobPostingById: async (id: string): Promise<Job_Post | null> => {
+    getJobPostingById: async (id: string): Promise<JobPost | null> => {
         try {
-            const jobPost = await prisma.job_Post.findUnique({
-                where: { job_id: id },
+            const jobPost = await prisma.jobPost.findUnique({
+                where: { jobId: id },
             });
 
             if (!jobPost) {
@@ -23,12 +23,12 @@ const JobPostingService = {
         }
     },
 
-    getJobPostingsByRecruiter: async (recruiterId: string, postId: string): Promise<Job_Post[] | null> => {
+    getJobPostingsByRecruiter: async (recruiterId: string, postId: string): Promise<JobPost[] | null> => {
         try {
-            const jobPosts: Job_Post[] | null = await prisma.job_Post.findMany({
+            const jobPosts: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
-                    job_id: postId,
-                    recruiter_id: recruiterId
+                    jobId: postId,
+                    recruiterId: recruiterId
                 },
             });
 
@@ -43,55 +43,55 @@ const JobPostingService = {
         }
     },
 
-    getJobsSaved: async (candidateId: string, postId: string): Promise<Job_Post[] | null> => {
+    getJobsSaved: async (candidateId: string, postId: string): Promise<JobPost[] | null> => {
         try {
-            const jobPosts = await prisma.job_Saved.findMany({
+            const jobPosts = await prisma.jobSaved.findMany({
                 where: {
-                    candidate_id: candidateId,
-                    job_id: postId,
+                    candidateId: candidateId,
+                    jobId: postId,
                 },
                 include: {
-                    job: true,
+                    jobPost: true,
                 },
             });
 
             if (!jobPosts) {
                 return null;
             }
-            return jobPosts.map(jobSaved => jobSaved.job);
+            return jobPosts.map(jobSaved => jobSaved.jobPost);
         } catch (error) {
             log(error)
             return null;
         }
     },
 
-    getJobsApplied: async (candidateId: string, postId: string): Promise<Job_Post[] | null> => {
+    getJobsApplied: async (candidateId: string, postId: string): Promise<JobPost[] | null> => {
         try {
             const jobPosts = await prisma.application.findMany({
                 where: {
-                    candidate_id: candidateId,
-                    job_id: postId,
+                    candidateId: candidateId,
+                    jobId: postId,
                 },
                 include: {
-                    job: true,
+                    jobPost: true,
                 },
             });
 
             if (!jobPosts) {
                 return null;
             }
-            return jobPosts.map(jobApplied => jobApplied.job);
+            return jobPosts.map(jobApplied => jobApplied.jobPost);
         } catch (error) {
             log(error)
             return null;
         }
     },
 
-    findJobPostingsByJobPosition: async (key: string): Promise<Job_Post[] | null> => {
+    findJobPostingsByJobPosition: async (key: string): Promise<JobPost[] | null> => {
         try {
-            const data: Job_Post[] | null = await prisma.job_Post.findMany({
+            const data: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
-                    job_title: {
+                    jobTitle: {
                         contains: key,
                         mode: 'insensitive',
                     },
@@ -104,18 +104,18 @@ const JobPostingService = {
         }
     },
 
-    filterJobPostingByLocation: async (location: string): Promise<Job_Post[] | null> => {
+    filterJobPostingByLocation: async (location: string): Promise<JobPost[] | null> => {
         try {
-            const data: Job_Post[] | null = await prisma.job_Post.findMany({
+            const data: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
                     recruiter: {
-                        org_address: location
+                        orgAddress: location
                     }
                 },
                 include: {
                     recruiter: {
                         select: {
-                            org_address: true,
+                            orgAddress: true,
                         }
                     }
                 }
@@ -127,11 +127,11 @@ const JobPostingService = {
         }
     },
 
-    filterJobPostingByIndustry: async (industry: string): Promise<Job_Post[] | null> => {
+    filterJobPostingByIndustry: async (industry: string): Promise<JobPost[] | null> => {
         try {
-            const data: Job_Post[] | null = await prisma.job_Post.findMany({
+            const data: JobPost[] | null = await prisma.jobPost.findMany({
                 where: {
-                    type_of_industry: industry
+                    typeOfIndustry: industry
                 },
             });
             return data;
@@ -141,11 +141,11 @@ const JobPostingService = {
         }
     },
 
-    getJobsPosted: async (userId: string): Promise<Job_Post[] | null> => {
+    getJobsPosted: async (userId: string): Promise<JobPost[] | null> => {
         try {
-            return await prisma.job_Post.findMany({
+            return await prisma.jobPost.findMany({
                 where: {
-                    recruiter_id: userId
+                    recruiterId: userId
                 }
             });
         } catch (error) {
@@ -154,9 +154,9 @@ const JobPostingService = {
         }
     },
 
-    getJobPostingsByPage: async (page: number, pageSize: number): Promise<Job_Post[] | null> => {
+    getJobPostingsByPage: async (page: number, pageSize: number): Promise<JobPost[] | null> => {
         try {
-            return await prisma.job_Post.findMany({
+            return await prisma.jobPost.findMany({
                 skip: (page - 1) * pageSize,
                 take: pageSize
             });
@@ -166,17 +166,16 @@ const JobPostingService = {
         }
     },
 
-    createJobPosting: async (recruiter_id: string, job_title: string, job_image: string, type_of_work: string, location: string, job_salary: string, candidates_limit: number, education_required: string, years_of_experience: string, type_of_industry: string,
-        professional_skills: string, certificate_required: string, languages_required: string, job_benefit: string, leave_policy: string, job_description: string, work_enviroment: string, job_schedule: string, application_deadline: string): Promise<boolean | null> => {
+    createJobPosting: async (recruiterId: string, jobTitle: string, jobImage: string, typeOfWork: string, location: string, jobSalary: string, candidatesLimit: number, educationRequired: string,
+        yearsOfExperience: string, typeOfIndustry: string, professionalSkills: string, certificateRequired: string, languagesRequired: string, jobBenefit: string, leavePolicy: string,
+        jobDescription: string, workEnvironment: string, jobSchedule: string, applicationDeadline: string): Promise<boolean | null> => {
         try {
-            const job_id: string = uuidv4();
-            await prisma.job_Post.create({
+            await prisma.jobPost.create({
                 data: {
-                    job_id, recruiter_id, job_title, job_image, type_of_work, location, job_salary, candidates_limit, education_required,
-                    years_of_experience, type_of_industry, professional_skills, certificate_required, languages_required, job_benefit,
-                    leave_policy, job_description, work_enviroment, job_schedule, application_deadline
-                }
-            })
+                    recruiterId, jobTitle, jobImage, typeOfWork, location, jobSalary, candidatesLimit, educationRequired, yearsOfExperience, typeOfIndustry, professionalSkills,
+                    certificateRequired, languagesRequired, jobBenefit, leavePolicy, jobDescription, workEnvironment, jobSchedule, applicationDeadline,
+                },
+            });
             return true;
         } catch (error) {
             log(error);
@@ -184,11 +183,12 @@ const JobPostingService = {
         }
     },
 
+
     deleteJobPosting: async (jobId: string): Promise<boolean | null> => {
         try {
-            await prisma.job_Post.delete({
+            await prisma.jobPost.delete({
                 where: {
-                    job_id: jobId
+                    jobId: jobId
                 }
             });
             return true;

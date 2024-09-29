@@ -1,4 +1,4 @@
-import { PrismaClient, Recruiter } from '@prisma/client';
+import { PrismaClient, Recruiter, SensitiveInfo, User } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from "bcrypt";
 import UserRole from '../../types/IUserRole';
@@ -13,47 +13,65 @@ const RecruiterService = {
 
     getRecruiterById: async (id: string): Promise<Recruiter | null> => {
         return await prisma.recruiter.findUnique({
-            where: { recruiter_id: id }
+            where: { recruiterId: id }
         });
     },
 
-    getRecruiterByEmail: async (email: string): Promise<Recruiter | null> => {
-        return await prisma.recruiter.findUnique({
-            where: {
-                org_email: email, 
+    getRecruiterByEmail: async (email: string): Promise<{ user: User; recruiter: Recruiter; sensitiveInfo?: SensitiveInfo } | null> => {
+        const user = await prisma.user.findUnique({
+            where: { email },
+            include: {
+                recruiter: true,
+                sensitiveInfo: true
             },
         });
+        if (!user || !user.recruiter || !user.sensitiveInfo) {
+            return null;
+        }
+        const recruiter = user.recruiter;
+        const sensitiveInfo = user.sensitiveInfo;
+        return { user, recruiter, sensitiveInfo };
     },
 
-    createRecruiter: async (email: string, mobile: string, password: string, tax_number: string, org_name: string, org_field: string, org_scale: string, org_address: string, org_image_url: string): Promise<Recruiter> => {
-        const recruiterId = uuidv4();
+
+    createRecruiter: async (email: string, mobile: string, password: string, tax_number: string, org_name: string, org_field: string, org_scale: string, org_address: string): Promise<Recruiter> => {
         const hashedPwd = await bcrypt.hash(password, saltRounds);
-        return await prisma.recruiter.create({
+
+        // Tạo User trước
+        const user = await prisma.user.create({
             data: {
-                recruiter_id: recruiterId,
-                org_email: email, 
-                org_mobile: mobile,
-                org_password: hashedPwd,
+                email,
+                phoneNumber: mobile,
                 role: UserRole.RECRUITER,
-                org_tax_number: tax_number,
-                org_name,
-                org_field,
-                org_scale,
-                org_address,
-                org_image: org_image_url
+                sensitiveInfo: {
+                    create: {
+                        password: hashedPwd,
+                    }
+                }
             }
         });
+
+        return await prisma.recruiter.create({
+            data: {
+                userId: user.userId,
+                orgName: org_name,
+                orgField: org_field,
+                orgScale: org_scale,
+                orgTaxNumber: tax_number,
+                orgAddress: org_address
+            }
+        })
     },
 
     changePassword: async (userId: string, newPassword: string): Promise<void> => {
         try {
             const hashedPwd = await bcrypt.hash(newPassword, saltRounds);
-            await prisma.recruiter.update({
-                where: { recruiter_id: userId },
-                data: { org_password: hashedPwd },
-              })
+            await prisma.sensitiveInfo.update({
+                where: { userId: userId },
+                data: { password: hashedPwd },
+            })
         } catch (error) {
-            
+
         }
     }
 };

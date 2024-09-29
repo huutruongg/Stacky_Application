@@ -3,193 +3,221 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// Models
-// 1. candidates
+model User {
+  userId        String         @id @default(uuid())
+  email         String         @unique
+  phoneNumber   String?
+  role          Role
+  createdAt     DateTime       @default(now())
+  candidate     Candidate?
+  recruiter     Recruiter?
+  sensitiveInfo SensitiveInfo?
+  publicProfile PublicProfile?
+}
+
 model Candidate {
-  candidate_id         String          @id
-  email                String?         @unique
-  username             String?
-  role                 String          @default("CANDIDATE")
-  full_name            String?
-  applied_position     String?
-  phone_number         String?
-  gender               Boolean?
-  birth_date           DateTime?
-  address              String?
-  linkedin_url         String?
-  github_url           String?
-  personal_description String?
-  programming_skills   String?
-  github_score         Float?
-  created_at           DateTime        @default(now())
-  languages            C_Language[]
-  projects             C_Project[]
-  certificates         C_Certificate[]
-  educations           C_Education[]
-  experiences          C_Experience[]
-  applications         Application[]
-  job_saved            Job_Saved[]
-  oauth_tokens         Oauth_Token[]
+  candidateId       String        @id @default(uuid())
+  programmingSkills String?
+  user              User          @relation(fields: [userId], references: [userId])
+  userId            String        @unique
+  oauthTokens       OauthToken[]
+  languages         Language[]
+  projects          Project[]
+  certificates      Certificate[]
+  education         Education[]
+  experience        Experience[]
+  jobsSaved         JobSaved[]
+  applications      Application[]
 }
 
-// 2. c_languages
-model C_Language {
-  cl_id        Int       @id @default(autoincrement())
-  language     String
-  level        String
-  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id String
+model SensitiveInfo {
+  sensitiveId String     @id @default(uuid())
+  password    String
+  user        User       @relation(fields: [userId], references: [userId])
+  userId      String     @unique
+  recruiter   Recruiter? @relation(fields: [recruiterId], references: [recruiterId])
+  recruiterId String?    @unique // Add @unique here
 }
 
-// 3. c_projects
-model C_Project {
-  cp_id               Int       @id @default(autoincrement())
-  project_name        String
-  project_time        String
-  url_repo            String
-  project_description String?
-  candidate           Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id        String
-}
-
-// 4. c_certificates
-model C_Certificate {
-  cc_id              Int       @id @default(autoincrement())
-  certificate_name   String
-  date_of_receipt    DateTime
-  certificate_detail String?
-  candidate          Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id       String
-}
-
-// 5. c_educations
-model C_Education {
-  ce_id        Int       @id @default(autoincrement())
-  school_name  String
-  start_date   DateTime
-  finish_date  DateTime
-  field_name   String
-  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id String
-}
-
-// 6. c_experiences
-model C_Experience {
-  cexp_id              Int       @id @default(autoincrement())
-  company_name         String
-  start_date           DateTime
-  end_date             DateTime
-  job_position         String
-  previous_job_details String?
-  candidate            Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id         String
-}
-
-// 7. oauth_tokens
-model Oauth_Token {
-  token_id      Int       @id @default(autoincrement())
-  provider      String
-  provider_id   String
-  access_token  String
-  refresh_token String?
-  created_at    DateTime  @default(now())
-  candidate     Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id  String
-
-  @@unique([candidate_id, provider])
-}
-
-// 8. recruiters
 model Recruiter {
-  recruiter_id   String     @id
-  org_email      String     @unique
-  org_mobile     String?
-  org_password   String
-  role           String     @default("RECRUITER")
-  org_tax_number String?
-  org_name       String?
-  org_field      String?
-  org_scale      String?
-  org_address    String?
-  org_image      String?
-  job_posts      Job_Post[]
-  payments       Payment[]
+  recruiterId   String         @id @default(uuid())
+  orgName       String?
+  orgField      String?
+  orgScale      String?
+  orgAddress    String?
+  orgTaxNumber String?
+  user          User           @relation(fields: [userId], references: [userId])
+  userId        String         @unique
+  balance       Float          @default(0)
+  sensitiveInfo SensitiveInfo?
+  images        Image[]
+  jobPosts      JobPost[]
+  payments      Payment[]
 }
 
-// 9. job_posts
-model Job_Post {
-  job_id               String        @id
-  recruiter            Recruiter     @relation(fields: [recruiter_id], references: [recruiter_id], onDelete: Cascade)
-  recruiter_id         String
-  job_title            String
-  job_image            String?
-  type_of_work         String?
-  location             String?
-  job_salary           String?
-  candidates_limit     Int?
-  education_required   String?
-  years_of_experience  String?
-  type_of_industry     String?
-  professional_skills  String?
-  certificate_required String?
-  languages_required   String?
-  job_benefit          String?
-  leave_policy         String?
-  job_description      String?
-  work_enviroment      String?
-  job_schedule         String?
-  application_deadline DateTime?
-  posted_at            DateTime      @default(now())
-  applications         Application[]
-  job_saved            Job_Saved[]
+model Image {
+  imageId     String    @id @default(uuid())
+  imageUrl    String
+  uploadedAt  DateTime  @default(now())
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [recruiterId])
+  recruiterId String
 }
 
-// 10. applications
+model PublicProfile {
+  publicProfileId     String    @id @default(uuid())
+  fullName            String?
+  gender              Boolean?
+  birthDate           DateTime?
+  address             String?
+  linkedinUrl         String?
+  githubUrl           String?
+  personalDescription String?
+  jobPosition         String?
+  user                User      @relation(fields: [userId], references: [userId])
+  userId              String    @unique
+}
+
+model OauthToken {
+  OauthTokenId String    @id @default(uuid())
+  provider     String
+  providerId   String
+  accessToken  String
+  refreshToken String?
+  createdAt    DateTime  @default(now())
+  candidate    Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId  String
+
+  @@unique([candidateId, provider])
+}
+
+model Language {
+  languageId  String    @id @default(uuid())
+  language    String
+  level       String
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId String
+}
+
+model Project {
+  projectId          String    @id @default(uuid())
+  projectName        String
+  projectTime        String
+  urlRepo            String?
+  projectDescription String?
+  candidate          Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId        String
+}
+
+model Certificate {
+  certificateId     String    @id @default(uuid())
+  certificateName   String
+  dateOfReceipt     DateTime
+  certificateDetail String?
+  candidate         Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId       String
+}
+
+model Education {
+  educationId String    @id @default(uuid())
+  schoolName  String
+  startDate   DateTime
+  finishDate  DateTime
+  fieldName   String?
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId String
+}
+
+model Experience {
+  experienceId       String    @id @default(uuid())
+  companyName        String
+  startDate          DateTime
+  endDate            DateTime?
+  jobPosition        String
+  previousJobDetails String?
+  candidate          Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId        String
+}
+
+model JobPost {
+  jobId               String        @id @default(uuid())
+  jobTitle            String
+  jobImage            String?
+  typeOfWork          String?
+  location            String?
+  jobSalary           String?
+  candidatesLimit     Int?
+  educationRequired   String?
+  yearsOfExperience   String?
+  typeOfIndustry      String?
+  professionalSkills  String?
+  certificateRequired String?
+  languagesRequired   String?
+  jobBenefit          String?
+  leavePolicy         String?
+  jobDescription      String?
+  workEnvironment     String?
+  jobSchedule         String?
+  applicationDeadline DateTime
+  postedAt            DateTime      @default(now())
+  recruiter           Recruiter     @relation(fields: [recruiterId], references: [recruiterId])
+  recruiterId         String
+  jobsSaved           JobSaved[]
+  applications        Application[]
+}
+
+model JobSaved {
+  candidate   Candidate @relation(fields: [candidateId], references: [candidateId])
+  candidateId String
+  jobPost     JobPost   @relation(fields: [jobId], references: [jobId])
+  jobId       String
+  savedAt     DateTime  @default(now())
+
+  @@id([candidateId, jobId])
+}
+
 model Application {
-  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id String
-  job          Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
-  job_id       String
-  applied_at   DateTime  @default(now())
-  status       Status    @default(PENDING)
+  candidate   Candidate         @relation(fields: [candidateId], references: [candidateId])
+  candidateId String
+  jobPost     JobPost           @relation(fields: [jobId], references: [jobId])
+  jobId       String
+  appliedAt   DateTime          @default(now())
+  status      ApplicationStatus @default(PENDING)
+  githubScore Float
 
-  @@id([candidate_id, job_id])
+  @@id([candidateId, jobId])
 }
 
-enum Status {
+model Payment {
+  id              String    @id @default(uuid())
+  payAmount       Float
+  transactionDate DateTime  @default(now())
+  recruiter       Recruiter @relation(fields: [recruiterId], references: [recruiterId])
+  recruiterId     String
+}
+
+model MonthlyRevenue {
+  id           String   @id @default(uuid())
+  year         Int
+  month        Int
+  totalRevenue Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([year, month])
+}
+
+enum Role {
+  ADMIN
+  RECRUITER
+  CANDIDATE
+}
+
+enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
-}
-
-// 11. payments
-model Payment {
-  payment_id       String    @id
-  recruiter        Recruiter @relation(fields: [recruiter_id], references: [recruiter_id], onDelete: Cascade)
-  recruiter_id     String
-  pay_amount       Float
-  transaction_date DateTime  @default(now())
-}
-
-// 12. revenue_reports
-model Revenue_Report {
-  report_id     String   @id
-  total_revenue Float
-  report_date   DateTime @default(now())
-}
-
-// 13. job_saved
-model Job_Saved {
-  candidate    Candidate @relation(fields: [candidate_id], references: [candidate_id], onDelete: Cascade)
-  candidate_id String
-  job          Job_Post  @relation(fields: [job_id], references: [job_id], onDelete: Cascade)
-  job_id       String
-  saved_at     DateTime  @default(now())
-
-  @@id([candidate_id, job_id])
 }

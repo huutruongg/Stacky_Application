@@ -19,9 +19,21 @@ const CandidateCotroller = {
     },
 
     getCandidatesApplied: async (req: Request, res: Response): Promise<void> => {
-        const jobId = req.params.id;
+        try {
+            const jobId = req.params.id;
+            const candidates = await CandidateService.getCandidatesApplied(jobId);
+            if (!candidates) {
+                res.status(500).json({ succes: false, message: "Candidate not found!" });
+                return;
+            }
+            res.status(200).json({ succes: true, candidates });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ succes: false, message: "Internal server error!" });
+        }
+    },
 
-    }
+
 }
 
 export default CandidateCotroller;
