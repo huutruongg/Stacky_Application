@@ -7,7 +7,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const router = Router();
 
-router.post('/recruiter-image', upload.array('files'), UploadFileController.uploadRecruiterImages);
+router.post('/recruiter-images', upload.array('files'), UploadFileController.uploadRecruiterImages);
 router.post('/candidate-image', upload.array('files'), UploadFileController.uploadCandidateImages);
 router.delete('/recruiter-images/delete', UploadFileController.deleteRecruiterImages);
 router.delete('/candidate-images/delete', UploadFileController.deleteCandidateImages);

@@ -1,11 +1,13 @@
+import { Admin } from './../../models/admin.model';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
-import { PrismaClient, SensitiveInfo, User } from '@prisma/client';
 import { log } from 'console';
-
+import { IAdmin } from '../../types/IAdmin';
+import { Recruiter } from '../../models/recruiter.model';
+import UserRole from '../../types/EnumUserRole';
+const saltRounds = 10;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const prisma = new PrismaClient();
 
 const AuthService = {
     checkPassword: async (pwdRequest: string, hashedPwd: string): Promise<boolean> => {
@@ -50,28 +52,60 @@ const AuthService = {
         }
     },
 
-    getAdminAccountByEmail: async (email: string): Promise<{ user: User; sensitiveInfo: SensitiveInfo } | null> => {
+    getAdminAccountByEmail: async (email: string): Promise<IAdmin | null> => {
         try {
-            const admin = await prisma.user.findUnique({
-                where: {
-                    email: email,
-                },
-                include: {
-                    sensitiveInfo: true,
-                }
-            });
-            if (!admin || !admin.sensitiveInfo) {
+            const admin = await Admin.findOne({ email }).exec();
+            // log(data)
+            if (!admin) {
                 return null;
             }
-            const sensitiveInfo = admin.sensitiveInfo;
-            log({ user: admin, sensitiveInfo })
-            return { user: admin, sensitiveInfo };
+            return admin;
         } catch (error) {
             log(error);
             return null;
         }
-    }
+    },
 
+    createAdmin: async (email: string, password: string): Promise<IAdmin | null> => {
+        try {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const admin = new Admin({
+                email,
+                password: hashedPassword,
+            });
+            await admin.save();
+            return admin;
+        } catch (error) {
+            console.error('Error creating admin:', error);
+            return null;
+        }
+    },
+
+    changePassword: async (userId: string, newPassword: string, role: string): Promise<void> => {
+        try {
+            const hashedPwd = await AuthService.hashPassword(newPassword);
+            if (role === UserRole.ADMIN) {
+                await Admin.updateOne(
+                    { _id: userId },
+                    { $set: { password: hashedPwd } }
+                );
+            } else if (role === UserRole.RECRUITER) {
+                await Recruiter.updateOne(
+                    { _id: userId },
+                    { $set: { password: hashedPwd } }
+                );
+            } else {
+                throw new Error("Invalid role provided");
+            }
+        } catch (error) {
+            console.error('Error updating password:', error);
+            throw new Error("Password update failed");
+        }
+    },
+
+    hashPassword: async (password: string): Promise<string> => {
+        return await bcrypt.hash(password, saltRounds);
+    }
 };
 
 export default AuthService;

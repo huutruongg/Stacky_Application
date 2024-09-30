@@ -1,13 +1,14 @@
-import { JobPost } from "@prisma/client";
+
 import JobPostingService from "./jobPosting.service";
 import { Request, Response } from "express";
 import { log } from "console";
+import { IJobPost } from "../../types/IJobPost";
 
 const JobController = {
     getJobPostings: async (req: Request, res: Response): Promise<void> => {
         try {
             const { page, pageSize } = req.query;
-            const data: JobPost[] | null = await JobPostingService.getJobPostingsByPage(Number(page), Number(pageSize));
+            const data: IJobPost[] | null = await JobPostingService.getJobPostingsByPage(Number(page), Number(pageSize));
             if (!data) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -21,7 +22,7 @@ const JobController = {
     getJobPostingsByRecruiter: async (req: Request, res: Response): Promise<void> => {
         try {
             const { recruiterId, postId } = req.body;
-            const data: JobPost[] | null = await JobPostingService.getJobPostingsByRecruiter(recruiterId, postId);
+            const data: IJobPost[] | null = await JobPostingService.getJobPostingsByRecruiter(recruiterId, postId);
             if (!data) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -35,7 +36,7 @@ const JobController = {
     getJobPostingSaved: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
-            const data: JobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
+            const data: IJobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
             if (!data) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -49,7 +50,7 @@ const JobController = {
     getJobsApplied: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
-            const data: JobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
+            const data: IJobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
             if (!data) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -63,7 +64,7 @@ const JobController = {
     getJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
             const jobId = req.params.id;
-            const data: JobPost | null = await JobPostingService.getJobPostingById(jobId);
+            const data: IJobPost | null = await JobPostingService.getJobPostingById(jobId);
             if (!data) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -77,7 +78,7 @@ const JobController = {
     findByJobPosition: async (req: Request, res: Response): Promise<void> => {
         try {
             const { keySearch } = req.query;
-            const data: JobPost[] | null = await JobPostingService.findJobPostingsByJobPosition((keySearch as string));
+            const data: IJobPost[] | null = await JobPostingService.findJobPostingsByJobPosition((keySearch as string));
             if (!data) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -94,7 +95,7 @@ const JobController = {
         try {
             const { locationSelection } = req.query;
             log(locationSelection)
-            const data: JobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
+            const data: IJobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
             if (!data) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -110,7 +111,7 @@ const JobController = {
     filterByIndustry: async (req: Request, res: Response): Promise<void> => {
         try {
             const { industrySelection } = req.query;
-            const data: JobPost[] | null = await JobPostingService.filterJobPostingByIndustry((industrySelection as string));
+            const data: IJobPost[] | null = await JobPostingService.filterJobPostingByIndustry((industrySelection as string));
             if (!data) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;

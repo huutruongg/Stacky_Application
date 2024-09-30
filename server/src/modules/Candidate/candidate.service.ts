@@ -1,236 +1,107 @@
-import { v4 as uuidv4 } from 'uuid';
-import { Candidate, Certificate, Education, Experience, Language, OauthToken, PrismaClient, Project, PublicProfile, User } from "@prisma/client";
-import UserRole from '../../types/IUserRole';
-import { CandidateInfo } from '../../types/ICandidateInfo';
+import { ICertificate, IEducation, IExperience, ILanguage, IProject } from './../../types/ICandidate.d';
 import { log } from 'console';
+import { ICandidate } from '../../types/ICandidate';
+import { Candidate } from '../../models/candidate.model';
+import { Application } from '../../models/application.model';
 
-const prisma = new PrismaClient();
 
 const CandidateService = {
-    getFullCandidateInfo: async (user: User, candidate: Candidate, publicProfile?: PublicProfile, oauthToken?: OauthToken, project?: Project, language?: Language, certificate?: Certificate, education?: Education, experience?: Experience): Promise<CandidateInfo> => {
-        return {
-            user,
-            candidate,
-            publicProfile,
-            oauthToken,
-            project,
-            language,
-            certificate,
-            education,
-            experience
-        }
-    },
 
-    getCandidates: async (): Promise<CandidateInfo[] | null> => {
-        const candidates = await prisma.candidate.findMany({
-            include: {
-                user: {
-                    include: {
-                        publicProfile: true,
-                    },
-                },
-            },
-        });
-        if (!candidates) {
-            return null;
-        }
-        const candidateInfos = await Promise.all(
-            candidates.map(async (candidate) => {
-                const { user, ...restCandidate } = candidate;
-                if (!user || !user.publicProfile) {
-                    return null;
-                }
-                return await CandidateService.getFullCandidateInfo(
-                    user,
-                    restCandidate,
-                    user.publicProfile
-                );
-            })
-        );
-        return candidateInfos.filter(info => info !== null) as CandidateInfo[];
-    },
-
-    getLanguagesByCandidateId: async (id: string): Promise<Language[] | null> => {
+    getCandidates: async (): Promise<ICandidate[] | null> => {
         try {
-            const data = prisma.language.findMany({
-                where: {
-                    candidateId: id
-                }
-            });
-            return data;
+            const candidates = await Candidate.find().exec();
+
+            return candidates.length > 0 ? candidates : null;
         } catch (error) {
-            log(error)
+            console.error("Error fetching candidates:", error);
+            return null;
+        }
+    },
+    getCandidateById: async (id: string): Promise<ICandidate | null> => {
+        try {
+            return await Candidate.findById(id).exec();
+        } catch (error) {
+            log(error);
             return null;
         }
     },
 
-    getCandidateById: async (id: string): Promise<CandidateInfo | null> => {
-        log("IDDDDDDDDDD: ", id)
-        const candidate = await prisma.candidate.findUnique({
-            where: { candidateId: id }
-        });
-
-        if (!candidate) {
+    getCandidateByEmail: async (email: string): Promise<ICandidate | null> => {
+        try {
+            return await Candidate.findOne({ email }).exec();
+        } catch (error) {
+            log(error);
             return null;
         }
+    },
 
-        const [user, publicProfile] = await Promise.all([
-            prisma.user.findUnique({
-                where: { userId: candidate.userId }
-            }),
-            prisma.publicProfile.findUnique({
-                where: { userId: candidate.userId }
+
+    getCandidatesApplied: async (jobId: string): Promise<ICandidate[] | null> => {
+        try {
+            const applications = await Application.find({ jobId }).select('candidateId').exec();
+
+            if (!applications || applications.length === 0) {
+                return null;
+            }
+            const candidateIds = applications.map(app => app.candidateId);
+            const candidates = await Candidate.find({ _id: { $in: candidateIds } }).exec();
+            return candidates.length > 0 ? candidates : null;
+        } catch (error) {
+            console.error("Error fetching candidates who applied for the job:", error);
+            return null;
+        }
+    },
+
+    createCandidate: async (email: string, username: string): Promise<ICandidate | null> => {
+
+        try {
+            const candidate = await Candidate.create({
+                email, username
             })
-        ]);
-
-        if (!user || !publicProfile) {
+            return candidate;
+        } catch (error) {
+            log(error);
             return null;
         }
-
-        const data = await CandidateService.getFullCandidateInfo(
-            user,
-            candidate,
-            publicProfile
-        );
-        log("DATA: ", data)
-        return data;
     },
-
-
-
-    getCandidateByEmail: async (email: string): Promise<CandidateInfo | null> => {
-        const user = await prisma.user.findUnique({
-            where: { email },
-            include: {
-                candidate: true,
+    updateOauth: async (
+        provider: string,
+        providerId: string,
+        accessToken: string,
+        candidateId: string
+    ): Promise<void> => {
+        try {
+            // Tìm ứng viên theo ID
+            log("ID: ", candidateId)
+            const candidate = await Candidate.findById(candidateId).exec();
+            if (!candidate) {
+                throw new Error("Candidate not found");
             }
-        });
-        if (!user || !user.candidate) {
-            return null;
-        }
-        const publicProfile = await prisma.publicProfile.findUnique({
-            where: { userId: user.userId }
-        })
-        if (!publicProfile) {
-            return null;
-        }
-        const data = await CandidateService.getFullCandidateInfo(
-            user,
-            user.candidate,
-            publicProfile
-        );
-        return data;
-    },
 
+            // Kiểm tra xem có OAuth token nào đã tồn tại với provider và providerId không
+            const existingTokenIndex = candidate.oauthTokens.findIndex(
+                token => token.provider === provider && token.providerId === providerId
+            );
 
-    getCandidatesApplied: async (jobId: string): Promise<{ candidate: Candidate; appliedAt: Date }[] | null> => {
-        const applications = await prisma.application.findMany({
-            where: { jobId: jobId },
-            include: {
-                candidate: true
+            if (existingTokenIndex !== -1) {
+                // Nếu đã tồn tại, cập nhật accessToken
+                candidate.oauthTokens[existingTokenIndex].accessToken = accessToken;
+            } else {
+                // Nếu chưa tồn tại, thêm mới token vào mảng oauthTokens
+                candidate.oauthTokens.push({
+                    provider,
+                    providerId,
+                    accessToken
+                });
             }
-        });
 
-        if (!applications) {
-            return null;
+            // Lưu lại candidate với token đã cập nhật
+            await candidate.save();
+        } catch (error) {
+            console.error("Error updating OAuth token:", error);
+            throw new Error("Failed to update OAuth token");
         }
-
-        const result = applications.map(application => ({
-            candidate: application.candidate,
-            appliedAt: application.appliedAt
-        }));
-        return result;
     },
-
-    createCandidate: async (email: string, username: string): Promise<CandidateInfo> => {
-        const userPromise = prisma.user.create({
-            data: {
-                email: email,
-                role: UserRole.CANDIDATE,
-            },
-        });
-        const user = await userPromise;
-
-        const [candidate, publicProfile] = await Promise.all([
-            prisma.candidate.create({
-                data: {
-                    userId: user.userId,
-                },
-            }),
-            prisma.publicProfile.create({
-                data: {
-                    fullName: username,
-                    userId: user.userId,
-                },
-            }),
-        ]);
-        const data = await CandidateService.getFullCandidateInfo(user, candidate, publicProfile);
-        return data;
-    },
-
-
-    updateOauth: async (provider: string, providerId: string, accessToken: string, candidateId: string): Promise<void> => {
-        const data = {
-            accessToken: accessToken,
-            createdAt: new Date(),
-        };
-
-        await prisma.oauthToken.upsert({
-            where: {
-                candidateId_provider: { candidateId: candidateId, provider }
-            },
-            update: data,
-            create: {
-                provider,
-                providerId: providerId,
-                ...data,
-                candidateId: candidateId,
-            },
-        });
-    },
-
-
-
-    // updateCandidatePersonalProfile: async (
-    //     userId: string,
-    //     candidateId: string,
-    //     // Personal profile
-    //     fullName: string,
-    //     gender: boolean,
-    //     birthDate: Date,
-    //     address: string,
-    //     linkedinUrl: string,
-    //     githubUrl: string,
-    //     personalDescription: string,
-    //     jobPosition: string,
-    //     // languages
-    //     language: string,
-    //     level: string,
-    //     // projects
-    //     projectName: string,
-    //     projectTime: string,
-    //     urlRepo: string,
-    //     projectDescription: string,
-    //     // certificates
-    //     certificateName: string,
-    //     dateOfReceipt: Date,
-    //     certificateDetail: string,
-    //     // programming skills
-    //     programmingSkills: string,
-    //     // educations
-    //     schoolName: string,
-    //     startDateEdu: string,
-    //     finishDateEdu: string,
-    //     fieldName: string,
-    //     // experiences
-    //     companyName: string,
-    //     startDate: Date,
-    //     endDate: string,
-    //     jobPositionPast: string,
-    //     previousJobDetails: string,
-    // ): Promise<void> => {
-
-    // },
 
     createCandidatePersonalProfile: async (
         userId: string,
@@ -244,8 +115,10 @@ const CandidateService = {
         jobPosition: string
     ): Promise<boolean> => {
         try {
-            await prisma.publicProfile.create({
-                data: {
+            // Cập nhật thông tin cá nhân của ứng viên trong MongoDB
+            const result = await Candidate.findByIdAndUpdate(
+                userId,
+                {
                     fullName,
                     gender,
                     birthDate,
@@ -254,102 +127,58 @@ const CandidateService = {
                     githubUrl,
                     personalDescription,
                     jobPosition,
-                    userId
-                }
-            });
+                },
+                { new: true }
+            );
+            if (!result) {
+                throw new Error("Failed to update candidate profile");
+            }
             return true;
         } catch (error) {
-            log(error)
+            console.error("Error creating candidate personal profile:", error);
             return false;
         }
-
     },
 
     createCandidateProfessionalProfile: async (
         candidateId: string,
-        languages: Language[],
-        projects: Project[],
-        certificates: Certificate[],
+        languages: ILanguage[],
+        projects: IProject[],
+        certificates: ICertificate[],
         programmingSkills: string,
-        educations: Education[],
-        experiences: Experience[]
+        educations: IEducation[],
+        experiences: IExperience[]
     ): Promise<boolean> => {
+        const session = await Candidate.startSession();
+        session.startTransaction();
         try {
-            // Using transaction to handle all operations atomically
-            await prisma.$transaction(async (prisma) => {
-                // Batch create for languages
-                if (languages.length > 0) {
-                    await prisma.language.createMany({
-                        data: languages.map((lang) => ({
-                            language: lang.language,
-                            level: lang.level,
-                            candidateId: candidateId,
-                        })),
-                    });
-                }
+            // Tìm candidate cần cập nhật
+            const candidate = await Candidate.findById(candidateId).session(session);
 
-                // Batch create for projects
-                if (projects.length > 0) {
-                    await prisma.project.createMany({
-                        data: projects.map((proj) => ({
-                            projectName: proj.projectName,
-                            projectTime: proj.projectTime,
-                            urlRepo: proj.urlRepo,
-                            projectDescription: proj.projectDescription,
-                            candidateId: candidateId,
-                        })),
-                    });
-                }
+            if (!candidate) {
+                throw new Error("Candidate not found");
+            }
 
-                // Batch create for certificates
-                if (certificates.length > 0) {
-                    await prisma.certificate.createMany({
-                        data: certificates.map((cer) => ({
-                            certificateName: cer.certificateName,
-                            dateOfReceipt: cer.dateOfReceipt,
-                            certificateDetail: cer.certificateDetail,
-                            candidateId: candidateId,
-                        })),
-                    });
-                }
+            // Cập nhật từng trường subdocument của Candidate
+            candidate.languages = languages;
+            candidate.projects = projects;
+            candidate.certificates = certificates;
+            candidate.programmingSkills = programmingSkills;
+            candidate.educations = educations;
+            candidate.experiences = experiences;
 
-                // Update programming skills
-                await prisma.candidate.update({
-                    where: { candidateId: candidateId },
-                    data: { programmingSkills },
-                });
+            // Lưu lại thông tin ứng viên đã được cập nhật
+            await candidate.save({ session });
 
-                // Batch create for educations
-                if (educations.length > 0) {
-                    await prisma.education.createMany({
-                        data: educations.map((edu) => ({
-                            schoolName: edu.schoolName,
-                            startDate: edu.startDate,
-                            finishDate: edu.finishDate,
-                            fieldName: edu.fieldName,
-                            candidateId: candidateId,
-                        })),
-                    });
-                }
-
-                // Batch create for experiences
-                if (experiences.length > 0) {
-                    await prisma.experience.createMany({
-                        data: experiences.map((exp) => ({
-                            companyName: exp.companyName,
-                            jobPosition: exp.jobPosition,
-                            startDate: exp.startDate,
-                            endDate: exp.endDate,
-                            previousJobDetails: exp.previousJobDetails,
-                            candidateId: candidateId,
-                        })),
-                    });
-                }
-            });
+            // Commit transaction
+            await session.commitTransaction();
+            session.endSession();
 
             return true;
         } catch (error) {
             console.error("Error creating candidate professional profile:", error);
+            await session.abortTransaction();
+            session.endSession();
             return false;
         }
     },
@@ -365,12 +194,12 @@ const CandidateService = {
         githubUrl: string,
         personalDescription: string,
         jobPosition: string,
-        languages: Language[],
-        projects: Project[],
-        certificates: Certificate[],
+        languages: ILanguage[],
+        projects: IProject[],
+        certificates: ICertificate[],
         programmingSkills: string,
-        educations: Education[],
-        experiences: Experience[]
+        educations: IEducation[],
+        experiences: IExperience[]
     ): boolean => {
         try {
             CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
@@ -382,39 +211,37 @@ const CandidateService = {
         }
     },
 
-
-    getCandidatesByPage: async (page: number, pageSize: number): Promise<Candidate[]> => {
-        return await prisma.candidate.findMany({
-            skip: (page - 1) * pageSize,
-            take: pageSize
-        });
-    },
-
     getUrlReposSharedByCandidateId: async (id: string): Promise<string[] | null> => {
-        const projects = await prisma.project.findMany({
-            where: { candidateId: id },
-            select: { urlRepo: true }
-        });
-        const urls = projects
-            .map(p => p.urlRepo)
-            .filter((url): url is string => url !== null);
-        return urls.length > 0 ? urls : null;
+        try {
+            const candidate = await Candidate.findById(id).select('projects').exec();
+
+            if (!candidate || !candidate.projects) {
+                return null;
+            }
+            const urls = candidate.projects
+                .map(p => p.urlRepo)
+                .filter((url): url is string => url != null && url !== '');
+
+            return urls.length > 0 ? urls : null;
+        } catch (error) {
+            console.error("Error fetching URLs shared by candidate:", error);
+            return null;
+        }
     },
 
     getAccessTokenGithub: async (id: string): Promise<string | null> => {
         try {
-            const { accessToken } = await prisma.oauthToken.findFirst({
-                where: {
-                    candidateId: id,
-                    provider: "GITHUB"
-                },
-                select: { accessToken: true }
-            }) || {}; // Use destructuring to handle the case where data is null
-
-            return accessToken || null; // Return access_token or null if it doesn't exist
+            const candidate = await Candidate.findOne({ _id: id })
+                .select('oauthTokens')
+                .exec();
+            if (!candidate || !candidate.oauthTokens) {
+                return null;
+            }
+            const githubToken = candidate.oauthTokens.find(token => token.provider === 'GITHUB');
+            return githubToken ? githubToken.accessToken : null;
         } catch (error) {
             console.error("Error fetching GitHub access token:", error);
-            return null; // Return null if there's an error
+            return null;
         }
     }
 };

@@ -1,0 +1,121 @@
+{
+    "admin": {
+        "email": "String",
+        "password": "String"
+    },
+    "recruiter": {
+        "email": "String",
+        "password": "String",
+        "phoneNumber": "String",
+        "createdAt": "Date",
+        "orgName": "String?",
+        "orgField": "String?",
+        "images": [
+            {
+                "imageUrl": "String",
+                "uploadedAt": "Date"
+            }
+        ]
+    },
+    "candidate": {
+        "email": "String",
+        "phoneNumber": "String?",
+        "createdAt": "Date",
+        "programmingSkills": "String",
+        "fullName": "String",
+        "gender": "Boolean",
+        "birthDate": "Date",
+        "address": "String",
+        "linkedinUrl": "String",
+        "githubUrl": "String",
+        "personalDescription": "String",
+        "jobPosition": "String",
+        "oauthTokens": [
+            {
+                "provider": "String",
+                "providerId": "String",
+                "accessToken": "String",
+                "refreshToken": "String?"
+            }
+        ],
+        "languages": [
+            {
+                "language": "String",
+                "level": "String"
+            }
+        ],
+        "projects": [
+            {
+                "projectName": "String",
+                "projectTime": "String",
+                "urlRepo": "String",
+                "projectDescription": "String?"
+            }
+        ],
+        "educations": [
+            {
+                "schoolName": "String",
+                "startDate": "Date",
+                "finishDate": "Date",
+                "fieldName": "String"
+            }
+        ],
+        "experiences": [
+            {
+                "companyName": "String",
+                "startDate": "Date",
+                "endDate": "Date",
+                "jobPosition": "String",
+                "previousJobDetails": "String"
+            }
+        ],
+        "certificates": [
+            {
+                "certificateName  ": "String",
+                "dateOfReceipt    ": "DateTime",
+                "certificateDetail": "String"
+            }
+        ]
+    },
+    "JobPost": {
+        "recruiterId": "String",
+        "jobTitle": "String",
+        "jobImage": "String",
+        "typeOfWork": "String",
+        "location": "String",
+        "jobSalary": "String",
+        "candidatesLimit": "Int",
+        "educationRequired": "String",
+        "yearsOfExperience": "String",
+        "typeOfIndustry": "String",
+        "professionalSkills": "String",
+        "certificateRequired": "String",
+        "languagesRequired": "String",
+        "jobBenefit": "String",
+        "leavePolicy": "String",
+        "jobDescription": "String",
+        "workEnvironment": "String",
+        "jobSchedule": "String",
+        "applicationDeadline": "DateTime",
+        "postStatus": "String",
+        "postedAt": "DateTime"
+    },
+    "Application": {
+        "candidateId": "String",
+        "jobId": "String",
+        "appliedAt": "DateTime",
+        "status": "String",
+        "githubScore": "Float"
+    },
+    "JobSaved": {
+        "candidateId": "String",
+        "jobId": "String",
+        "savedAt": "DateTime"
+    },
+    "Payment": {
+        "recruiterId": "String",
+        "payAmount": "Float",
+        "transactionDate": "DateTime"
+    },
+    "MonthlyPayment": {}
+}

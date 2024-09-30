@@ -20,7 +20,7 @@ const GithubController = {
                 return;
             }
 
-            const candidateLanguages: string[] = candidateData.candidate.programmingSkills?.split(', ') || [];
+            const candidateLanguages: string[] = candidateData.programmingSkills?.split(', ') || [];
             const jdText: string = jobDescription?.professionalSkills || "";
 
             if (!jdText) {
@@ -34,7 +34,7 @@ const GithubController = {
                 return;
             }
 
-            const selfCreatedRepoUrl = candidateData?.publicProfile?.githubUrl;
+            const selfCreatedRepoUrl = candidateData?.githubUrl;
             if (!selfCreatedRepoUrl) {
                 res.status(500).json({ success: false, message: "Candidate GitHub URL missing or invalid" });
                 return;

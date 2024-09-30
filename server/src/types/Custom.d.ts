@@ -1,6 +1,6 @@
 // types/Custom.ts
 import { Request } from "express";
-import { UserRole } from "./IUserRole";
+import { UserRole } from "./EnumUserRole";
 
 export interface CustomRequest extends Request {
     userData: {

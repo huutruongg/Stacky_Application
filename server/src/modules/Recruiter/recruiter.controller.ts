@@ -1,22 +1,24 @@
-import { Candidate } from '@prisma/client';
 import { Request, Response } from "express";
 import RecruiterService from "./recruiter.service";
 import { log } from "console";
 import { resetPasswordTemplate } from "../../views/resetPasswordTemplate";
 import EmailService from "../Email/email.service";
+import { IRecruiter } from '../../types/IRecruiter';
+import AuthService from '../Auth/auth.service';
+import UserRole from '../../types/EnumUserRole';
 
 const RecruiterController = {
     forgotPassword: async (req: Request, res: Response): Promise<void> => {
         try {
             const { email } = req.body;
-            const data = await RecruiterService.getRecruiterByEmail(email);
+            const data: IRecruiter | null = await RecruiterService.getRecruiterByEmail(email);
             // log(data)
             if (!data) {
                 res.status(500).json({ success: false, message: "Email not found!" });
                 return;
             }
-            const companyName = data.recruiter.orgName || "you";
-            const url = `http://localhost:4080/recruiter/reset-password/${data.user.userId}`;
+            const companyName = data.orgName || "you";
+            const url = `http://localhost:4080/recruiter/reset-password/${data._id}`;
             const htmlContent = resetPasswordTemplate(companyName, url);
 
             await EmailService.sendEmail(email, "Reset your password!", "", htmlContent);
@@ -36,7 +38,7 @@ const RecruiterController = {
                 return;
             }
 
-            await RecruiterService.changePassword(userId, password);
+            await AuthService.changePassword(userId, password, UserRole.RECRUITER);
 
             res.status(200).json({ success: true, message: "Password reset successfully!" });
         } catch (error) {

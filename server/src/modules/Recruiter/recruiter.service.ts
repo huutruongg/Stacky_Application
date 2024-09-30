@@ -1,79 +1,80 @@
-import { PrismaClient, Recruiter, SensitiveInfo, User } from '@prisma/client';
-import { v4 as uuidv4 } from 'uuid';
 import bcrypt from "bcrypt";
-import UserRole from '../../types/IUserRole';
+import UserRole from '../../types/EnumUserRole';
 import { log } from 'console';
+import { Recruiter } from '../../models/recruiter.model';
+import { IRecruiter } from '../../types/IRecruiter';
 const saltRounds = 10;
-const prisma = new PrismaClient();
 
 const RecruiterService = {
-    // Recruiter
-    getRecruiters: async (): Promise<Recruiter[]> => {
-        return await prisma.recruiter.findMany();
+    getRecruiters: async (): Promise<IRecruiter[]> => {
+        try {
+            const recruiters = await Recruiter.find().exec();
+            return recruiters;
+        } catch (error) {
+            console.error('Error fetching recruiters:', error);
+            throw new Error('Failed to fetch recruiters');
+        }
     },
 
-    getRecruiterById: async (id: string): Promise<Recruiter | null> => {
-        return await prisma.recruiter.findUnique({
-            where: { recruiterId: id }
-        });
+    getRecruiterById: async (id: string): Promise<IRecruiter | null> => {
+        try {
+            const recruiter = await Recruiter.findById(id).exec();
+            if (!recruiter) {
+                return null;
+            }
+            return recruiter;
+        } catch (error) {
+            console.error('Error fetching recruiter by ID:', error);
+            throw new Error('Failed to fetch recruiter by ID');
+        }
     },
 
-    getRecruiterByEmail: async (email: string): Promise<{ user: User; recruiter: Recruiter; sensitiveInfo?: SensitiveInfo } | null> => {
-        const user = await prisma.user.findUnique({
-            where: { email },
-            include: {
-                recruiter: true,
-                sensitiveInfo: true
-            },
-        });
-        if (!user || !user.recruiter || !user.sensitiveInfo) {
+    getRecruiterByEmail: async (email: string): Promise<IRecruiter | null> => {
+        try {
+            const recruiter = await Recruiter.findOne({ email }).exec();
+            if (!recruiter) {
+                return null;
+            }
+            return recruiter;
+        } catch (error) {
+            console.error('Error finding recruiter by email:', error);
             return null;
         }
-        const recruiter = user.recruiter;
-        const sensitiveInfo = user.sensitiveInfo;
-        return { user, recruiter, sensitiveInfo };
     },
 
-
-    createRecruiter: async (email: string, mobile: string, password: string, tax_number: string, org_name: string, org_field: string, org_scale: string, org_address: string): Promise<Recruiter> => {
-        const hashedPwd = await bcrypt.hash(password, saltRounds);
-        const user = await prisma.user.create({
-            data: {
-                email,
-                phoneNumber: mobile,
-                role: UserRole.RECRUITER,
-                sensitiveInfo: {
-                    create: {
-                        password: hashedPwd,
-                    }
-                }
-            }
-        });
-
-        return await prisma.recruiter.create({
-            data: {
-                userId: user.userId,
-                orgName: org_name,
-                orgField: org_field,
-                orgScale: org_scale,
-                orgTaxNumber: tax_number,
-                orgAddress: org_address
-            }
-        })
-    },
-
-    changePassword: async (userId: string, newPassword: string): Promise<void> => {
+    createRecruiter: async (
+        email: string,
+        phoneNumber: string,
+        password: string,
+        orgTaxNumber: string,
+        orgName: string,
+        orgField: string,
+        orgScale: string,
+        orgAddress: string
+    ): Promise<IRecruiter> => {
         try {
-            const hashedPwd = await bcrypt.hash(newPassword, saltRounds);
-            await prisma.sensitiveInfo.update({
-                where: { userId: userId },
-                data: { password: hashedPwd },
-            })
+            const hashedPwd = await bcrypt.hash(password, saltRounds);
+            const recruiter = new Recruiter({
+                email,
+                phoneNumber,
+                password: hashedPwd,
+                orgName,
+                orgField,
+                orgScale,
+                orgTaxNumber,
+                orgAddress,
+                role: UserRole.RECRUITER,
+                createdAt: new Date()
+            });
+            await recruiter.save();
+            return recruiter;
         } catch (error) {
-
+            console.error('Error creating recruiter:', error);
+            throw new Error('Failed to create recruiter');
         }
-    }
+    },
+
+
 };
 
-RecruiterService.getRecruiterByEmail("conghuu1423@gmail.com").then((data) => log(data)).catch((e) => log(e))
 export default RecruiterService;

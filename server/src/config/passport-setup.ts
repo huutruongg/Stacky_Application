@@ -4,17 +4,23 @@ import { Strategy as GitHubStrategy } from 'passport-github';
 import axios from 'axios';
 import { log } from 'console';
 import CandidateService from '../modules/Candidate/candidate.service';
-import Provider from '../types/IProvider';
+import Provider from '../types/EnumProvider';
+import { ICandidate } from '../types/ICandidate';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
   const user = await CandidateService.getCandidateByEmail(email);
+  log(user)
   if (user) {
-    await CandidateService.updateOauth(provider, providerId, accessToken, user.candidate.candidateId);
+    await CandidateService.updateOauth(provider, providerId, accessToken, String(user._id));
     return user;
   } else {
-    const newUser = await CandidateService.createCandidate(email, displayName);
-    await CandidateService.updateOauth(provider, providerId, accessToken, newUser.candidate.candidateId);
+    const newUser: ICandidate | null = await CandidateService.createCandidate(email, displayName);
+    log(newUser)
+    if (!newUser) {
+      return;
+    }
+    await CandidateService.updateOauth(provider, providerId, accessToken, newUser._id as string);
     return newUser;
   }
 };
@@ -29,7 +35,7 @@ passport.use(new GoogleStrategy({
   const email = profile.emails[0].value;
   const provider = Provider.GOOGLE;
   const providerId = profile.id;
-
+  log(email, provider, providerId)
   try {
     const user = await handleUserOAuth(provider, providerId, email, profile.displayName, accessToken);
     log(user);
