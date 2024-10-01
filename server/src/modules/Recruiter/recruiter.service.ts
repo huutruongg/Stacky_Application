@@ -25,7 +25,7 @@ const RecruiterService = {
         }
     },
     createRecruiter: async (
-        email: string,
+        privateEmail: string,
         password: string,
         phoneNumber: string,
         orgTaxNumber: string,
@@ -39,7 +39,7 @@ const RecruiterService = {
 
             // Tạo User trước
             const user = new User({
-                email, // Email đăng nhập
+                privateEmail, 
                 password: hashedPwd,
                 role: UserRole.RECRUITER,
                 phoneNumber,

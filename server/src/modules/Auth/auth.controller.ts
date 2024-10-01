@@ -127,7 +127,7 @@ const AuthController = {
                 return;
             }
 
-            const isValidPassword = await AuthService.checkPassword(password,String( existingUser.password));
+            const isValidPassword = await AuthService.checkPassword(password, String(existingUser.password));
             if (!isValidPassword) {
                 res.status(401).json({ message: "Invalid credentials!" });
                 return;

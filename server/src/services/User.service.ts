@@ -17,7 +17,7 @@ const UserService = {
 
     getUserByEmail: async (email: string): Promise<IUser | null> => {
         try {
-            const user: IUser | null = await User.findOne({ email: email }).exec();
+            const user: IUser | null = await User.findOne({ privateEmail: email }).exec();
             return user;
         } catch (error) {
             log(error)
