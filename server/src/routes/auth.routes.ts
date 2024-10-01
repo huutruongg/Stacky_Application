@@ -7,7 +7,7 @@ const router = Router();
 router.post('/login/admin', AuthController.adminLogin);
 
 router.post('/signup/recruiter', AuthController.signupRecruiter);
-router.post('/login/recruiter', AuthController.login);
+router.post('/login/recruiter', AuthController.recruiterLogin);
 
 // Serve the login page
 router.get('/login', (req: Request, res: Response) => {

@@ -10,35 +10,35 @@ import CandidateService from "../Candidate/candidate.service";
 import { CandidateInfo } from "../../types/ICandidateInfo";
 import { ICandidate } from "../../types/ICandidate";
 import { IRecruiter } from "../../types/IRecruiter";
+import { IUser } from "../../types/IUser";
+import UserService from "../../services/User.service";
 
 dotenv.config();
 
 const AuthController = {
     signupRecruiter: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { email, phoneNumber, password, tax_number, org_name, org_field, org_scale, org_address } = req.body;
+        const { privateEmail, password, phoneNumber, orgTaxNumber, orgName, orgField, orgScale, orgAddress } = req.body;
 
         try {
-            const existingUser = await RecruiterService.getRecruiterByEmail(email);
+            const existingUser = await RecruiterService.getRecruiterByEmail(privateEmail);
             if (existingUser) {
                 res.status(401).json({ message: "This email already exists! Please enter another email." });
                 return;
             }
 
-            const recruiter: IRecruiter | null = await RecruiterService.createRecruiter(
-                email, phoneNumber, password, tax_number, org_name, org_field, org_scale, org_address
-            );
+            const recruiter: IRecruiter | null = await RecruiterService.createRecruiter(privateEmail, password, phoneNumber, orgTaxNumber, orgName, orgField, orgScale, orgAddress);
 
             if (!recruiter) {
                 res.status(500).json({ message: "Failed to create recruiter." });
                 return;
             }
 
-            const token = AuthService.generateToken(recruiter._id as string, email, UserRole.RECRUITER);
+            const token = AuthService.generateToken(recruiter._id as string, privateEmail, UserRole.RECRUITER);
             res.status(200).json({
                 success: true,
                 data: {
                     userId: recruiter._id,
-                    email: email,
+                    email: privateEmail,
                     token,
                 },
             });
@@ -49,28 +49,40 @@ const AuthController = {
         }
     },
 
-    login: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    recruiterLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { email, password } = req.body;
 
         try {
-            const existingUser = await RecruiterService.getRecruiterByEmail(email);
+            // Tìm User theo email
+            const existingUser: IUser | null = await UserService.getUserByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;
             }
-            const isValidPassword = await AuthService.checkPassword(password, existingUser.password);
+
+            // Tìm Recruiter theo userId
+            const user: IUser | null = await UserService.getUserById(String(existingUser._id));
+            if (!user) {
+                res.status(401).json({ message: "User is not a recruiter!" });
+                return;
+            }
+
+            // Kiểm tra mật khẩu
+            const isValidPassword = await AuthService.checkPassword(password, String(existingUser.password));
+
             if (!isValidPassword) {
                 res.status(401).json({ message: "Invalid credentials!" });
                 return;
             }
 
-            const jwtToken = AuthService.generateToken(existingUser._id as string, existingUser.email, UserRole.RECRUITER);
+            // Tạo JWT token
+            const jwtToken = AuthService.generateToken(String(user._id), String(user.privateEmail), user.role);
             res.status(200).json({
                 success: true,
                 data: {
-                    userId: existingUser._id,
-                    email: existingUser.email,
-                    role: UserRole.RECRUITER,
+                    userId: user._id,
+                    email: user.privateEmail,
+                    role: user.role,
                     token: jwtToken,
                 },
             });
@@ -82,52 +94,51 @@ const AuthController = {
     },
 
     loginCandidateOAuth: (provider: 'google' | 'github') => async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        passport.authenticate(provider, { session: false }, async (err: any, user: ICandidate) => {
-            if (err || !user) {
-                log(err);
-                res.status(401).json({ success: false, message: 'Authentication failed' });
-                return;
-            }
 
-            try {
-                const candidate = await CandidateService.getCandidateById(String(user._id));
+        try {
+            passport.authenticate(provider, { session: false }, async (err: any, user: any) => {
+                if (err || !user) {
+                    log(err);
+                    res.status(401).json({ success: false, message: 'Authentication failed' });
+                    return;
+                }
+                const candidate: IUser | null = await UserService.getUserById(String(user._id));
                 if (!candidate) {
                     res.status(401).json({ success: false, message: 'Authentication failed' });
                     return;
                 }
 
-                const jwtToken = AuthService.generateToken(String(user._id), String(candidate.email), UserRole.CANDIDATE);
+                const jwtToken = AuthService.generateToken(String(candidate._id), String(candidate.privateEmail), candidate.role);
                 res.status(200).json({ success: true, token: jwtToken });
-            } catch (error) {
-                console.error(error);
-                res.status(500).json({ success: false, message: 'Internal server error' });
-            }
-        })(req, res, next);
+            })(req, res, next);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
     },
 
     adminLogin: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        
+
         try {
             const { email, password } = req.body;
-            const existingUser = await AuthService.getAdminAccountByEmail(email);
-            // log(existingUser);
+            const existingUser = await UserService.getUserByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;
             }
 
-            const isValidPassword = await AuthService.checkPassword(password, existingUser.password);
+            const isValidPassword = await AuthService.checkPassword(password,String( existingUser.password));
             if (!isValidPassword) {
                 res.status(401).json({ message: "Invalid credentials!" });
                 return;
             }
 
-            const jwtToken = AuthService.generateToken(String(existingUser._id), existingUser.email, UserRole.ADMIN);
+            const jwtToken = AuthService.generateToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
             res.status(200).json({
                 success: true,
                 data: {
                     userId: existingUser._id,
-                    email: existingUser.email,
+                    email: existingUser.privateEmail,
                     role: UserRole.ADMIN,
                     token: jwtToken,
                 },

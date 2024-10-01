@@ -6,11 +6,12 @@ export interface IImage {
 }
 
 export interface IRecruiter extends Document {
-  email: string;
-  password: string;
-  phoneNumber: string;
-  createdAt: Date;
+  userId: string;
+  orgEmail?: string,
   orgName?: string;
   orgField?: string;
+  orgScale: string;
+  orgTaxNumber: string;
+  orgAddress: string;
   images?: IImage[];
 }

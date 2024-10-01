@@ -1,3 +1,4 @@
+import { IUser } from './../types/IUser.d';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github';
@@ -6,16 +7,17 @@ import { log } from 'console';
 import CandidateService from '../modules/Candidate/candidate.service';
 import Provider from '../types/EnumProvider';
 import { ICandidate } from '../types/ICandidate';
+import UserService from '../services/User.service';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
-  const user = await CandidateService.getCandidateByEmail(email);
+  const user: IUser | null = await UserService.getUserByEmail(email);
   log(user)
   if (user) {
     await CandidateService.updateOauth(provider, providerId, accessToken, String(user._id));
     return user;
   } else {
-    const newUser: ICandidate | null = await CandidateService.createCandidate(email, displayName);
+    const newUser: IUser | null = await UserService.createCandidateUser(email, displayName);
     log(newUser)
     if (!newUser) {
       return;
@@ -84,12 +86,12 @@ passport.use(new GitHubStrategy({
 }));
 
 passport.serializeUser((user: any, done: Function) => {
-  done(null, user.candidateId);
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id: string, done: Function) => {
   try {
-    const user = await CandidateService.getCandidateById(id);
+    const user = await UserService.getUserById(id);
     done(null, user);
   } catch (err) {
     done(err);

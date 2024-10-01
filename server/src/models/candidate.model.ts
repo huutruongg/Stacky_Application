@@ -42,9 +42,8 @@ const CertificationSchema = new Schema({
 });
 
 const CandidateSchema = new Schema({
-  email: { type: String, required: true },
-  phoneNumber: { type: String },
-  createdAt: { type: Date, default: Date.now },
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  publicEmail: { type: String },
   programmingSkills: { type: String },
   fullName: { type: String },
   gender: { type: Boolean },

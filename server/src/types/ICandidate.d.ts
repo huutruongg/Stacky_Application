@@ -41,14 +41,15 @@ export interface ILanguage {
 }
 
 export interface ICandidate extends Document {
-  email: string;
+  userId: string;
+  publicEmail: string;
   phoneNumber?: string;
   createdAt: Date;
   programmingSkills: string;
   fullName: string;
   gender: boolean;
   birthDate: Date;
-  avatarUrl: String;
+  avatarUrl: string;
   address: string;
   linkedinUrl: string;
   githubUrl: string;
@@ -59,5 +60,5 @@ export interface ICandidate extends Document {
   projects: IProject[];
   educations: IEducation[];
   experiences: IExperience[];
-  certificates: ICertification[];
+  certifications: ICertification[];
 }

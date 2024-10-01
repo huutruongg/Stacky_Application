@@ -3,48 +3,55 @@ import { log } from 'console';
 import { ICandidate } from '../../types/ICandidate';
 import { Candidate } from '../../models/candidate.model';
 import { Application } from '../../models/application.model';
+import { User } from '../../models/user.model';
+import { IApplication } from '../../types/IApplication';
 
 
 const CandidateService = {
 
     getCandidates: async (): Promise<ICandidate[] | null> => {
         try {
-            const candidates = await Candidate.find().exec();
-
+            const candidates = await Candidate.find().populate('userId').exec();
             return candidates.length > 0 ? candidates : null;
         } catch (error) {
             console.error("Error fetching candidates:", error);
             return null;
         }
     },
-    getCandidateById: async (id: string): Promise<ICandidate | null> => {
+
+    getCandidateById: async (candidateId: string): Promise<ICandidate | null> => {
         try {
-            return await Candidate.findById(id).exec();
+            return await Candidate.findById(candidateId).exec();
         } catch (error) {
-            log(error);
+            console.error("Error fetching candidate by userId:", error);
             return null;
         }
     },
 
-    getCandidateByEmail: async (email: string): Promise<ICandidate | null> => {
-        try {
-            return await Candidate.findOne({ email }).exec();
-        } catch (error) {
-            log(error);
-            return null;
-        }
-    },
-
+    // getCandidateByEmail: async (email: string): Promise<ICandidate | null> => {
+    //     try {
+    //         const user = await User.findOne({ email }).exec();
+    //         if (!user) {
+    //             return null;
+    //         }
+    //         return await Candidate.findOne({ userId: user._id }).populate('userId').exec();
+    //     } catch (error) {
+    //         console.error("Error fetching candidate by email:", error);
+    //         return null;
+    //     }
+    // },
 
     getCandidatesApplied: async (jobId: string): Promise<ICandidate[] | null> => {
         try {
-            const applications = await Application.find({ jobId }).select('candidateId').exec();
+            const applications = await Application.find({ jobId }).exec();
 
             if (!applications || applications.length === 0) {
                 return null;
             }
-            const candidateIds = applications.map(app => app.candidateId);
-            const candidates = await Candidate.find({ _id: { $in: candidateIds } }).exec();
+
+            const userIds = applications.map((app : IApplication) => app.candidateId);
+            // Tìm candidates dựa trên userId
+            const candidates = await Candidate.find({ userId: { $in: userIds } }).populate('userId').exec();
             return candidates.length > 0 ? candidates : null;
         } catch (error) {
             console.error("Error fetching candidates who applied for the job:", error);
@@ -71,23 +78,19 @@ const CandidateService = {
         candidateId: string
     ): Promise<void> => {
         try {
-            // Tìm ứng viên theo ID
             log("ID: ", candidateId)
             const candidate = await Candidate.findById(candidateId).exec();
             if (!candidate) {
                 throw new Error("Candidate not found");
             }
 
-            // Kiểm tra xem có OAuth token nào đã tồn tại với provider và providerId không
             const existingTokenIndex = candidate.oauthTokens.findIndex(
                 token => token.provider === provider && token.providerId === providerId
             );
 
             if (existingTokenIndex !== -1) {
-                // Nếu đã tồn tại, cập nhật accessToken
                 candidate.oauthTokens[existingTokenIndex].accessToken = accessToken;
             } else {
-                // Nếu chưa tồn tại, thêm mới token vào mảng oauthTokens
                 candidate.oauthTokens.push({
                     provider,
                     providerId,
@@ -95,7 +98,6 @@ const CandidateService = {
                 });
             }
 
-            // Lưu lại candidate với token đã cập nhật
             await candidate.save();
         } catch (error) {
             console.error("Error updating OAuth token:", error);
@@ -107,7 +109,7 @@ const CandidateService = {
         candidateId: string,
         fullName: string,
         jobPosition: string,
-        email: string,
+        publicEmail: string,
         phoneNumber: string,
         gender: boolean,
         birthDate: Date,
@@ -123,7 +125,7 @@ const CandidateService = {
                 {
                     fullName,
                     jobPosition,
-                    email,
+                    publicEmail,
                     phoneNumber,
                     gender,
                     avatar,
@@ -149,7 +151,7 @@ const CandidateService = {
         candidateId: string,
         languages: ILanguage[],
         projects: IProject[],
-        certificates: ICertification[],
+        certifications: ICertification[],
         programmingSkills: string,
         educations: IEducation[],
         experiences: IExperience[]
@@ -166,7 +168,7 @@ const CandidateService = {
 
             candidate.languages = languages;
             candidate.projects = projects;
-            candidate.certificates = certificates;
+            candidate.certifications = certifications;
             candidate.programmingSkills = programmingSkills;
             candidate.educations = educations;
             candidate.experiences = experiences;
@@ -185,34 +187,6 @@ const CandidateService = {
             return false;
         }
     },
-
-    // submitProfessionalDetails: (
-    //     userId: string,
-    //     candidateId: string,
-    //     fullName: string,
-    //     gender: boolean,
-    //     birthDate: Date,
-    //     address: string,
-    //     linkedinUrl: string,
-    //     githubUrl: string,
-    //     personalDescription: string,
-    //     jobPosition: string,
-    //     languages: ILanguage[],
-    //     projects: IProject[],
-    //     certificates: ICertificate[],
-    //     programmingSkills: string,
-    //     educations: IEducation[],
-    //     experiences: IExperience[]
-    // ): boolean => {
-    //     try {
-    //         CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
-    //         CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certificates, programmingSkills, educations, experiences);
-    //         return true;
-    //     } catch (error) {
-    //         log(error);
-    //         return false;
-    //     }
-    // },
 
     getUrlReposSharedByCandidateId: async (id: string): Promise<string[] | null> => {
         try {

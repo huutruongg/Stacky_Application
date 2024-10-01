@@ -1,69 +1,60 @@
 import bcrypt from "bcrypt";
 import UserRole from '../../types/EnumUserRole';
-import { log } from 'console';
 import { Recruiter } from '../../models/recruiter.model';
+import { User } from '../../models/user.model';
 import { IRecruiter } from '../../types/IRecruiter';
+
 const saltRounds = 10;
 
 const RecruiterService = {
-    getRecruiters: async (): Promise<IRecruiter[]> => {
+    getRecruiterByUserId: async (userId: string) => {
         try {
-            const recruiters = await Recruiter.find().exec();
-            return recruiters;
-        } catch (error) {
-            console.error('Error fetching recruiters:', error);
-            throw new Error('Failed to fetch recruiters');
-        }
-    },
-
-    getRecruiterById: async (id: string): Promise<IRecruiter | null> => {
-        try {
-            const recruiter = await Recruiter.findById(id).exec();
-            if (!recruiter) {
-                return null;
-            }
+            const recruiter = await Recruiter.findOne({ userId }).populate('userId');
             return recruiter;
         } catch (error) {
-            console.error('Error fetching recruiter by ID:', error);
-            throw new Error('Failed to fetch recruiter by ID');
+            throw new Error('Error fetching recruiter');
         }
     },
 
     getRecruiterByEmail: async (email: string): Promise<IRecruiter | null> => {
         try {
-            const recruiter = await Recruiter.findOne({ email }).exec();
-            if (!recruiter) {
-                return null;
-            }
+            const recruiter = await Recruiter.findOne({ email }).populate('userId');
             return recruiter;
         } catch (error) {
-            console.error('Error finding recruiter by email:', error);
-            return null;
+            throw new Error('Error fetching recruiter');
         }
     },
-
     createRecruiter: async (
         email: string,
-        phoneNumber: string,
         password: string,
+        phoneNumber: string,
         orgTaxNumber: string,
         orgName: string,
         orgField: string,
         orgScale: string,
-        orgAddress: string
+        orgAddress: string,
     ): Promise<IRecruiter> => {
         try {
             const hashedPwd = await bcrypt.hash(password, saltRounds);
-            const recruiter = new Recruiter({
-                email,
-                phoneNumber,
+
+            // Tạo User trước
+            const user = new User({
+                email, // Email đăng nhập
                 password: hashedPwd,
+                role: UserRole.RECRUITER,
+                phoneNumber,
+            });
+            await user.save(); // Lưu User trước
+
+            // Tạo Recruiter và liên kết với User
+            const recruiter = new Recruiter({
+                userId: user._id,
+                phoneNumber,
                 orgName,
                 orgField,
                 orgScale,
                 orgTaxNumber,
                 orgAddress,
-                role: UserRole.RECRUITER,
                 createdAt: new Date()
             });
             await recruiter.save();
@@ -73,8 +64,6 @@ const RecruiterService = {
             throw new Error('Failed to create recruiter');
         }
     },
-
-
 };
 
 export default RecruiterService;
