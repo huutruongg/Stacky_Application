@@ -19,9 +19,14 @@ const AuthService = {
         }
     },
 
-    generateToken: (userId: string, email: string, role: string): string => {
+    generateAccessToken: (userId: string, email: string, role: string): string => {
         const payload = { userId, email, role };
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: '1h' });
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRATION });
+    },
+
+    generateRefreshToken: (userId: string, email: string, role: string) => {
+        const payload = { userId, email, role };
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
     },
 
     verifyOAuthToken: async (provider: string, token: string) => {

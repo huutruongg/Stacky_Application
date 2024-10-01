@@ -33,13 +33,15 @@ const AuthController = {
                 return;
             }
 
-            const token = AuthService.generateToken(recruiter._id as string, privateEmail, UserRole.RECRUITER);
+            const accessToken = AuthService.generateAccessToken(recruiter.userId as string, privateEmail, UserRole.RECRUITER);
+            const refreshToken = AuthService.generateRefreshToken(recruiter.userId as string, privateEmail, UserRole.RECRUITER);
             res.status(200).json({
                 success: true,
                 data: {
-                    userId: recruiter._id,
+                    userId: recruiter.userId,
                     email: privateEmail,
-                    token,
+                    accessToken,
+                    refreshToken
                 },
             });
 
@@ -76,14 +78,16 @@ const AuthController = {
             }
 
             // Tạo JWT token
-            const jwtToken = AuthService.generateToken(String(user._id), String(user.privateEmail), user.role);
+            const accessToken = AuthService.generateAccessToken(String(user._id), user.privateEmail, user.role);
+            const refreshToken = AuthService.generateRefreshToken(user._id as string, user.privateEmail, user.role);
             res.status(200).json({
                 success: true,
                 data: {
                     userId: user._id,
                     email: user.privateEmail,
                     role: user.role,
-                    token: jwtToken,
+                    accessToken,
+                    refreshToken
                 },
             });
 
@@ -108,8 +112,18 @@ const AuthController = {
                     return;
                 }
 
-                const jwtToken = AuthService.generateToken(String(candidate._id), String(candidate.privateEmail), candidate.role);
-                res.status(200).json({ success: true, token: jwtToken });
+                const accessToken = AuthService.generateAccessToken(String(candidate._id), candidate.privateEmail, candidate.role);
+                const refreshToken = AuthService.generateRefreshToken(String(candidate._id), candidate.privateEmail, candidate.role);
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        userId: user._id,
+                        email: user.privateEmail,
+                        role: user.role,
+                        accessToken,
+                        refreshToken
+                    },
+                });
             })(req, res, next);
         } catch (error) {
             console.error(error);
@@ -133,14 +147,16 @@ const AuthController = {
                 return;
             }
 
-            const jwtToken = AuthService.generateToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
+            const accessToken = AuthService.generateAccessToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
+            const refreshToken = AuthService.generateRefreshToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
             res.status(200).json({
                 success: true,
                 data: {
                     userId: existingUser._id,
                     email: existingUser.privateEmail,
-                    role: UserRole.ADMIN,
-                    token: jwtToken,
+                    role: existingUser.role,
+                    accessToken,
+                    refreshToken
                 },
             });
 
