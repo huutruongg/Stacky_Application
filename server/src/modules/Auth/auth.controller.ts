@@ -20,7 +20,7 @@ const AuthController = {
         const { privateEmail, password, phoneNumber, orgTaxNumber, orgName, orgField, orgScale, orgAddress } = req.body;
 
         try {
-            const existingUser = await RecruiterService.getRecruiterByEmail(privateEmail);
+            const existingUser = await UserService.getUserByEmail(privateEmail);
             if (existingUser) {
                 res.status(401).json({ message: "This email already exists! Please enter another email." });
                 return;
