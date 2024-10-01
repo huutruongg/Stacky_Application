@@ -2,6 +2,7 @@ import { User } from './../models/user.model';
 import { IUser } from '../types/IUser';
 import { log } from 'console';
 import { Candidate } from '../models/candidate.model';
+import UserRole from '../types/EnumUserRole';
 
 
 const UserService = {
@@ -25,10 +26,11 @@ const UserService = {
         }
     },
 
-    createCandidateUser: async (email: string, fullName: string): Promise<IUser | null> => {
+    createCandidateUser: async (privateEmail: string, fullName: string): Promise<IUser | null> => {
         try {
             const user = await User.create({
-                email
+                privateEmail,
+                role: UserRole.CANDIDATE
             })
             await Candidate.create({
                 fullName,

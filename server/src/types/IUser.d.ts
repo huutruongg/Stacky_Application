@@ -5,6 +5,6 @@ export interface IUser extends Document {
     privateEmail: string,
     password?: string,
     role: UserRole,
-    phoneNumber: string,
+    phoneNumber?: string,
     createdAt: Date;
 }

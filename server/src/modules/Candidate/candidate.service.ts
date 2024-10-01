@@ -59,27 +59,27 @@ const CandidateService = {
         }
     },
 
-    createCandidate: async (email: string, username: string): Promise<ICandidate | null> => {
+    // createCandidate: async (privateEmail: string, username: string): Promise<ICandidate | null> => {
 
-        try {
-            const candidate = await Candidate.create({
-                email, username
-            })
-            return candidate;
-        } catch (error) {
-            log(error);
-            return null;
-        }
-    },
+    //     try {
+    //         const candidate = await Candidate.create({
+    //             privateEmail, username
+    //         })
+    //         return candidate;
+    //     } catch (error) {
+    //         log(error);
+    //         return null;
+    //     }
+    // },
     updateOauth: async (
         provider: string,
         providerId: string,
         accessToken: string,
-        candidateId: string
+        userId: string
     ): Promise<void> => {
         try {
-            log("ID: ", candidateId)
-            const candidate = await Candidate.findById(candidateId).exec();
+            const candidate = await Candidate.findOne({userId}).exec();
+            log("Candidate: ", candidate)
             if (!candidate) {
                 throw new Error("Candidate not found");
             }
