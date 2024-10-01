@@ -1,11 +1,10 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import * as serviceAccount from '../../config/firebase-admin.json';
-import { log } from 'console';
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount as ServiceAccount), // Cast to ServiceAccount type
-    storageBucket: 'gs://stackydemo-95381.appspot.com',
+    storageBucket: process.env.STORAGE_BUCKET,
 });
 
 const bucket = admin.storage().bucket();

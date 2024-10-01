@@ -29,7 +29,7 @@ export interface IExperience {
   previousJobDetails: string;
 }
 
-export interface ICertificate {
+export interface ICertification {
   certificateName: string;
   dateOfReceipt: Date;
   certificateDetail: string;
@@ -48,6 +48,7 @@ export interface ICandidate extends Document {
   fullName: string;
   gender: boolean;
   birthDate: Date;
+  avatarUrl: String;
   address: string;
   linkedinUrl: string;
   githubUrl: string;
@@ -58,5 +59,5 @@ export interface ICandidate extends Document {
   projects: IProject[];
   educations: IEducation[];
   experiences: IExperience[];
-  certificates: ICertificate[];
+  certificates: ICertification[];
 }

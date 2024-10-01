@@ -1,4 +1,4 @@
-import { ICertificate, IEducation, IExperience, ILanguage, IProject } from './../../types/ICandidate.d';
+import { ICertification, IEducation, IExperience, ILanguage, IProject } from './../../types/ICandidate.d';
 import { log } from 'console';
 import { ICandidate } from '../../types/ICandidate';
 import { Candidate } from '../../models/candidate.model';
@@ -104,29 +104,34 @@ const CandidateService = {
     },
 
     createCandidatePersonalProfile: async (
-        userId: string,
+        candidateId: string,
         fullName: string,
+        jobPosition: string,
+        email: string,
+        phoneNumber: string,
         gender: boolean,
         birthDate: Date,
+        avatar: string,
         address: string,
         linkedinUrl: string,
         githubUrl: string,
-        personalDescription: string,
-        jobPosition: string
+        personalDescription: string
     ): Promise<boolean> => {
         try {
-            // Cập nhật thông tin cá nhân của ứng viên trong MongoDB
             const result = await Candidate.findByIdAndUpdate(
-                userId,
+                { candidateId },
                 {
                     fullName,
+                    jobPosition,
+                    email,
+                    phoneNumber,
                     gender,
+                    avatar,
                     birthDate,
                     address,
                     linkedinUrl,
                     githubUrl,
                     personalDescription,
-                    jobPosition,
                 },
                 { new: true }
             );
@@ -144,7 +149,7 @@ const CandidateService = {
         candidateId: string,
         languages: ILanguage[],
         projects: IProject[],
-        certificates: ICertificate[],
+        certificates: ICertification[],
         programmingSkills: string,
         educations: IEducation[],
         experiences: IExperience[]
@@ -159,7 +164,6 @@ const CandidateService = {
                 throw new Error("Candidate not found");
             }
 
-            // Cập nhật từng trường subdocument của Candidate
             candidate.languages = languages;
             candidate.projects = projects;
             candidate.certificates = certificates;
@@ -167,7 +171,6 @@ const CandidateService = {
             candidate.educations = educations;
             candidate.experiences = experiences;
 
-            // Lưu lại thông tin ứng viên đã được cập nhật
             await candidate.save({ session });
 
             // Commit transaction
@@ -183,33 +186,33 @@ const CandidateService = {
         }
     },
 
-    submitProfessionalDetails: (
-        userId: string,
-        candidateId: string,
-        fullName: string,
-        gender: boolean,
-        birthDate: Date,
-        address: string,
-        linkedinUrl: string,
-        githubUrl: string,
-        personalDescription: string,
-        jobPosition: string,
-        languages: ILanguage[],
-        projects: IProject[],
-        certificates: ICertificate[],
-        programmingSkills: string,
-        educations: IEducation[],
-        experiences: IExperience[]
-    ): boolean => {
-        try {
-            CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
-            CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certificates, programmingSkills, educations, experiences);
-            return true;
-        } catch (error) {
-            log(error);
-            return false;
-        }
-    },
+    // submitProfessionalDetails: (
+    //     userId: string,
+    //     candidateId: string,
+    //     fullName: string,
+    //     gender: boolean,
+    //     birthDate: Date,
+    //     address: string,
+    //     linkedinUrl: string,
+    //     githubUrl: string,
+    //     personalDescription: string,
+    //     jobPosition: string,
+    //     languages: ILanguage[],
+    //     projects: IProject[],
+    //     certificates: ICertificate[],
+    //     programmingSkills: string,
+    //     educations: IEducation[],
+    //     experiences: IExperience[]
+    // ): boolean => {
+    //     try {
+    //         CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
+    //         CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certificates, programmingSkills, educations, experiences);
+    //         return true;
+    //     } catch (error) {
+    //         log(error);
+    //         return false;
+    //     }
+    // },
 
     getUrlReposSharedByCandidateId: async (id: string): Promise<string[] | null> => {
         try {

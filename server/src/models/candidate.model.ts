@@ -35,7 +35,7 @@ const ExperienceSchema = new Schema({
   previousJobDetails: { type: String, required: true }
 });
 
-const CertificateSchema = new Schema({
+const CertificationSchema = new Schema({
   certificateName: { type: String, required: true },
   dateOfReceipt: { type: Date, required: true },
   certificateDetail: { type: String, required: true }
@@ -44,22 +44,23 @@ const CertificateSchema = new Schema({
 const CandidateSchema = new Schema({
   email: { type: String, required: true },
   phoneNumber: { type: String },
-  createdAt: { type: Date, default: Date.now }, 
-  programmingSkills: { type: String }, 
-  fullName: { type: String }, 
-  gender: { type: Boolean }, 
-  birthDate: { type: Date }, 
-  address: { type: String }, 
-  linkedinUrl: { type: String }, 
-  githubUrl: { type: String }, 
-  personalDescription: { type: String }, 
-  jobPosition: { type: String }, 
+  createdAt: { type: Date, default: Date.now },
+  programmingSkills: { type: String },
+  fullName: { type: String },
+  gender: { type: Boolean },
+  birthDate: { type: Date },
+  avatarUrl: { type: String },
+  address: { type: String },
+  linkedinUrl: { type: String },
+  githubUrl: { type: String },
+  personalDescription: { type: String },
+  jobPosition: { type: String },
   oauthTokens: [OAuthTokenSchema],
   languages: [LanguageSchema],
   projects: [ProjectSchema],
   educations: [EducationSchema],
   experiences: [ExperienceSchema],
-  certificates: [CertificateSchema]
+  certifications: [CertificationSchema]
 });
 
 export const Candidate = model<ICandidate>('Candidate', CandidateSchema);

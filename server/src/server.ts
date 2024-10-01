@@ -12,7 +12,7 @@ import session from 'express-session';
 import cors from "cors"
 import { log } from "console";
 import './config/passport-setup';
-import connectDB from "./config/database";
+import {connectDB, disconnectDB} from "./config/database";
 dotenv.config();
 
 
@@ -48,6 +48,11 @@ app.use('/candidate', candidateRouter)
 app.use('/job-posting', jobPostingRouter);
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
+});
+
+process.on('SIGINT', async () => {
+  await disconnectDB();
+  process.exit(0);
 });
 
 connectDB()

@@ -35,11 +35,11 @@ const CandidateCotroller = {
 
     submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition,
-                candidateId, languages, projects, certificates, programmingSkills, educations, experiences
+            const { candidateId, fullName, jobPosition, email, phoneNumber, gender, birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription,
+                languages, projects, certifications, programmingSkills, educations, experiences
             } = req.body;
-            const personalProfile = await CandidateService.createCandidatePersonalProfile(userId, fullName, gender, birthDate, address, linkedinUrl, githubUrl, personalDescription, jobPosition);
-            const professionalProfile = await CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certificates, programmingSkills, educations, experiences);
+            const personalProfile = await CandidateService.createCandidatePersonalProfile(candidateId, fullName, jobPosition, email, phoneNumber, Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription);
+            const professionalProfile = await CandidateService.createCandidateProfessionalProfile(candidateId, languages, projects, certifications, programmingSkills, educations, experiences);
             if (!personalProfile || !professionalProfile) {
                 res.status(500).json({ succes: false, message: "Something went wrong!" });
                 return;
