@@ -5,20 +5,19 @@ import { Strategy as GitHubStrategy } from 'passport-github';
 import axios from 'axios';
 import { log } from 'console';
 import CandidateService from '../modules/Candidate/candidate.service';
+import AuthService from '../modules/Auth/auth.service'
 import Provider from '../types/EnumProvider';
-import { ICandidate } from '../types/ICandidate';
-import UserService from '../services/User.service';
 
 
 const handleUserOAuth = async (provider: string, providerId: string, email: string, displayName: string, accessToken: string) => {
-  const user: IUser | null = await UserService.getUserByEmail(email);
+  const user: IUser | null = await AuthService.getUserByEmail(email);
   log(user)
   if (user) {
     await CandidateService.updateOauth(provider, providerId, accessToken, String(user._id));
     return user;
   } else {
-    const newUser: IUser | null = await UserService.createCandidateUser(email, displayName);
-    log(newUser)
+    const newUser: IUser | null = await AuthService.createCandidateUser(email, displayName);
+    // log(newUser)
     if (!newUser) {
       return;
     }
@@ -91,7 +90,7 @@ passport.serializeUser((user: any, done: Function) => {
 
 passport.deserializeUser(async (id: string, done: Function) => {
   try {
-    const user = await UserService.getUserById(id);
+    const user = await AuthService.getUserById(id);
     done(null, user);
   } catch (err) {
     done(err);

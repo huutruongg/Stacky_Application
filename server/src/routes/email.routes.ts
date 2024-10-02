@@ -8,6 +8,6 @@ import EmailController from "../modules/Email/email.controller";
 const router = Router();
 
 // Route to send an email with authentication and authorization
-router.post('/send-email', authenticateJWT, authorize(UserRole.ADMIN, UserRole.RECRUITER), EmailController.sendEmail);
+router.post('/send-email', EmailController.sendEmail);
 
 export default router;

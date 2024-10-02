@@ -1,14 +1,15 @@
 
-import JobPostingService from "./jobPosting.service";
+import JobManagementService from "./jobManagement.service";
 import { Request, Response } from "express";
 import { log } from "console";
 import { IJobPost } from "../../types/IJobPost";
+import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplicationError";
 
-const JobController = {
+const JobManagementController = {
     getJobPostings: async (req: Request, res: Response): Promise<void> => {
         try {
             const { page, pageSize } = req.query;
-            const result: IJobPost[] | null = await JobPostingService.getJobPostingsByPage(Number(page), Number(pageSize));
+            const result: IJobPost[] | null = await JobManagementService.getJobPostingsByPage(Number(page), Number(pageSize));
             if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -22,7 +23,7 @@ const JobController = {
     getJobPostingsByRecruiter: async (req: Request, res: Response): Promise<void> => {
         try {
             const { recruiterId, postId } = req.body;
-            const result: IJobPost[] | null = await JobPostingService.getJobPostingsByRecruiter(recruiterId, postId);
+            const result: IJobPost[] | null = await JobManagementService.getJobPostingsByRecruiter(recruiterId, postId);
             if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -33,10 +34,10 @@ const JobController = {
         }
     },
 
-    getJobPostingSaved: async (req: Request, res: Response): Promise<void> => {
+    getJobPostingsSaved: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { candidateId, postId } = req.body;
-            const result: IJobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
+            const { candidateId } = req.body;
+            const result: IJobPost[] | null = await JobManagementService.getJobsSaved(candidateId);
             if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -49,8 +50,8 @@ const JobController = {
 
     getJobsApplied: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { candidateId, postId } = req.body;
-            const result: IJobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
+            const { candidateId } = req.body;
+            const result: IJobPost[] | null = await JobManagementService.getJobsApplied(candidateId);
             if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -64,7 +65,7 @@ const JobController = {
     getJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
             const jobId = req.params.id;
-            const result: IJobPost | null = await JobPostingService.getJobPostingById(jobId);
+            const result: IJobPost | null = await JobManagementService.getJobPostingById(jobId);
             if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -78,7 +79,7 @@ const JobController = {
     findByJobPosition: async (req: Request, res: Response): Promise<void> => {
         try {
             const { keySearch } = req.query;
-            const result: IJobPost[] | null = await JobPostingService.findJobPostingsByJobPosition((keySearch as string));
+            const result: IJobPost[] | null = await JobManagementService.findJobPostingsByJobPosition((keySearch as string));
             if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -95,7 +96,7 @@ const JobController = {
         try {
             const { locationSelection } = req.query;
             log(locationSelection)
-            const result: IJobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
+            const result: IJobPost[] | null = await JobManagementService.filterJobPostingByLocation(String(locationSelection));
             if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -111,7 +112,7 @@ const JobController = {
     filterByIndustry: async (req: Request, res: Response): Promise<void> => {
         try {
             const { industrySelection } = req.query;
-            const result: IJobPost[] | null = await JobPostingService.filterJobPostingByIndustry((industrySelection as string));
+            const result: IJobPost[] | null = await JobManagementService.filterJobPostingByIndustry((industrySelection as string));
             if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -131,7 +132,7 @@ const JobController = {
                 certificateRequired, languagesRequired, jobBenefit, leavePolicy, jobDescription, workEnvironment, jobSchedule, applicationDeadline
             } = req.body;
 
-            const isCreated: boolean | null = await JobPostingService.createJobPosting(
+            const isCreated: boolean | null = await JobManagementService.createJobPosting(
                 recruiterId, jobTitle, jobImage, typeOfWork, location, jobSalary, candidatesLimit, educationRequired, yearsOfExperience, typeOfIndustry, professionalSkills,
                 certificateRequired, languagesRequired, jobBenefit, leavePolicy, jobDescription, workEnvironment, jobSchedule, applicationDeadline
             );
@@ -149,7 +150,7 @@ const JobController = {
     deleteJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
             const jobId = req.params.jobId;
-            const isDeleted = await JobPostingService.deleteJobPosting(jobId);
+            const isDeleted = await JobManagementService.deleteJobPosting(jobId);
             if (!isDeleted) {
                 res.status(500).json({ success: false, message: "Job not deleted!" });
                 return;
@@ -159,7 +160,80 @@ const JobController = {
             log(error)
             res.status(500).json({ success: false, error: 'Internal Server Error!' });
         }
+    },
+
+    createApplication: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const jobPostId = req.params.jobPostId;
+            const { candidateId } = req.body;
+
+            const result = await JobManagementService.createApplication(candidateId, jobPostId);
+
+            if (!result) {
+                res.status(500).json({ success: false, message: "Failed to create application." });
+                return;
+            }
+
+            res.status(201).json({ success: true, message: "Application created successfully." });
+        } catch (error: any) {
+            if (error instanceof DuplicateApplicationError) {
+                // Handle the custom error for duplicate application
+                res.status(400).json({ success: false, message: error.message });
+            } else {
+                // Handle general errors
+                res.status(500).json({ success: false, message: "Internal Server Error." });
+            }
+        }
+    },
+
+    savedJobPost: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const jobPostId = req.params.jobPostId;
+            const { candidateId } = req.body;
+            const isSaved = await JobManagementService.savedJobPost(candidateId, jobPostId);
+            if (!isSaved) {
+                res.status(400).json({
+                    success: false,
+                    message: 'Job post has already been saved by this candidate.'
+                });
+                return;
+            }
+            res.status(201).json({
+                success: true,
+                message: 'Job post saved successfully!'
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: 'Internal Server Error.'
+            });
+        }
+    },
+
+    cancelJobPostSaved: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const jobSavedId = req.params.jobSavedId; 
+
+            const isDeleted = await JobManagementService.cancelJobPostSaved(jobSavedId);
+
+            if (!isDeleted) {
+                res.status(404).json({
+                    success: false,
+                    message: 'Job post was not found or already removed from saved list.'
+                });
+                return;
+            }
+            res.status(200).json({
+                success: true,
+                message: 'Job post removed from saved list successfully.'
+            });
+        } catch (error: any) {
+            res.status(500).json({
+                success: false,
+                message: 'Internal Server Error.'
+            });
+        }
     }
 }
 
-export default JobController;
+export default JobManagementController;

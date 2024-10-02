@@ -28,19 +28,6 @@ const CandidateService = {
         }
     },
 
-    // getCandidateByEmail: async (email: string): Promise<ICandidate | null> => {
-    //     try {
-    //         const user = await User.findOne({ email }).exec();
-    //         if (!user) {
-    //             return null;
-    //         }
-    //         return await Candidate.findOne({ userId: user._id }).populate('userId').exec();
-    //     } catch (error) {
-    //         console.error("Error fetching candidate by email:", error);
-    //         return null;
-    //     }
-    // },
-
     getCandidatesApplied: async (jobId: string): Promise<ICandidate[] | null> => {
         try {
             const applications = await Application.find({ jobId }).exec();
@@ -49,7 +36,7 @@ const CandidateService = {
                 return null;
             }
 
-            const userIds = applications.map((app : IApplication) => app.candidateId);
+            const userIds = applications.map((app: IApplication) => app.candidateId);
             // Tìm candidates dựa trên userId
             const candidates = await Candidate.find({ userId: { $in: userIds } }).populate('userId').exec();
             return candidates.length > 0 ? candidates : null;
@@ -59,18 +46,6 @@ const CandidateService = {
         }
     },
 
-    // createCandidate: async (privateEmail: string, username: string): Promise<ICandidate | null> => {
-
-    //     try {
-    //         const candidate = await Candidate.create({
-    //             privateEmail, username
-    //         })
-    //         return candidate;
-    //     } catch (error) {
-    //         log(error);
-    //         return null;
-    //     }
-    // },
     updateOauth: async (
         provider: string,
         providerId: string,
@@ -78,7 +53,7 @@ const CandidateService = {
         userId: string
     ): Promise<void> => {
         try {
-            const candidate = await Candidate.findOne({userId}).exec();
+            const candidate = await Candidate.findOne({ userId }).exec();
             log("Candidate: ", candidate)
             if (!candidate) {
                 throw new Error("Candidate not found");
@@ -121,7 +96,7 @@ const CandidateService = {
     ): Promise<boolean> => {
         try {
             const result = await Candidate.findByIdAndUpdate(
-                { candidateId },
+                candidateId,
                 {
                     fullName,
                     jobPosition,
@@ -159,9 +134,7 @@ const CandidateService = {
         const session = await Candidate.startSession();
         session.startTransaction();
         try {
-            // Tìm candidate cần cập nhật
-            const candidate = await Candidate.findById(candidateId).session(session);
-
+            const candidate = await CandidateService.getCandidateById(candidateId);
             if (!candidate) {
                 throw new Error("Candidate not found");
             }

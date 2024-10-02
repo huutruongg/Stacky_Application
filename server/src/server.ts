@@ -6,7 +6,7 @@ import githubRouter from "./routes/github.routes"
 import uploadRouter from "./routes/upload.routes"
 import recruiterRouter from "./routes/recruiter.routes"
 import candidateRouter from "./routes/candidate.routes"
-import jobPostingRouter from "./routes/jobPosting.routes"
+import jobPostingRouter from "./routes/jobManagement.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"

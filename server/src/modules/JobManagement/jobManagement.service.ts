@@ -5,11 +5,10 @@ import { JobSaved } from "../../models/jobSaved.model";
 import { Application } from "../../models/application.model";
 import PostStatus from "../../types/EnumPostStatus";
 import { ILanguage } from "../../types/ICandidate";
+import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplicationError";
 
 
-const JobPostingService = {
-
-
+const JobManagementService = {
     getJobPostingById: async (id: string): Promise<IJobPost | null> => {
         try {
             const jobPost = await JobPost.findById(id).exec();
@@ -42,30 +41,27 @@ const JobPostingService = {
         }
     },
 
-    getJobsSaved: async (candidateId: string, postId: string): Promise<IJobPost[] | null> => {
+    getJobsSaved: async (candidateId: string): Promise<IJobPost[] | null> => {
         try {
             const savedJobs = await JobSaved.find({
-                candidateId: candidateId,
-                jobId: postId
-            }).populate('jobPost').exec(); // Lấy jobPost liên kết qua populate
+                candidateId: candidateId
+            }).populate('jobPost').exec();
 
             if (!savedJobs || savedJobs.length === 0) {
                 return null;
             }
 
-            // Trả về danh sách JobPost từ các jobSaved đã lưu
-            return savedJobs.map(jobSaved => jobSaved.jobPost); // Ép kiểu sang IJobPost nếu cần
+            return savedJobs.map(jobSaved => jobSaved.jobPost);
         } catch (error) {
             log(error);
             return null;
         }
     },
 
-    getJobsApplied: async (candidateId: string, postId: string): Promise<IJobPost[] | null> => {
+    getJobsApplied: async (candidateId: string): Promise<IJobPost[] | null> => {
         try {
             const appliedJobs = await Application.find({
-                candidateId: candidateId,
-                jobId: postId
+                candidateId: candidateId
             }).populate('jobPost').exec();
 
             if (!appliedJobs || appliedJobs.length === 0) {
@@ -94,7 +90,7 @@ const JobPostingService = {
     filterJobPostingByLocation: async (location: string): Promise<IJobPost[] | null> => {
         try {
             const data = await JobPost.find({
-                location: { $regex: location, $options: 'i' } // Lọc theo location
+                location: { $regex: location, $options: 'i' }
             }).exec();
 
             log(data);
@@ -202,6 +198,57 @@ const JobPostingService = {
         }
     },
 
+    createApplication: async (candidateId: string, jobPostId: string): Promise<boolean> => {
+        try {
+            const existingApplication = await Application.findOne({ candidateId, jobPostId });
+
+            if (existingApplication) {
+                throw new DuplicateApplicationError('Candidate has already applied for this job.');
+            }
+
+            const application = new Application({
+                candidateId,
+                jobPostId
+            });
+            await application.save();
+            return true;
+        } catch (error: any) {
+            log(error);
+            return false;
+        }
+    },
+
+    savedJobPost: async (candidateId: string, jobSavedId: string): Promise<boolean> => {
+        try {
+            const existingJob = await JobSaved.findOne({ candidateId, jobSavedId });
+            if (existingJob) {
+                return false;
+            }
+            const newSavedJob = new JobSaved({
+                candidateId,
+                jobSavedId
+            });
+            await newSavedJob.save();
+            return true;
+        } catch (error: any) {
+            log(error);
+            return false;
+        }
+    },
+
+    cancelJobPostSaved: async (jobSavedId: string): Promise<boolean> => {
+        try {
+            const result = await JobSaved.findByIdAndDelete(jobSavedId);
+            if (result) {
+                return true;
+            }
+
+            return false;
+        } catch (error: any) {
+            log(error);
+            return false;
+        }
+    }
 };
 
-export default JobPostingService;
+export default JobManagementService;

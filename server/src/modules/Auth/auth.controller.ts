@@ -7,7 +7,6 @@ import RecruiterService from "../Recruiter/recruiter.service";
 import UserRole from "../../types/EnumUserRole";
 import { IRecruiter } from "../../types/IRecruiter";
 import { IUser } from "../../types/IUser";
-import UserService from "../../services/User.service";
 
 dotenv.config();
 
@@ -16,16 +15,16 @@ const AuthController = {
         const { privateEmail, password, phoneNumber, orgTaxNumber, orgName, orgField, orgScale, orgAddress } = req.body;
 
         try {
-            const existingUser = await UserService.getUserByEmail(privateEmail);
+            const existingUser = await AuthService.getUserByEmail(privateEmail);
             if (existingUser) {
-                res.status(401).json({ message: "This email already exists! Please enter another email." });
+                res.status(401).json({ success: false, message: "This email already exists! Please enter another email." });
                 return;
             }
 
             const recruiter: IRecruiter | null = await RecruiterService.createRecruiter(privateEmail, password, phoneNumber, orgTaxNumber, orgName, orgField, orgScale, orgAddress);
 
             if (!recruiter) {
-                res.status(500).json({ message: "Failed to create recruiter." });
+                res.status(500).json({ success: false, message: "Failed to create recruiter." });
                 return;
             }
 
@@ -49,16 +48,16 @@ const AuthController = {
 
         try {
             // Tìm User theo email
-            const existingUser: IUser | null = await UserService.getUserByEmail(email);
+            const existingUser: IUser | null = await AuthService.getUserByEmail(email);
             if (!existingUser) {
-                res.status(401).json({ message: "User not found!" });
+                res.status(401).json({ success: false, message: "User not found!" });
                 return;
             }
 
             // Tìm Recruiter theo userId
-            const user: IUser | null = await UserService.getUserById(String(existingUser._id));
+            const user: IUser | null = await AuthService.getUserById(String(existingUser._id));
             if (!user) {
-                res.status(401).json({ message: "User is not a recruiter!" });
+                res.status(401).json({ success: false, message: "User is not a recruiter!" });
                 return;
             }
 
@@ -66,7 +65,7 @@ const AuthController = {
             const isValidPassword = await AuthService.checkPassword(password, String(existingUser.password));
 
             if (!isValidPassword) {
-                res.status(401).json({ message: "Invalid credentials!" });
+                res.status(401).json({ success: false, message: "Invalid credentials!" });
                 return;
             }
 
@@ -96,7 +95,7 @@ const AuthController = {
                     res.status(401).json({ success: false, message: 'Authentication failed' });
                     return;
                 }
-                const candidate: IUser | null = await UserService.getUserById(String(user._id));
+                const candidate: IUser | null = await AuthService.getUserById(String(user._id));
                 if (!candidate) {
                     res.status(401).json({ success: false, message: 'Authentication failed' });
                     return;
@@ -122,7 +121,7 @@ const AuthController = {
 
         try {
             const { email, password } = req.body;
-            const existingUser = await UserService.getUserByEmail(email);
+            const existingUser = await AuthService.getUserByEmail(email);
             if (!existingUser) {
                 res.status(401).json({ message: "User not found!" });
                 return;

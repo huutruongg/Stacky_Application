@@ -1,4 +1,4 @@
-import { Router, Request, Response} from "express";
+import { Router, Request, Response } from "express";
 import path from "path";
 import AuthController from "../modules/Auth/auth.controller";
 

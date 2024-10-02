@@ -8,6 +8,7 @@ import { Recruiter } from '../../models/recruiter.model';
 import UserRole from '../../types/EnumUserRole';
 import { User } from '../../models/user.model';
 import { IUser } from '../../types/IUser';
+import { Candidate } from '../../models/candidate.model';
 const saltRounds = 10;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -59,20 +60,6 @@ const AuthService = {
         }
     },
 
-    getAdminAccountByEmail: async (email: string): Promise<IAdmin | null> => {
-        try {
-            const admin = await Admin.findOne({ email }).exec();
-            // log(data)
-            if (!admin) {
-                return null;
-            }
-            return admin;
-        } catch (error) {
-            log(error);
-            return null;
-        }
-    },
-
     createAdmin: async (privateEmail: string, password: string): Promise<IAdmin | null> => {
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -115,6 +102,46 @@ const AuthService = {
 
     hashPassword: async (password: string): Promise<string> => {
         return await bcrypt.hash(password, saltRounds);
+    },
+
+    getUserById: async (userId: string): Promise<IUser | null> => {
+        try {
+            const user: IUser | null = await User.findById(userId).exec();
+            return user;
+        } catch (error) {
+            log(error)
+            return null;
+        }
+    },
+
+    getUserByEmail: async (email: string): Promise<IUser | null> => {
+        try {
+            const user: IUser | null = await User.findOne({ privateEmail: email }).exec();
+            return user;
+        } catch (error) {
+            log(error)
+            return null;
+        }
+    },
+
+    createCandidateUser: async (privateEmail: string, fullName: string): Promise<IUser | null> => {
+        try {
+            log("Attempting to create user with email: ", privateEmail);
+            const user = new User({
+                privateEmail,
+                role: UserRole.CANDIDATE
+            });
+            await user.save();
+            const candidate = new Candidate({
+                userId: user._id,
+                fullName: fullName
+            })
+            await candidate.save();
+            return user;
+        } catch (error) {
+            log("Error creating user or candidate: ", error);
+            return null;
+        }
     }
 };
 
