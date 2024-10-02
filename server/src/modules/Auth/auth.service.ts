@@ -6,6 +6,8 @@ import { log } from 'console';
 import { IAdmin } from '../../types/IAdmin';
 import { Recruiter } from '../../models/recruiter.model';
 import UserRole from '../../types/EnumUserRole';
+import { User } from '../../models/user.model';
+import { IUser } from '../../types/IUser';
 const saltRounds = 10;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -71,13 +73,16 @@ const AuthService = {
         }
     },
 
-    createAdmin: async (email: string, password: string): Promise<IAdmin | null> => {
+    createAdmin: async (privateEmail: string, password: string): Promise<IAdmin | null> => {
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
-            const admin = new Admin({
-                email,
+            const user: IUser | null = new User({
+                privateEmail,
                 password: hashedPassword,
+                role: UserRole.ADMIN
             });
+            await user.save();
+            const admin = new Admin({ userId: user._id })
             await admin.save();
             return admin;
         } catch (error) {

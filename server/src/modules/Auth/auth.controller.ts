@@ -3,12 +3,8 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import { log } from 'console';
 import AuthService from './auth.service';
-import { AuthUserType } from "../../types/Custom";
 import RecruiterService from "../Recruiter/recruiter.service";
 import UserRole from "../../types/EnumUserRole";
-import CandidateService from "../Candidate/candidate.service";
-import { CandidateInfo } from "../../types/ICandidateInfo";
-import { ICandidate } from "../../types/ICandidate";
 import { IRecruiter } from "../../types/IRecruiter";
 import { IUser } from "../../types/IUser";
 import UserService from "../../services/User.service";
@@ -36,13 +32,10 @@ const AuthController = {
             const accessToken = AuthService.generateAccessToken(recruiter.userId as string, privateEmail, UserRole.RECRUITER);
             const refreshToken = AuthService.generateRefreshToken(recruiter.userId as string, privateEmail, UserRole.RECRUITER);
             res.status(200).json({
-                success: true,
-                data: {
-                    userId: recruiter.userId,
-                    email: privateEmail,
-                    accessToken,
-                    refreshToken
-                },
+                userId: recruiter.userId,
+                email: privateEmail,
+                accessToken,
+                refreshToken
             });
 
         } catch (err) {
@@ -81,14 +74,11 @@ const AuthController = {
             const accessToken = AuthService.generateAccessToken(String(user._id), user.privateEmail, user.role);
             const refreshToken = AuthService.generateRefreshToken(user._id as string, user.privateEmail, user.role);
             res.status(200).json({
-                success: true,
-                data: {
-                    userId: user._id,
-                    email: user.privateEmail,
-                    role: user.role,
-                    accessToken,
-                    refreshToken
-                },
+                userId: user._id,
+                email: user.privateEmail,
+                role: user.role,
+                accessToken,
+                refreshToken
             });
 
         } catch (err) {
@@ -115,14 +105,11 @@ const AuthController = {
                 const accessToken = AuthService.generateAccessToken(String(candidate._id), candidate.privateEmail, candidate.role);
                 const refreshToken = AuthService.generateRefreshToken(String(candidate._id), candidate.privateEmail, candidate.role);
                 res.status(200).json({
-                    success: true,
-                    data: {
-                        userId: user._id,
-                        email: user.privateEmail,
-                        role: user.role,
-                        accessToken,
-                        refreshToken
-                    },
+                    userId: user._id,
+                    email: user.privateEmail,
+                    role: user.role,
+                    accessToken,
+                    refreshToken
                 });
             })(req, res, next);
         } catch (error) {
@@ -150,14 +137,11 @@ const AuthController = {
             const accessToken = AuthService.generateAccessToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
             const refreshToken = AuthService.generateRefreshToken(String(existingUser._id), existingUser.privateEmail, existingUser.role);
             res.status(200).json({
-                success: true,
-                data: {
-                    userId: existingUser._id,
-                    email: existingUser.privateEmail,
-                    role: existingUser.role,
-                    accessToken,
-                    refreshToken
-                },
+                userId: existingUser._id,
+                email: existingUser.privateEmail,
+                role: existingUser.role,
+                accessToken,
+                refreshToken
             });
 
         } catch (err) {

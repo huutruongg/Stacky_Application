@@ -14,7 +14,8 @@ const RecruiterSchema = new Schema({
   orgScale: { type: String },
   orgTaxNumber: { type: String },
   orgAddress: { type: String },
-  images: [ImageSchema]
+  images: [ImageSchema],
+  balance: {type: Number, default: 0}
 });
 
 export const Recruiter = model<IRecruiter>('Recruiter', RecruiterSchema);

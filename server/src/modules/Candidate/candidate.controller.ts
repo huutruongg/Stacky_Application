@@ -6,12 +6,12 @@ const CandidateCotroller = {
     getCandidateById: async (req: Request, res: Response): Promise<void> => {
         try {
             const { userId } = req.body;
-            const candidate = await CandidateService.getCandidateById(userId);
-            if (!candidate) {
+            const result = await CandidateService.getCandidateById(userId);
+            if (!result) {
                 res.status(500).json({ succes: false, message: "Candidate not found!" });
                 return;
             }
-            res.status(200).json({ succes: true, candidate });
+            res.status(200).json({ succes: true, result });
         } catch (error) {
             log(error);
             res.status(500).json({ succes: false, message: "Internal server error!" });
@@ -21,12 +21,12 @@ const CandidateCotroller = {
     getCandidatesApplied: async (req: Request, res: Response): Promise<void> => {
         try {
             const jobId = req.params.id;
-            const candidates = await CandidateService.getCandidatesApplied(jobId);
-            if (!candidates) {
+            const result = await CandidateService.getCandidatesApplied(jobId);
+            if (!result) {
                 res.status(500).json({ succes: false, message: "Candidate not found!" });
                 return;
             }
-            res.status(200).json({ succes: true, candidates });
+            res.status(200).json({ succes: true, result });
         } catch (error) {
             log(error);
             res.status(500).json({ succes: false, message: "Internal server error!" });

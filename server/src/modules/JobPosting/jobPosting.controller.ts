@@ -8,12 +8,12 @@ const JobController = {
     getJobPostings: async (req: Request, res: Response): Promise<void> => {
         try {
             const { page, pageSize } = req.query;
-            const data: IJobPost[] | null = await JobPostingService.getJobPostingsByPage(Number(page), Number(pageSize));
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.getJobPostingsByPage(Number(page), Number(pageSize));
+            if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
         } catch (error) {
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
@@ -22,12 +22,12 @@ const JobController = {
     getJobPostingsByRecruiter: async (req: Request, res: Response): Promise<void> => {
         try {
             const { recruiterId, postId } = req.body;
-            const data: IJobPost[] | null = await JobPostingService.getJobPostingsByRecruiter(recruiterId, postId);
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.getJobPostingsByRecruiter(recruiterId, postId);
+            if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
         } catch (error) {
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
@@ -36,12 +36,12 @@ const JobController = {
     getJobPostingSaved: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
-            const data: IJobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.getJobsSaved(candidateId, postId);
+            if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
         } catch (error) {
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
@@ -50,12 +50,12 @@ const JobController = {
     getJobsApplied: async (req: Request, res: Response): Promise<void> => {
         try {
             const { candidateId, postId } = req.body;
-            const data: IJobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.getJobsApplied(candidateId, postId);
+            if (!result) {
                 res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
         } catch (error) {
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
@@ -64,12 +64,12 @@ const JobController = {
     getJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
             const jobId = req.params.id;
-            const data: IJobPost | null = await JobPostingService.getJobPostingById(jobId);
-            if (!data) {
+            const result: IJobPost | null = await JobPostingService.getJobPostingById(jobId);
+            if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
         } catch (error) {
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
@@ -78,12 +78,12 @@ const JobController = {
     findByJobPosition: async (req: Request, res: Response): Promise<void> => {
         try {
             const { keySearch } = req.query;
-            const data: IJobPost[] | null = await JobPostingService.findJobPostingsByJobPosition((keySearch as string));
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.findJobPostingsByJobPosition((keySearch as string));
+            if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
 
         } catch (error) {
             log(error)
@@ -95,12 +95,12 @@ const JobController = {
         try {
             const { locationSelection } = req.query;
             log(locationSelection)
-            const data: IJobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.filterJobPostingByLocation(String(locationSelection));
+            if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
 
         } catch (error) {
             log(error)
@@ -111,12 +111,12 @@ const JobController = {
     filterByIndustry: async (req: Request, res: Response): Promise<void> => {
         try {
             const { industrySelection } = req.query;
-            const data: IJobPost[] | null = await JobPostingService.filterJobPostingByIndustry((industrySelection as string));
-            if (!data) {
+            const result: IJobPost[] | null = await JobPostingService.filterJobPostingByIndustry((industrySelection as string));
+            if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
             }
-            res.status(200).json({ success: true, data });
+            res.status(200).json({ success: true, result });
 
         } catch (error) {
             log(error)

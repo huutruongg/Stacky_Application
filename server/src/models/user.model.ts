@@ -13,5 +13,5 @@ const UserSchema = new Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// Tạo model User
+
 export const User = model<IUser>('User', UserSchema);
