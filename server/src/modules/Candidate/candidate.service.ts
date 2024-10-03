@@ -80,7 +80,7 @@ const CandidateService = {
         }
     },
 
-    createCandidatePersonalProfile: async (
+    updateCandidatePersonalProfile: async (
         candidateId: string,
         fullName: string,
         jobPosition: string,
@@ -122,7 +122,7 @@ const CandidateService = {
         }
     },
 
-    createCandidateProfessionalProfile: async (
+    updateCandidateProfessionalProfile: async (
         candidateId: string,
         languages: ILanguage[],
         projects: IProject[],

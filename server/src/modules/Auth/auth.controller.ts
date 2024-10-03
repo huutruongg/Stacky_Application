@@ -106,10 +106,8 @@ const AuthController = {
                 const refreshToken = AuthService.generateRefreshToken(String(candidate._id), candidate.privateEmail, candidate.role);
                 req.session.accessToken = accessToken;
                 req.session.refreshToken = refreshToken;
-                res.status(200).json({
-                    success: true,
-                    message: 'Send tokens successfully!'
-                });
+                
+                res.redirect("http://localhost:5173/account.stacky.vn?token=true");
             })(req, res, next);
         } catch (error) {
             console.error(error);

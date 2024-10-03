@@ -113,10 +113,10 @@ const JobManagementService = {
         }
     },
 
-    getJobsPosted: async (userId: string): Promise<IJobPost[] | null> => {
+    getJobsPosted: async (recruiterId: string): Promise<IJobPost[] | null> => {
         try {
             return await JobPost.find({
-                recruiterId: userId
+                recruiterId: recruiterId
             }).exec();
         } catch (error) {
             log(error);

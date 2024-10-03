@@ -7,7 +7,7 @@ import authorize from "../middlewares/authorize.m";
 
 const router = Router();
 
-router.post('/submit-profile',  CandidateCotroller.submitProfessionalDetails);
-
+router.post('/submit-profile', CandidateCotroller.submitProfessionalDetails);
+router.get('/get-candidate-details/:candidateId', CandidateCotroller.getCandidateById)
 
 export default router;

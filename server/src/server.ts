@@ -12,12 +12,12 @@ import session from 'express-session';
 import cors from "cors"
 import { log } from "console";
 import './config/passport-setup';
-import {connectDB, disconnectDB} from "./config/database";
+import { connectDB, disconnectDB } from "./config/database";
 dotenv.config();
-
 
 const corsOptions = {
   origin: process.env.URL_CLIENT,
+  credentials: true,
   optionsSuccessStatus: 200
 }
 

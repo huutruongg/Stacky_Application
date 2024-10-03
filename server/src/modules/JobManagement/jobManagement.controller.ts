@@ -1,8 +1,8 @@
+import { IJobPost } from './../../types/IJobPost.d';
 
 import JobManagementService from "./jobManagement.service";
 import { Request, Response } from "express";
 import { log } from "console";
-import { IJobPost } from "../../types/IJobPost";
 import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplicationError";
 
 const JobManagementController = {
@@ -64,8 +64,8 @@ const JobManagementController = {
 
     getJobPosting: async (req: Request, res: Response): Promise<void> => {
         try {
-            const jobId = req.params.id;
-            const result: IJobPost | null = await JobManagementService.getJobPostingById(jobId);
+            const jobPostId = req.params.jobPostId;
+            const result: IJobPost | null = await JobManagementService.getJobPostingById(jobPostId);
             if (!result) {
                 res.status(500).json({ success: false, message: "Job not found!" });
                 return;
@@ -114,11 +114,26 @@ const JobManagementController = {
             const { industrySelection } = req.query;
             const result: IJobPost[] | null = await JobManagementService.filterJobPostingByIndustry((industrySelection as string));
             if (!result) {
-                res.status(500).json({ success: false, message: "Job not found!" });
+                res.status(500).json({ success: false, message: "Jobs not found!" });
                 return;
             }
             res.status(200).json({ success: true, result });
 
+        } catch (error) {
+            log(error)
+            res.status(500).json({ success: false, error: 'Internal Server Error!' });
+        }
+    },
+
+    getJobsPosted: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const recruiterId = req.params.recruiterId;
+            const result: IJobPost[] | null = await JobManagementService.getJobsPosted(recruiterId);
+            if (!result) {
+                res.status(500).json({ success: false, message: "Jobs not found!" });
+                return;
+            }
+            res.status(200).json({ success: true, result });
         } catch (error) {
             log(error)
             res.status(500).json({ success: false, error: 'Internal Server Error!' });
@@ -212,7 +227,7 @@ const JobManagementController = {
 
     cancelJobPostSaved: async (req: Request, res: Response): Promise<void> => {
         try {
-            const jobSavedId = req.params.jobSavedId; 
+            const jobSavedId = req.params.jobSavedId;
 
             const isDeleted = await JobManagementService.cancelJobPostSaved(jobSavedId);
 
