@@ -7,6 +7,7 @@ import RecruiterService from "../Recruiter/recruiter.service";
 import UserRole from "../../types/EnumUserRole";
 import { IRecruiter } from "../../types/IRecruiter";
 import { IUser } from "../../types/IUser";
+import { CustomSessionRequest } from "../../types/Custom";
 
 dotenv.config();
 
@@ -103,12 +104,11 @@ const AuthController = {
 
                 const accessToken = AuthService.generateAccessToken(String(candidate._id), candidate.privateEmail, candidate.role);
                 const refreshToken = AuthService.generateRefreshToken(String(candidate._id), candidate.privateEmail, candidate.role);
+                req.session.accessToken = accessToken;
+                req.session.refreshToken = refreshToken;
                 res.status(200).json({
-                    userId: user._id,
-                    email: user.privateEmail,
-                    role: user.role,
-                    accessToken,
-                    refreshToken
+                    success: true,
+                    message: 'Send tokens successfully!'
                 });
             })(req, res, next);
         } catch (error) {
@@ -158,7 +158,22 @@ const AuthController = {
             res.clearCookie('connect.sid');
             res.status(200).json({ success: true, message: 'Logout successful!' });
         });
+    },
+    getTokens: (req: CustomSessionRequest, res: Response) => {
+        const accessToken = req.session?.accessToken;
+        const refreshToken = req.session?.refreshToken;
+
+        console.log(req.session); // Log session to troubleshoot
+
+        if (!accessToken || !refreshToken) {
+            return res.status(401).json({ success: false, message: "No tokens found" });
+        }
+        res.status(200).json({
+            accessToken,
+            refreshToken
+        });
     }
+
 }
 
 export default AuthController;

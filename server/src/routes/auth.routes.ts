@@ -17,8 +17,10 @@ router.get('/login', (req: Request, res: Response) => {
 // Google and GitHub OAuth
 router.get("/google/callback", AuthController.loginCandidateOAuth('google'));
 router.get("/github/callback", AuthController.loginCandidateOAuth('github'));
+router.get('/get-tokens', AuthController.getTokens);
 
 // Logout
 router.post('/logout', AuthController.logout);
 
 export default router;
+
