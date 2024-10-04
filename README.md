@@ -17,9 +17,10 @@ Stacky Application is the Capstone Project 1 at Duy Tan University, developed by
 - Integration with various data sources for enhanced insights.
 
 ## Technologies Used
+- TypeScript
 - ExpressJS
 - ReacJS
-- Prisma
+- Mongodb/Mongoose
 - Axios
 - Firebase
 - Nodemailer

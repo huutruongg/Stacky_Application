@@ -1,11 +1,10 @@
-import { ICertification, IEducation, IExperience, ILanguage, IProject } from './../../types/ICandidate.d';
 import { log } from 'console';
 import { ICandidate } from '../../types/ICandidate';
+import { ICertification, IEducation, IExperience, ILanguage, IProject } from '../../types/ICandidate.d';
 import { Candidate } from '../../models/candidate.model';
 import { Application } from '../../models/application.model';
-import { User } from '../../models/user.model';
 import { IApplication } from '../../types/IApplication';
-
+import { startSession, ClientSession } from 'mongoose';
 
 const CandidateService = {
 
@@ -14,18 +13,13 @@ const CandidateService = {
             const candidates = await Candidate.find().populate('userId').exec();
             return candidates.length > 0 ? candidates : null;
         } catch (error) {
-            console.error("Error fetching candidates:", error);
+            logError("Error fetching candidates:", error);
             return null;
         }
     },
 
     getCandidateById: async (candidateId: string): Promise<ICandidate | null> => {
-        try {
-            return await Candidate.findById(candidateId).exec();
-        } catch (error) {
-            console.error("Error fetching candidate by userId:", error);
-            return null;
-        }
+        return handleFindCandidateById(candidateId);
     },
 
     getCandidatesApplied: async (jobId: string): Promise<ICandidate[] | null> => {
@@ -37,27 +31,18 @@ const CandidateService = {
             }
 
             const userIds = applications.map((app: IApplication) => app.candidateId);
-            // Tìm candidates dựa trên userId
             const candidates = await Candidate.find({ userId: { $in: userIds } }).populate('userId').exec();
             return candidates.length > 0 ? candidates : null;
         } catch (error) {
-            console.error("Error fetching candidates who applied for the job:", error);
+            logError("Error fetching candidates who applied for the job:", error);
             return null;
         }
     },
 
-    updateOauth: async (
-        provider: string,
-        providerId: string,
-        accessToken: string,
-        userId: string
-    ): Promise<void> => {
+    updateOauth: async (provider: string, providerId: string, accessToken: string, userId: string): Promise<void> => {
         try {
-            const candidate = await Candidate.findOne({ userId }).exec();
-            log("Candidate: ", candidate)
-            if (!candidate) {
-                throw new Error("Candidate not found");
-            }
+            const candidate = await handleFindCandidateByUserId(userId);
+            if (!candidate) throw new Error("Candidate not found");
 
             const existingTokenIndex = candidate.oauthTokens.findIndex(
                 token => token.provider === provider && token.providerId === providerId
@@ -75,7 +60,7 @@ const CandidateService = {
 
             await candidate.save();
         } catch (error) {
-            console.error("Error updating OAuth token:", error);
+            logError("Error updating OAuth token:", error);
             throw new Error("Failed to update OAuth token");
         }
     },
@@ -95,29 +80,23 @@ const CandidateService = {
         personalDescription: string
     ): Promise<boolean> => {
         try {
-            const result = await Candidate.findByIdAndUpdate(
-                candidateId,
-                {
-                    fullName,
-                    jobPosition,
-                    publicEmail,
-                    phoneNumber,
-                    gender,
-                    avatar,
-                    birthDate,
-                    address,
-                    linkedinUrl,
-                    githubUrl,
-                    personalDescription,
-                },
-                { new: true }
-            );
-            if (!result) {
-                throw new Error("Failed to update candidate profile");
-            }
-            return true;
+            const updateFields = {
+                fullName,
+                jobPosition,
+                publicEmail,
+                phoneNumber,
+                gender,
+                birthDate,
+                avatar,
+                address,
+                linkedinUrl,
+                githubUrl,
+                personalDescription
+            };
+
+            return await updateCandidateProfile(candidateId, updateFields);
         } catch (error) {
-            console.error("Error creating candidate personal profile:", error);
+            logError("Error updating candidate personal profile:", error);
             return false;
         }
     },
@@ -131,13 +110,11 @@ const CandidateService = {
         educations: IEducation[],
         experiences: IExperience[]
     ): Promise<boolean> => {
-        const session = await Candidate.startSession();
+        const session = await startSession();
         session.startTransaction();
         try {
-            const candidate = await CandidateService.getCandidateById(candidateId);
-            if (!candidate) {
-                throw new Error("Candidate not found");
-            }
+            const candidate = await handleFindCandidateById(candidateId, session);
+            if (!candidate) throw new Error("Candidate not found");
 
             candidate.languages = languages;
             candidate.projects = projects;
@@ -150,14 +127,12 @@ const CandidateService = {
 
             // Commit transaction
             await session.commitTransaction();
-            session.endSession();
-
             return true;
         } catch (error) {
-            console.error("Error creating candidate professional profile:", error);
-            await session.abortTransaction();
-            session.endSession();
+            await handleTransactionError(session, "Error updating candidate professional profile:", error);
             return false;
+        } finally {
+            session.endSession();
         }
     },
 
@@ -168,32 +143,73 @@ const CandidateService = {
             if (!candidate || !candidate.projects) {
                 return null;
             }
+
             const urls = candidate.projects
                 .map(p => p.urlRepo)
                 .filter((url): url is string => url != null && url !== '');
 
             return urls.length > 0 ? urls : null;
         } catch (error) {
-            console.error("Error fetching URLs shared by candidate:", error);
+            logError("Error fetching URLs shared by candidate:", error);
             return null;
         }
     },
 
     getAccessTokenGithub: async (id: string): Promise<string | null> => {
         try {
-            const candidate = await Candidate.findOne({ _id: id })
-                .select('oauthTokens')
-                .exec();
-            if (!candidate || !candidate.oauthTokens) {
-                return null;
-            }
+            const candidate = await Candidate.findOne({ _id: id }).select('oauthTokens').exec();
+            if (!candidate || !candidate.oauthTokens) return null;
+
             const githubToken = candidate.oauthTokens.find(token => token.provider === 'GITHUB');
             return githubToken ? githubToken.accessToken : null;
         } catch (error) {
-            console.error("Error fetching GitHub access token:", error);
+            logError("Error fetching GitHub access token:", error);
             return null;
         }
     }
+};
+
+// Helper function to log errors
+const logError = (message: string, error: any) => {
+    console.error(message, error);
+};
+
+// Helper function to find candidate by id with optional session
+const handleFindCandidateById = async (candidateId: string, session?: ClientSession): Promise<ICandidate | null> => {
+    try {
+        return await Candidate.findById(candidateId).session(session || null).exec();
+    } catch (error) {
+        logError("Error fetching candidate by ID:", error);
+        return null;
+    }
+};
+
+// Helper function to find candidate by userId
+const handleFindCandidateByUserId = async (userId: string): Promise<ICandidate | null> => {
+    try {
+        return await Candidate.findOne({ userId }).exec();
+    } catch (error) {
+        logError("Error fetching candidate by userId:", error);
+        return null;
+    }
+};
+
+// Helper function to update candidate profile
+const updateCandidateProfile = async (candidateId: string, updateFields: object): Promise<boolean> => {
+    try {
+        const result = await Candidate.findByIdAndUpdate(candidateId, updateFields, { new: true });
+        if (!result) throw new Error("Failed to update candidate profile");
+        return true;
+    } catch (error) {
+        logError("Error updating candidate profile:", error);
+        return false;
+    }
+};
+
+// Helper function to handle transaction errors
+const handleTransactionError = async (session: ClientSession, message: string, error: any) => {
+    console.error(message, error);
+    await session.abortTransaction();
 };
 
 export default CandidateService;

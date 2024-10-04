@@ -1,55 +1,73 @@
 import { Request, Response } from 'express';
 import CandidateService from './candidate.service';
 import { log } from 'console';
+import { CandidateValidation } from '../../utils/validations/candidate.validation';
+import { handleServiceResult, handleValidationError } from '../../utils/errors/handleError';
 
-const CandidateCotroller = {
+const CandidateController = {
     getCandidateById: async (req: Request, res: Response): Promise<void> => {
         try {
+            // Validate candidateId in params
+            if (handleValidationError(CandidateValidation.candidateIdSchema.validate(req.params), res)) return;
+
             const candidateId = req.params.candidateId;
             const result = await CandidateService.getCandidateById(candidateId);
-            if (!result) {
-                res.status(500).json({ succes: false, message: "Candidate not found!" });
-                return;
-            }
-            res.status(200).json({ succes: true, result });
+
+            // Handle result from service
+            if (handleServiceResult(result, res, "Candidate not found!")) return;
+
+            res.status(200).json({ success: true, result });
         } catch (error) {
             log(error);
-            res.status(500).json({ succes: false, message: "Internal server error!" });
+            res.status(500).json({ success: false, message: "Internal server error!" });
         }
     },
 
     getCandidatesApplied: async (req: Request, res: Response): Promise<void> => {
         try {
+            // Validate jobId in params
+            if (handleValidationError(CandidateValidation.jobIdSchema.validate(req.params), res)) return;
+
             const jobId = req.params.id;
             const result = await CandidateService.getCandidatesApplied(jobId);
-            if (!result) {
-                res.status(500).json({ succes: false, message: "Candidate not found!" });
-                return;
-            }
-            res.status(200).json({ succes: true, result });
+
+            // Handle result from service
+            if (handleServiceResult(result, res, "Candidates not found!")) return;
+
+            res.status(200).json({ success: true, result });
         } catch (error) {
             log(error);
-            res.status(500).json({ succes: false, message: "Internal server error!" });
+            res.status(500).json({ success: false, message: "Internal server error!" });
         }
     },
 
     submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { candidateId, fullName, jobPosition, email, phoneNumber, gender, birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription,
-                languages, projects, certifications, programmingSkills, educations, experiences
-            } = req.body;
-            const personalProfile = await CandidateService.updateCandidatePersonalProfile(candidateId, fullName, jobPosition, email, phoneNumber, Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription);
-            const professionalProfile = await CandidateService.updateCandidateProfessionalProfile(candidateId, languages, projects, certifications, programmingSkills, educations, experiences);
+            // Validate professional details in body
+            const { error } = CandidateValidation.candidateProfessionalDetailsSchema.validate(req.body);
+
+            if (handleValidationError(error, res)) return;
+            const { candidateId, fullName, jobPosition, publicEmail, phoneNumber, gender, birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription,
+                languages, projects, certifications, programmingSkills, educations, experiences } = req.body;
+
+            // Update personal and professional profiles
+            const [personalProfile, professionalProfile] = await Promise.all([
+                CandidateService.updateCandidatePersonalProfile(candidateId, fullName, jobPosition, publicEmail, phoneNumber, Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription),
+                CandidateService.updateCandidateProfessionalProfile(candidateId, languages, projects, certifications, programmingSkills, educations, experiences)
+            ]);
+
+            // Handle service result
             if (!personalProfile || !professionalProfile) {
-                res.status(500).json({ succes: false, message: "Something went wrong!" });
+                res.status(500).json({ success: false, message: "Something went wrong!" });
                 return;
             }
-            res.status(200).json({ succes: true, message: "Updated successfully!" });
+
+            res.status(200).json({ success: true, message: "Updated successfully!" });
         } catch (error) {
             log(error);
-            res.status(500).json({ succes: false, message: "Internal server error!" });
+            res.status(500).json({ success: false, message: "Internal server error!" });
         }
     }
-}
+};
 
-export default CandidateCotroller;
+export default CandidateController;

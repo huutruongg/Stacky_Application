@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import UserRole from "../types/EnumUserRole";
 import { CustomRequest } from "../types/Custom";
 
-const authorize = (...allowedRoles: UserRole[]) => {
+const authorizeJWT = (...allowedRoles: UserRole[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {
         const userData = (req as CustomRequest).userData;
         // Check if user data exists
@@ -21,4 +21,4 @@ const authorize = (...allowedRoles: UserRole[]) => {
     };
 };
 
-export default authorize;
+export default authorizeJWT;

@@ -7,6 +7,7 @@ import uploadRouter from "./routes/upload.routes"
 import recruiterRouter from "./routes/recruiter.routes"
 import candidateRouter from "./routes/candidate.routes"
 import jobPostingRouter from "./routes/jobManagement.routes"
+import zalopayRouter from "./routes/zaloPay.routes"
 import passport from 'passport';
 import session from 'express-session';
 import cors from "cors"
@@ -46,6 +47,7 @@ app.use('/upload', uploadRouter);
 app.use('/recruiter', recruiterRouter)
 app.use('/candidate', candidateRouter)
 app.use('/job-posting', jobPostingRouter);
+app.use('/zalo-pay', zalopayRouter);
 app.get('/home', (req: Request, res: Response) => {
   res.send("Welcome to Stacky application!")
 });

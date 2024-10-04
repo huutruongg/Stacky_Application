@@ -9,10 +9,12 @@ import UserRole from '../../types/EnumUserRole';
 import { User } from '../../models/user.model';
 import { IUser } from '../../types/IUser';
 import { Candidate } from '../../models/candidate.model';
+
 const saltRounds = 10;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const AuthService = {
+
     checkPassword: async (pwdRequest: string, hashedPwd: string): Promise<boolean> => {
         try {
             return await bcrypt.compare(pwdRequest, hashedPwd);
@@ -27,7 +29,7 @@ const AuthService = {
         return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRATION });
     },
 
-    generateRefreshToken: (userId: string, email: string, role: string) => {
+    generateRefreshToken: (userId: string, email: string, role: string): string => {
         const payload = { userId, email, role };
         return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
     },
@@ -62,14 +64,11 @@ const AuthService = {
 
     createAdmin: async (privateEmail: string, password: string): Promise<IAdmin | null> => {
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const user: IUser | null = new User({
-                privateEmail,
-                password: hashedPassword,
-                role: UserRole.ADMIN
-            });
-            await user.save();
-            const admin = new Admin({ userId: user._id })
+            const hashedPassword = await AuthService.hashPassword(password);
+            const user = await AuthService.saveUser(privateEmail, hashedPassword, UserRole.ADMIN);
+            if (!user) throw new Error('Failed to create admin user');
+            
+            const admin = new Admin({ userId: user._id });
             await admin.save();
             return admin;
         } catch (error) {
@@ -81,19 +80,16 @@ const AuthService = {
     changePassword: async (userId: string, newPassword: string, role: string): Promise<void> => {
         try {
             const hashedPwd = await AuthService.hashPassword(newPassword);
+            let model;
             if (role === UserRole.ADMIN) {
-                await Admin.updateOne(
-                    { _id: userId },
-                    { $set: { password: hashedPwd } }
-                );
+                model = Admin;
             } else if (role === UserRole.RECRUITER) {
-                await Recruiter.updateOne(
-                    { _id: userId },
-                    { $set: { password: hashedPwd } }
-                );
+                model = Recruiter;
             } else {
                 throw new Error("Invalid role provided");
             }
+
+            await model.updateOne({ _id: userId }, { $set: { password: hashedPwd } });
         } catch (error) {
             console.error('Error updating password:', error);
             throw new Error("Password update failed");
@@ -106,43 +102,55 @@ const AuthService = {
 
     getUserById: async (userId: string): Promise<IUser | null> => {
         try {
-            const user: IUser | null = await User.findById(userId).exec();
-            return user;
+            return await User.findById(userId).exec();
         } catch (error) {
-            log(error)
+            console.error('Error finding user by ID:', error);
             return null;
         }
     },
 
     getUserByEmail: async (email: string): Promise<IUser | null> => {
         try {
-            const user: IUser | null = await User.findOne({ privateEmail: email }).exec();
-            return user;
+            return await User.findOne({ privateEmail: email }).exec();
         } catch (error) {
-            log(error)
+            console.error('Error finding user by email:', error);
             return null;
         }
     },
 
     createCandidateUser: async (privateEmail: string, fullName: string): Promise<IUser | null> => {
         try {
-            log("Attempting to create user with email: ", privateEmail);
-            const user = new User({
-                privateEmail,
-                role: UserRole.CANDIDATE
-            });
-            await user.save();
+            const user = await AuthService.saveUser(privateEmail, '', UserRole.CANDIDATE); // No password for OAuth
+            if (!user) throw new Error('Failed to create candidate user');
+
             const candidate = new Candidate({
                 userId: user._id,
-                fullName: fullName
-            })
+                fullName
+            });
             await candidate.save();
             return user;
         } catch (error) {
-            log("Error creating user or candidate: ", error);
+            console.error('Error creating candidate user:', error);
+            return null;
+        }
+    },
+
+    // Helper function to save a user
+    saveUser: async (privateEmail: string, password: string, role: string): Promise<IUser | null> => {
+        try {
+            const user = new User({
+                privateEmail,
+                password,
+                role
+            });
+            await user.save();
+            return user;
+        } catch (error) {
+            console.error('Error saving user:', error);
             return null;
         }
     }
 };
+
 
 export default AuthService;

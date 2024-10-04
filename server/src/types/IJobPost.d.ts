@@ -1,5 +1,4 @@
 import { ILanguage } from './ICandidate.d';
-import exp from 'constants';
 import { Document, Types } from 'mongoose';
 
 export interface IJobPost extends Document {

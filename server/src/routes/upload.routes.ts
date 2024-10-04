@@ -2,7 +2,6 @@ import { Router, Request, Response } from "express";
 import multer from 'multer'
 import authenticateJWT from "../middlewares/authenticate.m";
 import UploadFileController from "../modules/Upload/upload.controller";
-import authorize from "../middlewares/authorize.m";
 import UserRole from "../types/EnumUserRole";
 // Configure Multer to store file in memory
 const storage = multer.memoryStorage();
