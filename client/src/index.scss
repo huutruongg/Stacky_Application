@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .page-container {
+    max-width: 1170px;
+    @apply mx-auto;
+  }
+  .product-list .swiper-slide {
+    width: 272px;
+    height: auto;
+  }
+  .banner .swiper {
+    height: 100%;
+  }
+}
+
+// @media (min-width: 80rem) {
+//   .container {
+//     max-width: 80rem;
+//     padding-right: 0.625rem;
+//     padding-left: 0.625rem;
+//   }
+// }
+
+@layer base {
+  html {
+    font-family: "Poppins", sans-serif;
+  }
+}
+
+.outline-input:focus {
+  border: 2px solid transparent;
+  background-image: linear-gradient(white, white),
+    linear-gradient(to right, #48038c, #00f0ff);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.ant-form-item-required::after {
+  display: inline-block;
+  content: "(*)" !important;
+  padding-left: 5px;
+  color: #d34127;
+  font-weight: 600;
+}
+
+//
+.back-top {
+  position: fixed;
+  bottom: 100px;
+  right: 15px;
+  z-index: 99;
+  top: auto;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.3s ease-out 0s;
+  transform: translateY(-20px);
+}
+
+.beginning-page {
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  border: 3px solid #48038c;
+  transform: rotate(-45deg);
+  background-color: #fff;
+}
+
+.beginning-page:hover {
+  border: 2px solid #00f0ff;
+}
