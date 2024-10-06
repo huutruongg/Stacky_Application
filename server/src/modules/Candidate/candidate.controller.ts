@@ -8,8 +8,8 @@ const CandidateController = {
     getCandidateById: async (req: Request, res: Response): Promise<void> => {
         try {
             // Validate candidateId in params
-            if (handleValidationError(CandidateValidation.candidateIdSchema.validate(req.params), res)) return;
-
+            const { error } = CandidateValidation.candidateIdSchema.validate(req.params);
+            if (handleValidationError(error, res)) return;
             const candidateId = req.params.candidateId;
             const result = await CandidateService.getCandidateById(candidateId);
 
@@ -44,9 +44,9 @@ const CandidateController = {
     submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
         try {
             // Validate professional details in body
-            const { error } = CandidateValidation.candidateProfessionalDetailsSchema.validate(req.body);
+            // const { error } = CandidateValidation.candidateProfessionalDetailsSchema.validate(req.body);
 
-            if (handleValidationError(error, res)) return;
+            // if (handleValidationError(error, res)) return;
             const { candidateId, fullName, jobPosition, publicEmail, phoneNumber, gender, birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription,
                 languages, projects, certifications, programmingSkills, educations, experiences } = req.body;
 
@@ -63,6 +63,21 @@ const CandidateController = {
             }
 
             res.status(200).json({ success: true, message: "Updated successfully!" });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ success: false, message: "Internal server error!" });
+        }
+    },
+
+    removeObjectFromArray: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { candidateId, field, objectId } = req.body;
+            const result = await CandidateService.removeObjectFromArray(candidateId, field, objectId);
+            if (!result) {
+                res.status(500).json({ success: false, message: "Something went wrong!" });
+                return;
+            }
+            res.status(200).json({ success: true, message: "Removed successfully!" });
         } catch (error) {
             log(error);
             res.status(500).json({ success: false, message: "Internal server error!" });

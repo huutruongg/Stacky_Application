@@ -5,6 +5,8 @@ import { JobSaved } from "../../models/jobSaved.model";
 import { Application } from "../../models/application.model";
 import PostStatus from "../../types/EnumPostStatus";
 import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplicationError";
+import { Recruiter } from "../../models/recruiter.model";
+import { IJobPostMin } from "../../types/IJobPostMin";
 
 
 
@@ -45,12 +47,45 @@ const handleFindByCandidate = async (Model: any, candidateId: string, field: str
 };
 
 // Helper function to find by field with regex
-const handleFindByField = async (Model: any, fieldName: string, value: string): Promise<IJobPost[] | null> => {
+const handleFindByField = async (Model: any, fieldName: string, value: string): Promise<IJobPostMin[] | null> => {
     try {
-        const data = await Model.find({ [fieldName]: { $regex: value, $options: 'i' } }).exec();
-        return data.length > 0 ? data : null;
+        // First query: Find the matching job posts with selected fields
+        const data: IJobPost[] = await Model.find({ [fieldName]: { $regex: value, $options: 'i' } })
+            .select('jobTitle jobImage jobSalary location recruiterId') // Select only required fields
+            .exec();
+
+        if (!data || data.length === 0) {
+            return null;
+        }
+
+        // Extract recruiterIds
+        const recruiterIds = data.map(post => post.recruiterId);
+
+        // Second query: Find the recruiters by recruiterIds to get the orgName
+        const recruiters = await Recruiter.find({ _id: { $in: recruiterIds } })
+            .select('orgName') // Select only the orgName
+            .exec();
+
+        // Create a recruiterMap to map recruiterId to orgName
+        const recruiterMap = recruiters.reduce((map, recruiter) => {
+            map[String(recruiter._id)] = recruiter.orgName;
+            return map;
+        }, {} as Record<string, string>);
+
+        // Merge job post data with the recruiter orgName
+        const result = data.map(post => ({
+            _id: post._id,
+            recruiterId: post.recruiterId,
+            jobTitle: post.jobTitle,
+            jobImage: post.jobImage,
+            jobSalary: post.jobSalary,
+            location: post.location,
+            orgName: recruiterMap[post.recruiterId.toString()] || 'Unknown'
+        }));
+
+        return result;
     } catch (error) {
-        log(`Error fetching by ${fieldName}:`, error);
+        console.error(`Error fetching by ${fieldName}:`, error);
         return null;
     }
 };
@@ -99,15 +134,15 @@ const JobManagementService = {
         return handleFindByCandidate(Application, candidateId, "jobPost");
     },
 
-    findJobPostingsByJobPosition: async (key: string): Promise<IJobPost[] | null> => {
+    findJobPostingsByJobPosition: async (key: string): Promise<IJobPostMin[] | null> => {
         return handleFindByField(JobPost, "jobTitle", key);
     },
 
-    filterJobPostingByLocation: async (location: string): Promise<IJobPost[] | null> => {
+    filterJobPostingByLocation: async (location: string): Promise<IJobPostMin[] | null> => {
         return handleFindByField(JobPost, "location", location);
     },
 
-    filterJobPostingByIndustry: async (industry: string): Promise<IJobPost[] | null> => {
+    filterJobPostingByIndustry: async (industry: string): Promise<IJobPostMin[] | null> => {
         return handleFindByField(JobPost, "typeOfIndustry", industry);
     },
 
@@ -121,14 +156,51 @@ const JobManagementService = {
         }
     },
 
-    getJobPostingsByPage: async (page: number, pageSize: number): Promise<IJobPost[] | null> => {
+    getJobPostingsByPage: async (page: number, pageSize: number): Promise<IJobPostMin[] | null> => {
+        if (page <= 0 || pageSize <= 0) {
+            console.warn('Invalid pagination parameters');
+            return null;
+        }
+
         try {
-            return await JobPost.find()
-                .skip((page - 1) * pageSize)
-                .limit(pageSize)
-                .exec();
+            // Perform the two queries concurrently using Promise.all()
+            const [jobPosts, recruiters] = await Promise.all([
+                JobPost.find()
+                    .select('_id jobTitle jobImage jobSalary location recruiterId')
+                    .skip((page - 1) * pageSize)
+                    .limit(pageSize)
+                    .exec(),
+
+                Recruiter.find()
+                    .select('_id orgName')
+                    .exec()
+            ]);
+
+            if (!jobPosts || jobPosts.length === 0) {
+                console.warn('No job posts found');
+                return null;
+            }
+
+            // Create a recruiterMap with a Map object for better key management
+            const recruiterMap = new Map<string, string>();
+            recruiters.forEach(recruiter => {
+                recruiterMap.set(String(recruiter._id), recruiter.orgName);
+            });
+
+            // Merge the jobPosts with the recruiter orgNames
+            const mergedResults = jobPosts.map(post => ({
+                _id: post._id,
+                recruiterId: post.recruiterId,
+                jobTitle: post.jobTitle,
+                jobImage: post.jobImage,
+                jobSalary: post.jobSalary,
+                location: post.location,
+                orgName: recruiterMap.get(post.recruiterId.toString()) || 'Unknown' // Handle missing orgName
+            }));
+
+            return mergedResults;
         } catch (error) {
-            log(error);
+            console.error('Error fetching job postings by page:', error);
             return null;
         }
     },
