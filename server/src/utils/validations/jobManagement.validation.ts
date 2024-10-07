@@ -1,4 +1,6 @@
 import Joi from 'joi';
+import PostStatus from '../../types/EnumPostStatus';
+import ApplyStatus from '../../types/EnumApplicationStatus';
 
 const JobManagementValidate = {
     pageSchema: () => {
@@ -78,6 +80,20 @@ const JobManagementValidate = {
             jobSchedule: Joi.string().optional(),
             applicationDeadline: Joi.date().required()
         });
+    },
+
+    ApplyStatusSchema: () => {
+        return Joi.object({
+            applicationId: Joi.string().required(),
+            status: Joi.string().valid(...Object.values(ApplyStatus)).required()
+        })
+    },
+
+    JobPostStatusSchema: () => {
+        return Joi.object({
+            jobPostId: Joi.string().required(),
+            postStatus: Joi.string().valid(...Object.values(PostStatus)).required()
+        })
     }
 };
 

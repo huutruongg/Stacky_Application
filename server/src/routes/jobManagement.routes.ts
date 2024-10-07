@@ -22,4 +22,7 @@ router.post('/create-application/:jobPostId', JobManagementController.createAppl
 router.post('/save-job/:jobPostId', JobManagementController.savedJobPost);
 router.delete('/cancel-job-saved/:jobSavedId', JobManagementController.cancelJobPostSaved)
 
+// Set status
+router.post('/set-apply-status', JobManagementController.setApplyStatus)
+router.post('/censor-job-post', JobManagementController.censorJobPost)
 export default router;

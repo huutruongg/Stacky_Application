@@ -246,6 +246,26 @@ const JobManagementService = {
 
     cancelJobPostSaved: async (jobSavedId: string): Promise<boolean> => {
         return handleDeleteById(JobSaved, jobSavedId, "JobSaved");
+    },
+
+    setApplyStatus: async (applicationId: string, status: string): Promise<boolean> => {
+        try {
+            await Application.findByIdAndUpdate(applicationId, { status: status })
+            return true;
+        } catch (error) {
+            log(error);
+            return false;
+        }
+    },
+
+    censorJobPost: async (jobPostId: string, status: string): Promise<boolean> => {
+        try {
+            await JobPost.findByIdAndUpdate(jobPostId, { postStatus: status })
+            return true;
+        } catch (error) {
+            log(error);
+            return false;
+        }
     }
 };
 

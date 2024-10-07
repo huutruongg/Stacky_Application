@@ -192,11 +192,11 @@ const JobManagementController = {
             const jobPostingData = req.body;
             const isCreated = await JobManagementService.createJobPosting(jobPostingData);
             if (!isCreated) {
-                res.status(500).json({ success: false, message: "Job not created!" });
+                res.status(404).json({ success: false, message: "Job not created!" });
                 return;
             }
 
-            res.status(201).json({ success: true, message: 'Created successfully!' });
+            res.status(200).json({ success: true, message: 'Created successfully!' });
         } catch (error) {
             log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
@@ -211,7 +211,7 @@ const JobManagementController = {
                 return;
             }
 
-            const {jobPostId} = req.params;
+            const { jobPostId } = req.params;
             const isDeleted = await JobManagementService.deleteJobPosting(jobPostId);
             if (!isDeleted) {
                 res.status(404).json({ success: false, message: "Job not deleted!" });
@@ -238,11 +238,11 @@ const JobManagementController = {
             const result = await JobManagementService.createApplication(candidateId, jobPostId);
 
             if (!result) {
-                res.status(500).json({ success: false, message: "Failed to create application." });
+                res.status(404).json({ success: false, message: "Failed to create application." });
                 return;
             }
 
-            res.status(201).json({ success: true, message: "Application created successfully." });
+            res.status(200).json({ success: true, message: "Application created successfully." });
         } catch (error: any) {
             if (error instanceof DuplicateApplicationError) {
                 res.status(400).json({ success: false, message: error.message });
@@ -268,11 +268,11 @@ const JobManagementController = {
             const isSaved = await JobManagementService.savedJobPost(candidateId, jobPostId);
 
             if (!isSaved) {
-                res.status(400).json({ success: false, message: 'Job post has already been saved by this candidate.' });
+                res.status(404).json({ success: false, message: 'Job post has already been saved by this candidate.' });
                 return;
             }
 
-            res.status(201).json({ success: true, message: 'Job post saved successfully!' });
+            res.status(200).json({ success: true, message: 'Job post saved successfully!' });
         } catch (error) {
             log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
@@ -296,6 +296,46 @@ const JobManagementController = {
             }
 
             res.status(200).json({ success: true, message: 'Job post removed from saved list successfully.' });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ success: false, message: "Internal Server Error!" });
+        }
+    },
+
+    setApplyStatus: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { applicationId, status } = req.body;
+            const { error } = JobManagementValidate.ApplyStatusSchema().validate(req.body);
+            if (error) {
+                res.status(400).json({ success: false, message: error.details[0].message });
+                return;
+            }
+            const isSet = await JobManagementService.setApplyStatus(applicationId, status);
+            if (!isSet) {
+                res.status(404).json({ success: false, message: 'Set status failed.' });
+                return;
+            }
+            res.status(200).json({ success: true, message: 'Set status successfully.' });
+        } catch (error) {
+            log(error);
+            res.status(500).json({ success: false, message: "Internal Server Error!" });
+        }
+    },
+
+    censorJobPost: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { jobPostId, status } = req.body;
+            const { error } = JobManagementValidate.JobPostStatusSchema().validate(req.body);
+            if (error) {
+                res.status(400).json({ success: false, message: error.details[0].message });
+                return;
+            }
+            const isSet = await JobManagementService.censorJobPost(jobPostId, status);
+            if (!isSet) {
+                res.status(404).json({ success: false, message: 'Set status failed.' });
+                return;
+            }
+            res.status(200).json({ success: true, message: 'Set status successfully.' });
         } catch (error) {
             log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
