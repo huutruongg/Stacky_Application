@@ -23,7 +23,7 @@ const corsOptions = {
 }
 
 const app: Application = express()
-const port: number = Number(process.env.PORT) | 4080;
+const port: number = Number(process.env.PORT) | 10000;
 
 app.use(cors(corsOptions));
 app.use(express.json())
