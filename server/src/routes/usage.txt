@@ -20,26 +20,35 @@ delete - http://localhost:4080/upload/candidate-images/delete
 
 
 Recruiter:
+get - http://localhost:4080/get-company-info/:recruiterId
 post - http://localhost:4080/recruiter/forgot-password
 post - http://localhost:4080/recruiter/reset-password/:id
 post - http://localhost:4080/recruiter/change-password/:id
 post - http://localhost:4080/recruiter/update-company-profile
 post - http://localhost:4080/recruiter/update-company-contact
 
+
 Candidate:
 post - http://localhost:4080/candidate/submit-profile
+post - http://localhost:4080/candidate/get-candidate-details/:candidateId
+post - http://localhost:4080/candidate/remove-object
+
 
 Job Posting:
-get - http://localhost:4080/job-posting/job-postings
+get - http://localhost:4080/job-posting/job-postings?page=1&pageSize=8
 get - http://localhost:4080/job-posting/job-posting/:id
 get - http://localhost:4080/job-posting/job-saved
 get - http://localhost:4080/job-posting/job-applied
-get - http://localhost:4080/job-posting/search-job-posting
-get - http://localhost:4080/job-posting/filter-by-location
-get - http://localhost:4080/job-posting/filter-by-industry
+get - http://localhost:4080/job-posting/search-job-posting?keySearch=Software
+get - http://localhost:4080/job-posting/filter-by-location?locationSelection=New York
+get - http://localhost:4080/job-posting/filter-by-industry?industrySelection=IT
 post - http://localhost:4080/job-posting/create-job-posting
 delete - http://localhost:4080/job-posting/delete-job-posting/:jobId
-
+post - http://localhost:4080/job-posting/create-application/:jobPostId
+post - http://localhost:4080/job-posting/save-job/:jobPostId
+post - http://localhost:4080/job-posting/cancel-job-saved/:jobSavedId
+post - http://localhost:4080/job-posting/set-apply-status
+post - http://localhost:4080/job-posting/censor-job-post
 
 
 
