@@ -57,7 +57,6 @@ const JobManagementValidate = {
         return Joi.object({
             recruiterId: Joi.string().required(),
             jobTitle: Joi.string().required(),
-            jobImage: Joi.string().uri().optional(),
             typeOfWork: Joi.string().required(),
             location: Joi.string().required(),
             jobSalary: Joi.string().required(),
@@ -74,11 +73,11 @@ const JobManagementValidate = {
                 })
             ).optional(),
             jobBenefit: Joi.string().optional(),
-            leavePolicy: Joi.string().optional(),
             jobDescription: Joi.string().required(),
-            workEnvironment: Joi.string().optional(),
             jobSchedule: Joi.string().optional(),
-            applicationDeadline: Joi.date().required()
+            applicationDeadline: Joi.date().required(),
+            staffLevel: Joi.string().required(),
+            genderRequired: Joi.string().required()
         });
     },
 

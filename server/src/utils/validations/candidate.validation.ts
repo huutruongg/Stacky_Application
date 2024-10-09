@@ -20,7 +20,6 @@ export const CandidateValidation = {
         birthDate: Joi.date().required(),
         avatarUrl: Joi.string().uri().optional(),
         address: Joi.string().required(),
-        linkedinUrl: Joi.string().uri().optional(),
         githubUrl: Joi.string().uri().optional(),
         personalDescription: Joi.string().optional(),
         
@@ -28,23 +27,6 @@ export const CandidateValidation = {
             Joi.object({
                 language: Joi.string().required(),
                 level: Joi.string().required()
-            })
-        ).required(),
-
-        projects: Joi.array().items(
-            Joi.object({
-                projectName: Joi.string().required(),
-                projectTime: Joi.string().required(),
-                urlRepo: Joi.string().uri().optional(),
-                projectDescription: Joi.string().optional()
-            })
-        ).required(),
-
-        certifications: Joi.array().items(
-            Joi.object({
-                certificateName: Joi.string().required(),
-                dateOfReceipt: Joi.date().required(),
-                certificateDetail: Joi.string().required()
             })
         ).required(),
 
@@ -57,16 +39,6 @@ export const CandidateValidation = {
                 finishDate: Joi.date().required(),
                 fieldName: Joi.string().required()
             })
-        ).required(),
-
-        experiences: Joi.array().items(
-            Joi.object({
-                companyName: Joi.string().required(),
-                startDate: Joi.date().required(),
-                endDate: Joi.date().optional(),
-                jobPosition: Joi.string().required(),
-                previousJobDetails: Joi.string().required()
-            })
-        ).required(),
+        ).required()
     })
 }
