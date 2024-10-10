@@ -4,12 +4,14 @@ post - http://localhost:4080/auth/signup/recruiter
 post - http://localhost:4080/auth/login/recruiter
 get - http://localhost:4080/auth/google/callback
 get - http://localhost:4080/auth/github/callback
+post - http://localhost:4080/auth//regenerate-access-token
+get - http://localhost:4080/auth//get-access-token
 
 Email:
-- http://localhost:4080/email/send-email
+post - http://localhost:4080/email/send-email
 
 Github:
-- http://localhost:4080/github/calculate-score
+get - http://localhost:4080/github/calculate-score
 
 Upload:
 post - http://localhost:4080/upload/recruiter-images

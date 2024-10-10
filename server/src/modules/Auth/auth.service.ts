@@ -1,4 +1,4 @@
-import { Admin } from './../../models/admin.model';
+import { Admin } from '../../models/admin.model';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
@@ -26,12 +26,24 @@ const AuthService = {
 
     generateAccessToken: (userId: string, email: string, role: string): string => {
         const payload = { userId, email, role };
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRATION });
+        return jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET as string, { expiresIn: process.env.JWT_ACCESS_EXPIRATION });
     },
 
     generateRefreshToken: (userId: string, email: string, role: string): string => {
         const payload = { userId, email, role };
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+        return jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET as string, { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+    },
+
+    verifyRefreshToken: (refreshToken: string): Promise<any> => {
+        return new Promise((resolve, reject) => {
+            jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET as string, (err, user) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(user);
+                }
+            });
+        });
     },
 
     verifyOAuthToken: async (provider: string, token: string) => {
@@ -62,12 +74,32 @@ const AuthService = {
         }
     },
 
+    saveRefreshToken: async (userId: string, refreshToken: string): Promise<boolean | null> => {
+        try {
+            await User.findByIdAndUpdate(userId, { refreshToken });
+            return true;
+        } catch (error) {
+            log(error);
+            return false;
+        }
+    },
+
+    deleteRefreshTokenByUserId: async (userId: string): Promise<boolean> => {
+        try {
+            await User.findByIdAndUpdate(userId, { refreshToken: null }).exec();
+            return true;
+        } catch (error) {
+            log(error);
+            return false;
+        }
+    },
+
     createAdmin: async (privateEmail: string, password: string): Promise<IAdmin | null> => {
         try {
             const hashedPassword = await AuthService.hashPassword(password);
             const user = await AuthService.saveUser(privateEmail, hashedPassword, UserRole.ADMIN);
             if (!user) throw new Error('Failed to create admin user');
-            
+
             const admin = new Admin({ userId: user._id });
             await admin.save();
             return admin;
@@ -103,6 +135,15 @@ const AuthService = {
     getUserById: async (userId: string): Promise<IUser | null> => {
         try {
             return await User.findById(userId).exec();
+        } catch (error) {
+            console.error('Error finding user by ID:', error);
+            return null;
+        }
+    },
+
+    getUserByRefreshToken: async (refreshToken: string): Promise<IUser | null> => {
+        try {
+            return await User.findOne({ refreshToken }).exec();
         } catch (error) {
             console.error('Error finding user by ID:', error);
             return null;

@@ -10,14 +10,15 @@ router.post('/signup/recruiter', AuthController.signupRecruiter);
 router.post('/login/recruiter', AuthController.recruiterLogin);
 
 // Serve the login page
-router.get('/login', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../views/index.html'));
-});
+// router.get('/login', (req: Request, res: Response) => {
+//     res.sendFile(path.join(__dirname, '../views/index.html'));
+// });
 
 // Google and GitHub OAuth
 router.get("/google/callback", AuthController.loginCandidateOAuth('google'));
 router.get("/github/callback", AuthController.loginCandidateOAuth('github'));
-router.get('/get-tokens', AuthController.getTokens);
+router.post('/regenerate-access-token', AuthController.regenerateAccessToken);
+router.get('/get-access-token', AuthController.getAccessToken);
 
 // Logout
 router.post('/logout', AuthController.logout);

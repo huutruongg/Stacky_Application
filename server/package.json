@@ -5,7 +5,7 @@
   "scripts": {
     "start": "ts-node src/server.ts",
     "build": "tsc",
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.local.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +14,15 @@
   "dependencies": {
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
+    "bull": "^4.16.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.4.1",
     "express-session": "^1.18.0",
     "firebase-admin": "^12.5.0",
+    "helmet": "^8.0.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
@@ -28,7 +31,9 @@
     "nodemailer": "^6.9.15",
     "passport": "^0.7.0",
     "passport-github": "^1.1.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "path-to-regexp": "^8.2.0",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -43,6 +48,8 @@
     "@types/passport": "^1.0.16",
     "@types/passport-github": "^1.1.12",
     "@types/passport-google-oauth20": "^2.0.16",
+    "@types/path-to-regexp": "^1.0.29",
+    "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"

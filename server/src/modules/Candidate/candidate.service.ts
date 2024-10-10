@@ -1,7 +1,7 @@
-import { Candidate } from './../../models/candidate.model';
+import { Candidate } from '../../models/candidate.model';
 import { log } from 'console';
 import { ICandidate } from '../../types/ICandidate';
-import { ICertification, IEducation, IExperience, ILanguage, IProject } from '../../types/ICandidate.d';
+import { ICertification, IEducation, IExperience, ILanguage, IProject } from '../../types/ICandidate';
 import { Application } from '../../models/application.model';
 import { IApplication } from '../../types/IApplication';
 import { startSession, ClientSession } from 'mongoose';

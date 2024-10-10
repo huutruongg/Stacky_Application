@@ -6,7 +6,7 @@ import EmailService from "../Email/email.service";
 import { IRecruiter } from '../../types/IRecruiter';
 import AuthService from '../Auth/auth.service';
 import UserRole from '../../types/EnumUserRole';
-import { handleValidationError } from "../../utils/errors/handleError";
+import { handleValidationError } from "../../utils/errors/handle.error";
 import { RecruiterValidation } from "../../utils/validations/recruiter.validate";
 import { recruiterIdValidationSchema } from "../../utils/validations/recruiter.validation";
 
@@ -44,7 +44,7 @@ const RecruiterController = {
             if (handleValidationError(error, res)) return;
 
             const { password } = req.body;
-            const userId = req.params.id;
+            const userId = req.params.userId;
             if (!userId) {
                 res.status(400).json({ success: false, message: "User ID is required!" });
                 return;
@@ -79,7 +79,7 @@ const RecruiterController = {
             }
 
             // Send company info response
-            res.status(200).json({success: true, result});
+            res.status(200).json({ success: true, result });
 
         } catch (err) {
             console.error('Error fetching company info:', err);

@@ -10,7 +10,8 @@ const UserSchema = new Schema({
         enum: ['ADMIN', 'RECRUITER', 'CANDIDATE']
     },
     phoneNumber: { type: String },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    refreshToken:{ type: String, unique: true}
 });
 
 

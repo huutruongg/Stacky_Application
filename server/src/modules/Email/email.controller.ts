@@ -1,5 +1,4 @@
 import { Response, Request } from "express";
-import sendEmail from "./email.service";
 import { log } from "console";
 import EmailService from "./email.service";
 

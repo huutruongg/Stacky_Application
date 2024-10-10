@@ -4,7 +4,7 @@ import { JobPost } from "../../models/jobPost.model";
 import { JobSaved } from "../../models/jobSaved.model";
 import { Application } from "../../models/application.model";
 import PostStatus from "../../types/EnumPostStatus";
-import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplicationError";
+import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplication.error";
 import { Recruiter } from "../../models/recruiter.model";
 import { IJobPostMin } from "../../types/IJobPostMin";
 
@@ -139,7 +139,8 @@ const JobManagementService = {
     },
 
     filterJobPostingByLocation: async (location: string): Promise<IJobPostMin[] | null> => {
-        return handleFindByField(JobPost, "location", location);
+        // log("HHHHHHHHHHHH: ", handleFindByField(JobPost, "location", location))
+        return await handleFindByField(JobPost, "location", location);
     },
 
     filterJobPostingByIndustry: async (industry: string): Promise<IJobPostMin[] | null> => {

@@ -5,7 +5,7 @@ import UserRole from "../types/EnumUserRole";
 
 const router = Router();
 
-router.post('/calculate-score',  (req: Request, res: Response) => { GithubController.getGithubScore(req, res) });
+router.post('/calculate-score', GithubController.getGithubScore);
 
 export default router;
 

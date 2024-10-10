@@ -1,5 +1,5 @@
-import { ILanguage } from './ICandidate.d';
 import { Document, Types } from 'mongoose';
+import { ILanguage } from './ICandidate';
 
 export interface IJobPost extends Document {
   recruiterId: Types.ObjectId;
@@ -14,7 +14,7 @@ export interface IJobPost extends Document {
   typeOfIndustry: string;
   professionalSkills: string;
   certificateRequired: string;
-  languagesRequired: string;
+  languagesRequired: ILanguage[];
   jobBenefit: string;
   leavePolicy: string;
   jobDescription: string;
@@ -26,5 +26,3 @@ export interface IJobPost extends Document {
   postStatus: string;
   postedAt: Date;
 }
-
-export interface ILanguage extends Document { language: string; level: string }

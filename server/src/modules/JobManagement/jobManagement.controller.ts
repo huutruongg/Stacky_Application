@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import JobManagementService from "./jobManagement.service";
 import { log } from 'console';
 import JobManagementValidate from '../../utils/validations/jobManagement.validation';
-import { DuplicateApplicationError } from '../../utils/errors/DuplicateApplicationError';
+import { DuplicateApplicationError } from '../../utils/errors/DuplicateApplication.error';
 
 const JobManagementController = {
     getJobPostings: async (req: Request, res: Response): Promise<void> => {
@@ -22,8 +22,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -44,8 +45,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -66,8 +68,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -88,8 +91,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -100,28 +104,30 @@ const JobManagementController = {
                 res.status(400).json({ success: false, message: error.details[0].message });
                 return;
             }
-
+    
             const { jobPostId } = req.params;
+            
+            // Thay vì gọi hàm xử lý trong hàng đợi, hãy gọi trực tiếp nếu cần.
             const result = await JobManagementService.getJobPostingById(jobPostId);
             if (!result) {
                 res.status(404).json({ success: false, message: "Job not found!" });
                 return;
             }
-
+    
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // console.error(error);  
             res.status(500).json({ success: false, message: "Internal Server Error!" });
         }
     },
 
     findByJobPosition: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { error } = JobManagementValidate.findByJobPositionSchema().validate(req.query);
-            if (error) {
-                res.status(400).json({ success: false, message: error.details[0].message });
-                return;
-            }
+            // const { error } = JobManagementValidate.findByJobPositionSchema().validate(req.query);
+            // if (error) {
+            //     res.status(400).json({ success: false, message: error.details[0].message });
+            //     return;
+            // }
 
             const { keySearch } = req.query;
             const result = await JobManagementService.findJobPostingsByJobPosition(keySearch as string);
@@ -132,8 +138,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -146,6 +153,7 @@ const JobManagementController = {
             }
 
             const { locationSelection } = req.query;
+            // log("LOGGGGGGGGGG: ", locationSelection)
             const result = await JobManagementService.filterJobPostingByLocation(locationSelection as string);
             if (!result || result.length === 0) {
                 res.status(404).json({ success: false, message: "Jobs not found!" });
@@ -154,8 +162,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -176,8 +185,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -198,8 +208,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, message: 'Created successfully!' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -220,8 +231,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, message: 'Deleted successfully!' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -248,9 +260,11 @@ const JobManagementController = {
                 res.status(400).json({ success: false, message: error.message });
                 return;
             } else {
-                log(error);
-                res.status(500).json({ success: false, message: "Internal Server Error!" });
-                return;
+                // log(error);
+                if (!res.headersSent) {
+                    res.status(500).json({ success: false, message: "Internal Server Error!" });
+                    return;
+                }
             }
         }
     },
@@ -274,8 +288,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, message: 'Job post saved successfully!' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -297,8 +312,9 @@ const JobManagementController = {
 
             res.status(200).json({ success: true, message: 'Job post removed from saved list successfully.' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -317,8 +333,9 @@ const JobManagementController = {
             }
             res.status(200).json({ success: true, message: 'Set status successfully.' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     },
 
@@ -337,8 +354,9 @@ const JobManagementController = {
             }
             res.status(200).json({ success: true, message: 'Set status successfully.' });
         } catch (error) {
-            log(error);
+            // log(error);
             res.status(500).json({ success: false, message: "Internal Server Error!" });
+            return;
         }
     }
 };

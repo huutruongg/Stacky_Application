@@ -3,6 +3,7 @@ import JobManagementController from "../modules/JobManagement/jobManagement.cont
 import authenticateJWT from "../middlewares/authenticate.m";
 import UserRole from "../types/EnumUserRole";
 
+
 const router = Router();
 
 router.get('/job-postings', JobManagementController.getJobPostings);

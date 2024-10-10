@@ -1,34 +1,111 @@
-import { Request, Response } from 'express';
 import CandidateService from './candidate.service';
 import { log } from 'console';
+import { handleServiceResult, handleValidationError } from '../../utils/errors/handle.error';
 import { CandidateValidation } from '../../utils/validations/candidate.validation';
-import { handleServiceResult, handleValidationError } from '../../utils/errors/handleError';
+import { Request, Response } from 'express';
 
 const CandidateController = {
+    // Fetch candidate by ID
     getCandidateById: async (req: Request, res: Response): Promise<void> => {
         try {
-            // Validate candidateId in params
-            const { error } = CandidateValidation.candidateIdSchema.validate(req.params);
-            if (handleValidationError(error, res)) return;
-            const candidateId = req.params.candidateId;
+            const candidateId = req.params.candidateId;  // Extract from req.params
             const result = await CandidateService.getCandidateById(candidateId);
 
-            // Handle result from service
-            if (handleServiceResult(result, res, "Candidate not found!")) return;
+            if (!result) {
+                res.status(404).json({ success: false, message: "Candidate not found!" });
+                return;
+            }
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
-            res.status(500).json({ success: false, message: "Internal server error!" });
+            // log(error);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: "Internal server error!" });
+                return;
+            }
         }
     },
 
+    // Submit professional details
+    submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const {
+                candidateId,
+                fullName,
+                jobPosition,
+                publicEmail,
+                phoneNumber,
+                gender,
+                birthDate,
+                avatarUrl,
+                address,
+                linkedinUrl,
+                githubUrl,
+                personalDescription,
+                languages,
+                projects,
+                certifications,
+                programmingSkills,
+                educations,
+                experiences
+            } = req.body;  // Extract from req.body
+
+            // Update both personal and professional profiles
+            const [personalProfile, professionalProfile] = await Promise.all([
+                CandidateService.updateCandidatePersonalProfile(
+                    candidateId, fullName, jobPosition, publicEmail, phoneNumber,
+                    Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription
+                ),
+                CandidateService.updateCandidateProfessionalProfile(
+                    candidateId, languages, projects, certifications, programmingSkills, educations, experiences
+                )
+            ]);
+
+            if (!personalProfile || !professionalProfile) {
+                res.status(404).json({ success: false, message: "Error updating profiles!" });
+                return;
+            }
+
+            res.status(200).json({ success: true, message: "Profile updated successfully!" });
+        } catch (error) {
+            // log(error);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: "Internal server error!" });
+                return;
+            }
+        }
+    },
+
+    // Remove an object from array
+    removeObjectFromArray: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { candidateId, field, objectId } = req.body;  // Extract from req.body
+
+            const result = await CandidateService.removeObjectFromArray(candidateId, field, objectId);
+
+            if (!result) {
+                res.status(404).json({ success: false, message: "Error removing object!" });
+                return;
+            }
+
+            res.status(200).json({ success: true, message: "Object removed successfully" });
+        } catch (error) {
+            // log(error);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: "Internal server error!" });
+                return;
+            }
+        }
+    },
+
+    // Fetch candidates who applied for a job
     getCandidatesApplied: async (req: Request, res: Response): Promise<void> => {
         try {
             // Validate jobId in params
-            if (handleValidationError(CandidateValidation.jobIdSchema.validate(req.params), res)) return;
+            const { error } = CandidateValidation.jobIdSchema.validate(req.params);  // Validate req.params
+            if (handleValidationError(error, res)) return;
 
-            const jobId = req.params.id;
+            const jobId = req.params.jobId;  // Extract from req.params
             const result = await CandidateService.getCandidatesApplied(jobId);
 
             // Handle result from service
@@ -36,51 +113,11 @@ const CandidateController = {
 
             res.status(200).json({ success: true, result });
         } catch (error) {
-            log(error);
-            res.status(500).json({ success: false, message: "Internal server error!" });
-        }
-    },
-
-    submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
-        try {
-            // Validate professional details in body
-            // const { error } = CandidateValidation.candidateProfessionalDetailsSchema.validate(req.body);
-
-            // if (handleValidationError(error, res)) return;
-            const { candidateId, fullName, jobPosition, publicEmail, phoneNumber, gender, birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription,
-                languages, projects, certifications, programmingSkills, educations, experiences } = req.body;
-
-            // Update personal and professional profiles
-            const [personalProfile, professionalProfile] = await Promise.all([
-                CandidateService.updateCandidatePersonalProfile(candidateId, fullName, jobPosition, publicEmail, phoneNumber, Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription),
-                CandidateService.updateCandidateProfessionalProfile(candidateId, languages, projects, certifications, programmingSkills, educations, experiences)
-            ]);
-
-            // Handle service result
-            if (!personalProfile || !professionalProfile) {
-                res.status(500).json({ success: false, message: "Something went wrong!" });
+            // log(error);
+            if (!res.headersSent) {
+                res.status(500).json({ success: false, message: "Internal server error!" });
                 return;
             }
-
-            res.status(200).json({ success: true, message: "Updated successfully!" });
-        } catch (error) {
-            log(error);
-            res.status(500).json({ success: false, message: "Internal server error!" });
-        }
-    },
-
-    removeObjectFromArray: async (req: Request, res: Response): Promise<void> => {
-        try {
-            const { candidateId, field, objectId } = req.body;
-            const result = await CandidateService.removeObjectFromArray(candidateId, field, objectId);
-            if (!result) {
-                res.status(500).json({ success: false, message: "Something went wrong!" });
-                return;
-            }
-            res.status(200).json({ success: true, message: "Removed successfully!" });
-        } catch (error) {
-            log(error);
-            res.status(500).json({ success: false, message: "Internal server error!" });
         }
     }
 };
