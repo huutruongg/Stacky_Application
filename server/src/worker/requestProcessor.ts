@@ -4,6 +4,9 @@ import { requestQueue } from '../config/requestQueue';
 import { NextFunction, Request, Response } from 'express';
 import { log } from 'console';
 import { Types } from 'mongoose';
+import session from 'express-session';
+import { Session } from 'inspector/promises';
+import { CustomSessionRequest } from '../types/Custom';
 
 requestQueue.process(10, async (queueItem, done) => {
   const { id, req: reqData }: { id: Types.ObjectId; req: Request } = queueItem.data;
@@ -16,7 +19,12 @@ requestQueue.process(10, async (queueItem, done) => {
     query: reqData.query,
     params: reqData.params,
     headers: reqData.headers,
-  };
+    session: {
+      userId: null, // or retrieve the session data as necessary
+      save: (callback: Function) => callback(),
+      destroy: (callback: Function) => callback(),
+    }
+  } as unknown as Request;
 
   // Create mock response object (if needed)
   const resDetail = {
@@ -26,16 +34,16 @@ requestQueue.process(10, async (queueItem, done) => {
     json: () => {
       console.log(`Running...`);
     },
+    cookie: (name: string, value: string, options: any) => { }
   };
 
   try {
-    const urlWithoutQuery = reqDetail.url.split('?')[0]; // Tách phần query string ra khỏi URL
-    console.log('URL without query:', urlWithoutQuery);
+    const urlWithoutQuery = reqDetail.url.split('?')[0];
+    // console.log('URL without query:', urlWithoutQuery);
 
-    // Tìm key khớp với URL từ processorRegistry
     const matchedProcessorKey = Object.keys(processorRegistry).find((pattern) => {
       const matcher = match(pattern, { decode: decodeURIComponent });
-      return matcher(urlWithoutQuery); // Kiểm tra xem URL có khớp không
+      return matcher(urlWithoutQuery); 
     }) as keyof typeof processorRegistry;
 
     console.log('Matched Processor Key:', matchedProcessorKey);
@@ -43,7 +51,6 @@ requestQueue.process(10, async (queueItem, done) => {
     if (matchedProcessorKey) {
       const processor = processorRegistry[matchedProcessorKey];
 
-      // Trích xuất params từ URL nếu có
       const matcher = match(matchedProcessorKey, { decode: decodeURIComponent });
       const matchResult = matcher(urlWithoutQuery);
       // log("MATCHINGGGGGGGGGGGG: ", matchResult);
@@ -51,10 +58,9 @@ requestQueue.process(10, async (queueItem, done) => {
         reqDetail.params = Object.fromEntries(
           Object.entries(matchResult.params).map(([key, value]) => [key, Array.isArray(value) ? value.join(',') : value || ''])
         ) as Record<string, string>;
-        console.log('Extracted params:', reqDetail.params);
+        // console.log('Extracted params:', reqDetail.params);
 
-        // Gọi processor tương ứng để xử lý yêu cầu
-        await processor(reqDetail as Request, resDetail as Response, () => {});
+        await processor(reqDetail, resDetail as Response, () => { });
         console.log('Finished processing request:', reqDetail.url);
       } else {
         throw new Error(`No matching processor found for URL: ${urlWithoutQuery}`);
@@ -63,7 +69,7 @@ requestQueue.process(10, async (queueItem, done) => {
       console.log('No matched processor found for URL:', urlWithoutQuery);
     }
 
-    done(); // Đánh dấu task hoàn thành
+    done(); 
   } catch (error) {
     console.error('Error processing task:', error);
     done(new Error('Failed to process task'));

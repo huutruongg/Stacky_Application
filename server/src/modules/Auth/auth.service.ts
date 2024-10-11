@@ -112,16 +112,7 @@ const AuthService = {
     changePassword: async (userId: string, newPassword: string, role: string): Promise<void> => {
         try {
             const hashedPwd = await AuthService.hashPassword(newPassword);
-            let model;
-            if (role === UserRole.ADMIN) {
-                model = Admin;
-            } else if (role === UserRole.RECRUITER) {
-                model = Recruiter;
-            } else {
-                throw new Error("Invalid role provided");
-            }
-
-            await model.updateOne({ _id: userId }, { $set: { password: hashedPwd } });
+            await User.findByIdAndUpdate(userId, { password: hashedPwd }).exec();
         } catch (error) {
             console.error('Error updating password:', error);
             throw new Error("Password update failed");

@@ -1,4 +1,4 @@
-export const resetPasswordTemplate = (userName: string, resetUrl: string): string => `
+export const resetPasswordTemplate = (resetUrl: string): string => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +62,7 @@ export const resetPasswordTemplate = (userName: string, resetUrl: string): strin
         </div>
         <div class="content">
             <h2>Reset Your Password</h2>
-            <p>Dear ${userName},</p>
+            <p>Dear Sir/Madam,</p>
             <p>We received a request to reset your password. Click the button below to proceed:</p>
             <a href="${resetUrl}" class="button">Reset Password</a>
             <p>If you didn't request this, you can safely ignore this email.</p>

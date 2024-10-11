@@ -117,8 +117,8 @@ const AuthController = {
         res.status(401).json({ success: false, message: "User not found!" });
         return;
       }
-
       req.session.userId = String(existingUser._id);
+      
 
       const isValidPassword = await AuthService.checkPassword(
         password,

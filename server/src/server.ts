@@ -78,7 +78,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Aplly redis queue to all routes
-app.use(queueRequestMiddleware)
+app.use(queueRequestMiddleware);
 
 // Routing flow configuration
 app.use('/auth', authRouter);

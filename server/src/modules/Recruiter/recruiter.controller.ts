@@ -9,6 +9,7 @@ import UserRole from '../../types/EnumUserRole';
 import { handleValidationError } from "../../utils/errors/handle.error";
 import { RecruiterValidation } from "../../utils/validations/recruiter.validate";
 import { recruiterIdValidationSchema } from "../../utils/validations/recruiter.validation";
+import { IUser } from "../../types/IUser";
 
 const RecruiterController = {
     forgotPassword: async (req: Request, res: Response): Promise<void> => {
@@ -18,16 +19,15 @@ const RecruiterController = {
             if (handleValidationError(error, res)) return;
 
             const { privateEmail } = req.body;
-            const data: IRecruiter | null = await RecruiterService.getRecruiterByEmail(privateEmail);
+            const data: IUser | null = await AuthService.getUserByEmail(privateEmail);
 
             if (!data) {
                 res.status(404).json({ success: false, message: "Email not found!" });
                 return;
             }
 
-            const companyName = data.orgName || "you";
             const url = `http://localhost:4080/recruiter/reset-password/${data._id}`;
-            const htmlContent = resetPasswordTemplate(companyName, url);
+            const htmlContent = resetPasswordTemplate(url);
 
             await EmailService.sendEmail(privateEmail, "Reset your password!", "", htmlContent);
             res.status(200).json({ success: true, message: "Password reset email sent successfully!" });
@@ -42,9 +42,9 @@ const RecruiterController = {
             // Validate the request body
             const { error } = RecruiterValidation.resetPasswordSchema.validate(req.body);
             if (handleValidationError(error, res)) return;
-
             const { password } = req.body;
             const userId = req.params.userId;
+            // log("LOGGGGGGGGG: ", userId, password)
             if (!userId) {
                 res.status(400).json({ success: false, message: "User ID is required!" });
                 return;
