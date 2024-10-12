@@ -4,6 +4,7 @@ import { Recruiter } from '../../models/recruiter.model';
 import { User } from '../../models/user.model';
 import { IRecruiter } from '../../types/IRecruiter';
 import { log } from "console";
+import { refreshToken } from "firebase-admin/app";
 
 const saltRounds = 10;
 
@@ -26,7 +27,7 @@ const createUser = async (privateEmail: string, hashedPwd: string, phoneNumber: 
             privateEmail,
             password: hashedPwd,
             role: UserRole.RECRUITER,
-            phoneNumber,
+            phoneNumber
         });
         await user.save();
         return user;
@@ -98,7 +99,7 @@ const RecruiterService = {
         try {
             const hashedPwd = await bcrypt.hash(password, saltRounds);
             const user = await createUser(privateEmail, hashedPwd, phoneNumber);
-
+            log("user", user);
             const recruiter = await createRecruiter({
                 userId: String(user._id),
                 phoneNumber,
@@ -108,7 +109,7 @@ const RecruiterService = {
                 orgScale,
                 orgAddress
             });
-
+            log("recruiter", recruiter);
             return recruiter;
         } catch (error) {
             console.error('Error creating recruiter:', error);

@@ -93,7 +93,12 @@ const AuthController = {
       });
 
 
-      res.status(200).json({ success: true, accessToken });
+      res.status(200).json({
+        success: true,
+        accessToken,
+        userId: recruiter.userId,
+        role: UserRole.RECRUITER,
+      });
     } catch (err) {
       return handleServiceError(err, res, next);
     }
@@ -118,7 +123,7 @@ const AuthController = {
         return;
       }
       req.session.userId = String(existingUser._id);
-      
+
 
       const isValidPassword = await AuthService.checkPassword(
         password,
@@ -151,7 +156,12 @@ const AuthController = {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      res.status(200).json({ success: true, accessToken });
+      res.status(200).json({
+        success: true,
+        accessToken,
+        userId: existingUser._id,
+        role: existingUser.role,
+      });
     } catch (err) {
       return handleServiceError(err, res, next);
     }
@@ -256,7 +266,12 @@ const AuthController = {
       });
 
 
-      res.status(200).json({ success: true, accessToken });
+      res.status(200).json({
+        success: true,
+        accessToken,
+        userId: existingUser._id,
+        role: existingUser.role,
+      });
     } catch (err) {
       return handleServiceError(err, res, next);
     }

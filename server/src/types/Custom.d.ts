@@ -15,13 +15,3 @@ export interface CustomRequest extends Request {
 export interface CustomSessionRequest extends Request {
     session?: CustomSession;
 }
-
-export type UserDataType = {
-    userId: string;
-    email: string;
-    role: UserRole;
-};
-
-export type AuthUserType = UserType & {
-    token?: string;
-};
