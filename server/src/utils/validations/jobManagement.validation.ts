@@ -3,23 +3,17 @@ import PostStatus from '../../types/EnumPostStatus';
 import ApplyStatus from '../../types/EnumApplicationStatus';
 
 const JobManagementValidate = {
-    pageSchema: () => {
-        return Joi.object({
-            page: Joi.number().integer().min(1).required(),
-            pageSize: Joi.number().integer().min(1).required()
-        });
-    },
 
     recruiterIdPostIdSchema: () => {
         return Joi.object({
-            recruiterId: Joi.string().required(),
-            postId: Joi.string().optional()
+            userId: Joi.string().required(),
+            jobPostId: Joi.string().optional()
         });
     },
 
     candidateIdSchema: () => {
         return Joi.object({
-            candidateId: Joi.string().required()
+            userId: Joi.string().required()
         });
     },
 
@@ -55,7 +49,7 @@ const JobManagementValidate = {
 
     createJobPostingSchema: () => {
         return Joi.object({
-            recruiterId: Joi.string().required(),
+            userId: Joi.string().required(),
             jobTitle: Joi.string().required(),
             jobImage: Joi.string().optional(),
             typeOfWork: Joi.string().required(),
@@ -86,7 +80,7 @@ const JobManagementValidate = {
 
     ApplyStatusSchema: () => {
         return Joi.object({
-            applicationId: Joi.string().required(),
+            jobPostId: Joi.string().required(),
             status: Joi.string().valid(...Object.values(ApplyStatus)).required()
         })
     },

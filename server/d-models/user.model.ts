@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IUser } from '../types/IUser';
-import UserRole from '../types/EnumUserRole';
+import { IUser } from '../src/types/IUser';
 
 const UserSchema = new Schema({
     privateEmail: { type: String, required: true, unique: true },
@@ -8,7 +7,7 @@ const UserSchema = new Schema({
     role: {
         type: String,
         required: true,
-        enum: Object.values(UserRole)
+        enum: ['ADMIN', 'RECRUITER', 'CANDIDATE']
     },
     phoneNumber: { type: String },
     createdAt: { type: Date, default: Date.now },

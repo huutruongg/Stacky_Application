@@ -1,8 +1,25 @@
 import { Document, Types } from 'mongoose';
 import { ILanguage } from './ICandidate';
+import { IUser } from './IUser';
+
+export interface IApplicant {
+  userId: IUser['_id'];
+  programmingSkills?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  personalDescription?: string;
+  languages: ILanguage[];
+  projects: IProject[];
+  educations: IEducation[];
+  experiences: IExperience[];
+  certifications: ICertification[];
+  status: ApplyStatus;
+  githubScore: number;
+  appliedAt: Date;
+}
 
 export interface IJobPost extends Document {
-  recruiterId: Types.ObjectId;
+  userId: IUser['_id'];
   jobTitle: string;
   jobImage: string;
   typeOfWork: string;
@@ -23,6 +40,7 @@ export interface IJobPost extends Document {
   applicationDeadline: Date;
   staffLevel: string;
   genderRequired: string
-  postStatus: string;
+  postStatus: PostStatus;
   postedAt: Date;
+  applicants: IApplicant[];
 }

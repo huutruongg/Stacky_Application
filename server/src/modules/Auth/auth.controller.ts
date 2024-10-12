@@ -83,7 +83,7 @@ const AuthController = {
         UserRole.RECRUITER
       );
 
-      await AuthService.saveRefreshToken(recruiter.userId, refreshToken);
+      await AuthService.saveRefreshToken(String(recruiter.userId), refreshToken);
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,

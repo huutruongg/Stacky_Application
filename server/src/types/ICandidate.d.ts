@@ -1,4 +1,6 @@
 import { Document } from 'mongoose';
+import { IUser } from './IUser';
+import { IJobPost } from './IJobPost';
 
 export interface IOAuthToken {
   provider: string;
@@ -40,8 +42,20 @@ export interface ILanguage {
   level: string;
 }
 
+export interface IJobSaved {
+  jobPostId: IJobPost['_id'];
+  savedAt: Date;
+}
+
+export interface IJobApplied {
+  jobPostId: IJobPost['_id'];
+  status: ApplyStatus;
+  githubScore: number;
+  appliedAt: Date;
+}
+
 export interface ICandidate extends Document {
-  userId: string;
+  userId: IUser['_id'];
   publicEmail: string;
   phoneNumber?: string;
   createdAt: Date;
@@ -61,4 +75,6 @@ export interface ICandidate extends Document {
   educations: IEducation[];
   experiences: IExperience[];
   certifications: ICertification[];
+  jobSaved: IJobSaved[];
+  jobApplied: IJobApplied[];
 }

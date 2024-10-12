@@ -3,7 +3,7 @@ import Joi from 'joi';
 // Candidate schemas
 export const CandidateValidation = {
     candidateIdSchema: Joi.object({
-        candidateId: Joi.string().required(),
+        userId: Joi.string().required(),
     }),
 
     jobIdSchema: Joi.object({
@@ -11,7 +11,7 @@ export const CandidateValidation = {
     }),
 
     candidateProfessionalDetailsSchema: Joi.object({
-        candidateId: Joi.string().required(),
+        userId: Joi.string().required(),
         fullName: Joi.string().required(),
         jobPosition: Joi.string().required(),
         publicEmail: Joi.string().email().required(),

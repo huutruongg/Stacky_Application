@@ -1,10 +1,11 @@
-import { Candidate } from '../../models/candidate.model';
+
 import { log } from 'console';
 import { ICandidate } from '../../types/ICandidate';
 import { ICertification, IEducation, IExperience, ILanguage, IProject } from '../../types/ICandidate';
-import { Application } from '../../models/application.model';
-import { IApplication } from '../../types/IApplication';
-import { startSession, ClientSession } from 'mongoose';
+
+import { startSession, ClientSession, Types } from 'mongoose';
+import { Candidate } from '../../models/candidate.model';
+import { JobPost } from '../../models/jobPost.model';
 
 const CandidateService = {
 
@@ -22,20 +23,29 @@ const CandidateService = {
         return handleFindCandidateById(candidateId);
     },
 
-    getCandidatesApplied: async (jobId: string): Promise<ICandidate[] | null> => {
+    getCandidatesApplied: async (jobPostId: string): Promise<ICandidate[] | null> => {
         try {
-            const applications = await Application.find({ jobId }).exec();
+            // Step 1: Find the candidate IDs from the JobPost collection
+            const jobPost = await JobPost
+                .findById(jobPostId, 'applicants.candidateId')
+                .lean();
 
-            if (!applications || applications.length === 0) {
-                return null;
+            if (!jobPost || !jobPost.applicants || jobPost.applicants.length === 0) {
+                return []; // No applicants found
             }
 
-            const userIds = applications.map((app: IApplication) => app.candidateId);
-            const candidates = await Candidate.find({ userId: { $in: userIds } }).populate('userId').exec();
-            return candidates.length > 0 ? candidates : null;
+            const candidateIds = jobPost.applicants.map(applicant => applicant.userId);
+
+            // Step 2: Query the Candidate collection using the candidate IDs
+            const candidates = await Candidate
+                .find({ _id: { $in: candidateIds } })
+                .select('fullName gender address') // Select only necessary fields
+                .lean();
+
+            return candidates;
         } catch (error) {
-            logError("Error fetching candidates who applied for the job:", error);
-            return null;
+            console.error('Error fetching applied candidates:', error);
+            throw new Error('Failed to retrieve applied candidates');
         }
     },
 
@@ -66,14 +76,14 @@ const CandidateService = {
     },
 
     updateCandidatePersonalProfile: async (
-        candidateId: string,
+        userId: string,
         fullName: string,
         jobPosition: string,
         publicEmail: string,
         phoneNumber: string,
         gender: boolean,
         birthDate: Date,
-        avatar: string,
+        avatarUrl: string,
         address: string,
         linkedinUrl: string,
         githubUrl: string,
@@ -87,22 +97,38 @@ const CandidateService = {
                 phoneNumber,
                 gender,
                 birthDate,
-                avatar,
+                avatarUrl,
                 address,
                 linkedinUrl,
                 githubUrl,
-                personalDescription
+                personalDescription,
             };
 
-            return await updateCandidateProfile(candidateId, updateFields);
+            // Convert userId to ObjectId and check if valid
+            const objectId = new Types.ObjectId(userId);
+
+            const result = await Candidate.findOneAndUpdate(
+                { userId: objectId },
+                { $set: updateFields },
+                { new: true, runValidators: true }
+            ).lean();
+
+            log(result);
+
+            if (!result) {
+                log(`Candidate with userId ${userId} not found.`);
+                throw new Error('Candidate not found');
+            }
+
+            return true;
         } catch (error) {
-            logError("Error updating candidate personal profile:", error);
+            log(error);
             return false;
         }
     },
 
     updateCandidateProfessionalProfile: async (
-        candidateId: string,
+        userId: string,
         languages: ILanguage[] = [],
         projects: IProject[] = [],
         certifications: ICertification[] = [],
@@ -110,53 +136,36 @@ const CandidateService = {
         educations: IEducation[] = [],
         experiences: IExperience[] = []
     ): Promise<boolean> => {
-        const MAX_RETRIES = 3;
-        let attempts = 0;
-        let success = false;
+        try {
+            console.log(`Searching for candidate with userId: ${userId}`);
 
-        while (attempts < MAX_RETRIES && !success) {
-            const session = await startSession();
-            session.startTransaction();
+            // Convert userId to ObjectId and find the candidate
+            const candidate: ICandidate | null = await Candidate.findOne({
+                userId: new Types.ObjectId(userId)
+            }).exec();
 
-            try {
-                const candidate = await handleFindCandidateById(candidateId, session);
-                if (!candidate) throw new Error("Candidate not found");
-
-                // Call update functions for each field
-                if (languages.length > 0) updateLanguages(candidate, languages);
-                if (projects.length > 0) updateProjects(candidate, projects);
-                if (certifications.length > 0) updateCertifications(candidate, certifications);
-                if (programmingSkills) updateProgrammingSkills(candidate, programmingSkills);
-                if (educations.length > 0) updateEducations(candidate, educations);
-                if (experiences.length > 0) updateExperiences(candidate, experiences);
-
-                // Save the candidate with updated information
-                await candidate.save({ session });
-
-                // Commit transaction
-                await session.commitTransaction();
-                success = true;
-                return true;
-            } catch (error: any) {
-                await handleTransactionError(session, "Error updating candidate professional profile:", error);
-
-                if (error.errorLabels && error.errorLabels.includes('TransientTransactionError')) {
-                    attempts++;
-                    console.warn(`Retry attempt ${attempts} due to transient error`);
-                } else {
-                    console.error("Non-transient error, aborting operation.");
-                    return false;
-                }
-            } finally {
-                session.endSession();
+            if (!candidate) {
+                console.error(`Candidate with userId ${userId} not found`);
+                return false;
             }
-        }
 
-        if (!success) {
-            console.error(`Failed to update candidate profile after ${MAX_RETRIES} attempts.`);
+            // Update candidate's fields if provided
+            if (languages.length > 0) candidate.languages = languages;
+            if (projects.length > 0) candidate.projects = projects;
+            if (certifications.length > 0) candidate.certifications = certifications;
+            if (programmingSkills) candidate.programmingSkills = programmingSkills;
+            if (educations.length > 0) candidate.educations = educations;
+            if (experiences.length > 0) candidate.experiences = experiences;
+
+            // Save the candidate's updated profile
+            await candidate.save();
+
+            console.log('Candidate professional profile updated successfully');
+            return true;
+        } catch (error: any) {
+            console.error('Error updating candidate professional profile:', error);
             return false;
         }
-        return true;
     },
 
     getUrlReposSharedByCandidateId: async (id: string): Promise<string[] | null> => {
@@ -265,18 +274,6 @@ const handleFindCandidateByUserId = async (userId: string): Promise<ICandidate |
     } catch (error) {
         logError("Error fetching candidate by userId:", error);
         return null;
-    }
-};
-
-// Helper function to update candidate profile
-const updateCandidateProfile = async (candidateId: string, updateFields: object): Promise<boolean> => {
-    try {
-        const result = await Candidate.findByIdAndUpdate(candidateId, updateFields, { new: true });
-        if (!result) throw new Error("Failed to update candidate profile");
-        return true;
-    } catch (error) {
-        logError("Error updating candidate profile:", error);
-        return false;
     }
 };
 

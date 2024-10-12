@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ICandidate } from '../types/ICandidate';
-import ApplyStatus from '../types/EnumApplicationStatus';
+import { ICandidate } from '../src/types/ICandidate';
 
 const OAuthTokenSchema = new Schema({
   provider: { type: String, required: true },
@@ -9,26 +8,26 @@ const OAuthTokenSchema = new Schema({
   refreshToken: { type: String }
 });
 
-export const LanguageSchema = new Schema({
+const LanguageSchema = new Schema({
   language: { type: String, required: true },
   level: { type: String, required: true }
 });
 
-export const ProjectSchema = new Schema({
+const ProjectSchema = new Schema({
   projectName: { type: String, required: true },
   projectTime: { type: String, required: true },
   urlRepo: { type: String },
   projectDescription: { type: String }
 });
 
-export const EducationSchema = new Schema({
+const EducationSchema = new Schema({
   schoolName: { type: String, required: true },
   startDate: { type: Date, required: true },
   finishDate: { type: Date, required: true },
   fieldName: { type: String, required: true }
 });
 
-export const ExperienceSchema = new Schema({
+const ExperienceSchema = new Schema({
   companyName: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date },
@@ -36,28 +35,15 @@ export const ExperienceSchema = new Schema({
   previousJobDetails: { type: String, required: true }
 });
 
-export const CertificationSchema = new Schema({
+const CertificationSchema = new Schema({
   certificateName: { type: String, required: true },
   dateOfReceipt: { type: Date, required: true },
   certificateDetail: { type: String, required: true }
 });
 
-const JobSavedSchema = new Schema({
-  jobPostId: { type: Schema.Types.ObjectId, ref: 'JobPost', required: true },
-  savedAt: { type: Date, default: Date.now() }
-});
-
-const JobAppliedSchema = new Schema({
-  jobPostId: { type: Schema.Types.ObjectId, ref: 'JobPost', required: true },
-  status: { type: String, default: ApplyStatus.PENDING },
-  githubScore: { type: Number, default: 0 },
-  appliedAt: { type: Date, default: Date.now() }
-});
-
 const CandidateSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   publicEmail: { type: String },
-  phoneNumber: { type: String },
   programmingSkills: { type: String },
   fullName: { type: String },
   gender: { type: Boolean },
@@ -73,11 +59,7 @@ const CandidateSchema = new Schema({
   projects: [ProjectSchema],
   educations: [EducationSchema],
   experiences: [ExperienceSchema],
-  certifications: [CertificationSchema],
-  jobSaved: [JobSavedSchema],
-  jobApplied: [JobAppliedSchema]
+  certifications: [CertificationSchema]
 });
-
-
 
 export const Candidate = model<ICandidate>('Candidate', CandidateSchema);

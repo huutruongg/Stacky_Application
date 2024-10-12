@@ -7,14 +7,15 @@ import { DuplicateApplicationError } from '../../utils/errors/DuplicateApplicati
 const JobManagementController = {
     getJobPostings: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { error } = JobManagementValidate.pageSchema().validate(req.query);
-            if (error) {
-                res.status(400).json({ success: false, message: error.details[0].message });
-                return;
-            }
 
             const { page, pageSize } = req.query;
-            const result = await JobManagementService.getJobPostingsByPage(Number(page), Number(pageSize));
+            let result = null;
+            if (!page || !pageSize) {
+                result = await JobManagementService.getJobPostings();
+            } else {
+                result = await JobManagementService.getJobPostingsByPage(Number(page), Number(pageSize))
+            }
+             
             if (!result || result.length === 0) {
                 res.status(404).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -60,7 +61,7 @@ const JobManagementController = {
             }
 
             const { candidateId } = req.body;
-            const result = await JobManagementService.getJobsSaved(candidateId);
+            const result = await JobManagementService.getSavedJobPosts(candidateId);
             if (!result || result.length === 0) {
                 res.status(404).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -104,16 +105,16 @@ const JobManagementController = {
                 res.status(400).json({ success: false, message: error.details[0].message });
                 return;
             }
-    
+
             const { jobPostId } = req.params;
-            
+
             // Thay vì gọi hàm xử lý trong hàng đợi, hãy gọi trực tiếp nếu cần.
             const result = await JobManagementService.getJobPostingById(jobPostId);
             if (!result) {
                 res.status(404).json({ success: false, message: "Job not found!" });
                 return;
             }
-    
+
             res.status(200).json({ success: true, result });
         } catch (error) {
             // console.error(error);  
@@ -199,10 +200,18 @@ const JobManagementController = {
                 return;
             }
 
-            const jobPostingData = req.body;
-            const isCreated = await JobManagementService.createJobPosting(jobPostingData);
+            // Extract userId from the request body or authenticated session
+            const { userId, ...jobPostingData } = req.body;
+
+            if (!userId) {
+                res.status(400).json({ success: false, message: 'User ID is required' });
+                return;
+            }
+
+            const isCreated = await JobManagementService.createJobPosting({ userId, ...jobPostingData });
+
             if (!isCreated) {
-                res.status(404).json({ success: false, message: "Job not created!" });
+                res.status(404).json({ success: false, message: 'Job not created!' });
                 return;
             }
 
@@ -245,9 +254,9 @@ const JobManagementController = {
                 return;
             }
 
-            const { candidateId } = req.body;
+            const { userId } = req.body;
             const { jobPostId } = req.params;
-            const result = await JobManagementService.createApplication(candidateId, jobPostId);
+            const result = await JobManagementService.createApplication(userId, jobPostId);
 
             if (!result) {
                 res.status(404).json({ success: false, message: "Failed to create application." });
@@ -277,9 +286,9 @@ const JobManagementController = {
                 return;
             }
 
-            const { candidateId } = req.body;
+            const { userId } = req.body;
             const { jobPostId } = req.params;
-            const isSaved = await JobManagementService.savedJobPost(candidateId, jobPostId);
+            const isSaved = await JobManagementService.savedJobPost(userId, jobPostId);
 
             if (!isSaved) {
                 res.status(404).json({ success: false, message: 'Job post has already been saved by this candidate.' });
@@ -320,13 +329,13 @@ const JobManagementController = {
 
     setApplyStatus: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { applicationId, status } = req.body;
+            const { jobPostId, status } = req.body;
             const { error } = JobManagementValidate.ApplyStatusSchema().validate(req.body);
             if (error) {
                 res.status(400).json({ success: false, message: error.details[0].message });
                 return;
             }
-            const isSet = await JobManagementService.setApplyStatus(applicationId, status);
+            const isSet = await JobManagementService.setApplyStatus(jobPostId, status);
             if (!isSet) {
                 res.status(404).json({ success: false, message: 'Set status failed.' });
                 return;

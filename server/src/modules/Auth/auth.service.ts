@@ -1,14 +1,17 @@
-import { Admin } from '../../models/admin.model';
+
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { log } from 'console';
 import { IAdmin } from '../../types/IAdmin';
-import { Recruiter } from '../../models/recruiter.model';
+
 import UserRole from '../../types/EnumUserRole';
-import { User } from '../../models/user.model';
+
 import { IUser } from '../../types/IUser';
+import { User } from '../../models/user.model';
+import { Admin } from '../../models/admin.model';
 import { Candidate } from '../../models/candidate.model';
+
 
 const saltRounds = 10;
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);

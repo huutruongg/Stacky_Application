@@ -30,7 +30,7 @@ const CandidateController = {
     submitProfessionalDetails: async (req: Request, res: Response): Promise<void> => {
         try {
             const {
-                candidateId,
+                userId,
                 fullName,
                 jobPosition,
                 publicEmail,
@@ -53,11 +53,11 @@ const CandidateController = {
             // Update both personal and professional profiles
             const [personalProfile, professionalProfile] = await Promise.all([
                 CandidateService.updateCandidatePersonalProfile(
-                    candidateId, fullName, jobPosition, publicEmail, phoneNumber,
+                    userId, fullName, jobPosition, publicEmail, phoneNumber,
                     Boolean(gender), birthDate, avatarUrl, address, linkedinUrl, githubUrl, personalDescription
                 ),
                 CandidateService.updateCandidateProfessionalProfile(
-                    candidateId, languages, projects, certifications, programmingSkills, educations, experiences
+                    userId, languages, projects, certifications, programmingSkills, educations, experiences
                 )
             ]);
 

@@ -1,12 +1,14 @@
 import { log } from "console";
-import { IJobPost } from "../../types/IJobPost";
-import { JobPost } from "../../models/jobPost.model";
-import { JobSaved } from "../../models/jobSaved.model";
-import { Application } from "../../models/application.model";
+import { IApplicant, IJobPost } from "../../types/IJobPost";
 import PostStatus from "../../types/EnumPostStatus";
 import { DuplicateApplicationError } from "../../utils/errors/DuplicateApplication.error";
-import { Recruiter } from "../../models/recruiter.model";
 import { IJobPostMin } from "../../types/IJobPostMin";
+import { JobPost } from "../../models/jobPost.model";
+import { Candidate } from "../../models/candidate.model";
+import ApplyStatus from "../../types/EnumApplicationStatus";
+import { ICandidate, IJobApplied } from "../../types/ICandidate";
+import { Recruiter } from "../../models/recruiter.model";
+import { User } from "../../models/user.model";
 
 
 
@@ -59,7 +61,7 @@ const handleFindByField = async (Model: any, fieldName: string, value: string): 
         }
 
         // Extract recruiterIds
-        const recruiterIds = data.map(post => post.recruiterId);
+        const recruiterIds = data.map(post => post.userId);
 
         // Second query: Find the recruiters by recruiterIds to get the orgName
         const recruiters = await Recruiter.find({ _id: { $in: recruiterIds } })
@@ -75,12 +77,12 @@ const handleFindByField = async (Model: any, fieldName: string, value: string): 
         // Merge job post data with the recruiter orgName
         const result = data.map(post => ({
             _id: post._id,
-            recruiterId: post.recruiterId,
+            userId: post.userId,
             jobTitle: post.jobTitle,
             jobImage: post.jobImage,
             jobSalary: post.jobSalary,
             location: post.location,
-            orgName: recruiterMap[post.recruiterId.toString()] || 'Unknown'
+            orgName: recruiterMap[String(post.userId)] || 'Unknown'
         }));
 
         return result;
@@ -101,22 +103,6 @@ const handleDeleteById = async (Model: any, id: string, modelName: string): Prom
     }
 };
 
-// Helper function to save job post for candidate
-const handleSaveJobPost = async (candidateId: string, jobSavedId: string): Promise<boolean> => {
-    try {
-        const existingJob = await JobSaved.findOne({ candidateId, jobSavedId });
-        if (existingJob) {
-            return false;
-        }
-        const newSavedJob = new JobSaved({ candidateId, jobSavedId });
-        await newSavedJob.save();
-        return true;
-    } catch (error: any) {
-        log(error);
-        return false;
-    }
-};
-
 const JobManagementService = {
     getJobPostingById: async (id: string): Promise<IJobPost | null> => {
         return handleFindById(JobPost, id, "JobPost");
@@ -126,12 +112,63 @@ const JobManagementService = {
         return handleFindByRecruiterAndPostId(recruiterId, postId);
     },
 
-    getJobsSaved: async (candidateId: string): Promise<IJobPost[] | null> => {
-        return handleFindByCandidate(JobSaved, candidateId, "jobPost");
+    async getSavedJobPosts(candidateId: string) {
+        try {
+            // Step 1: Find the saved job post IDs from the Candidate collection
+            const candidate = await Candidate
+                .findById(candidateId, 'jobSaved')
+                .lean();
+
+            if (!candidate || !candidate.jobSaved.length) {
+                return []; // No saved jobs found
+            }
+
+            const savedJobIds = candidate.jobSaved.map((job: any) => job.jobPostId);
+
+            // Step 2: Query the JobPost collection using the saved job IDs
+            const savedJobPosts = await JobPost
+                .find({ _id: { $in: savedJobIds } })
+                .select('jobTitle jobImage location jobSalary orgName postedAt') // Select only necessary fields
+                .lean();
+
+            return savedJobPosts;
+        } catch (error) {
+            console.error('Error fetching saved job posts:', error);
+            throw new Error('Failed to retrieve saved job posts');
+        }
     },
 
     getJobsApplied: async (candidateId: string): Promise<IJobPost[] | null> => {
-        return handleFindByCandidate(Application, candidateId, "jobPost");
+        try {
+            // Step 1: Find the candidate's applied jobs
+            const candidate = await Candidate.findById(candidateId, 'jobApplied')
+                .lean()
+                .exec();
+
+            if (!candidate || !candidate.jobApplied.length) {
+                console.warn(`No jobs found for candidate with ID: ${candidateId}`);
+                return null;
+            }
+
+            // Extract the jobPost IDs from the candidate's applied jobs
+            const jobPostIds = candidate.jobApplied.map(
+                (application) => application.jobPostId
+            );
+
+            // Step 2: Query the JobPost collection using the extracted jobPost IDs
+            const jobsApplied = await JobPost.find({ _id: { $in: jobPostIds } })
+                .select(
+                    'jobTitle jobImage jobSalary location typeOfWork postStatus postedAt'
+                ) // Select only necessary fields
+                .lean()
+                .exec();
+
+            return jobsApplied;
+
+        } catch (error) {
+            log(error);
+            return null;
+        }
     },
 
     findJobPostingsByJobPosition: async (key: string): Promise<IJobPostMin[] | null> => {
@@ -164,17 +201,16 @@ const JobManagementService = {
         }
 
         try {
-            // Perform the two queries concurrently using Promise.all()
+            // Perform both queries concurrently
             const [jobPosts, recruiters] = await Promise.all([
                 JobPost.find()
                     .select('_id jobTitle jobImage jobSalary location recruiterId')
                     .skip((page - 1) * pageSize)
                     .limit(pageSize)
+                    .lean()
                     .exec(),
 
-                Recruiter.find()
-                    .select('_id orgName')
-                    .exec()
+                Recruiter.find().select('_id orgName').lean().exec()
             ]);
 
             if (!jobPosts || jobPosts.length === 0) {
@@ -182,21 +218,58 @@ const JobManagementService = {
                 return null;
             }
 
-            // Create a recruiterMap with a Map object for better key management
+            // Create a recruiter map for quick lookup
             const recruiterMap = new Map<string, string>();
             recruiters.forEach(recruiter => {
                 recruiterMap.set(String(recruiter._id), recruiter.orgName);
             });
 
-            // Merge the jobPosts with the recruiter orgNames
-            const mergedResults = jobPosts.map(post => ({
-                _id: post._id,
-                recruiterId: post.recruiterId,
+            // Merge job posts with recruiter organization names
+            const mergedResults: IJobPostMin[] = jobPosts.map(post => ({
                 jobTitle: post.jobTitle,
                 jobImage: post.jobImage,
                 jobSalary: post.jobSalary,
                 location: post.location,
-                orgName: recruiterMap.get(post.recruiterId.toString()) || 'Unknown' // Handle missing orgName
+                orgName: recruiterMap.get(String(post.userId)) || 'Unknown' // Handle missing orgName
+            }));
+
+            return mergedResults;
+        } catch (error) {
+            console.error('Error fetching job postings by page:', error);
+            return null;
+        }
+    },
+
+    getJobPostings: async (): Promise<IJobPostMin[] | null> => {
+        try {
+            // Perform both queries concurrently
+            const [jobPosts, recruiters] = await Promise.all([
+                JobPost.find()
+                    .select('_id jobTitle jobImage jobSalary location recruiterId')
+                    .lean()
+                    .exec(),
+
+                Recruiter.find().select('_id orgName').lean().exec()
+            ]);
+
+            if (!jobPosts || jobPosts.length === 0) {
+                console.warn('No job posts found');
+                return null;
+            }
+
+            // Create a recruiter map for quick lookup
+            const recruiterMap = new Map<string, string>();
+            recruiters.forEach(recruiter => {
+                recruiterMap.set(String(recruiter._id), recruiter.orgName);
+            });
+
+            // Merge job posts with recruiter organization names
+            const mergedResults: IJobPostMin[] = jobPosts.map(post => ({
+                jobTitle: post.jobTitle,
+                jobImage: post.jobImage,
+                jobSalary: post.jobSalary,
+                location: post.location,
+                orgName: recruiterMap.get(String(post.userId)) || 'Unknown' // Handle missing orgName
             }));
 
             return mergedResults;
@@ -225,34 +298,127 @@ const JobManagementService = {
         return handleDeleteById(JobPost, jobId, "JobPost");
     },
 
-    createApplication: async (candidateId: string, jobPostId: string): Promise<boolean> => {
+    createApplication: async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
-            const existingApplication = await Application.findOne({ candidateId, jobPostId });
+            // Step 1: Check if the candidate has already applied to the job
+            const candidateApplied = await Candidate.findOne({
+                userId: userId,
+                'jobApplied.jobPostId': jobPostId,
+            }).lean();
 
-            if (existingApplication) {
-                throw new DuplicateApplicationError('Candidate has already applied for this job.');
+            if (candidateApplied) {
+                console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
+                return false;
             }
 
-            const application = new Application({ candidateId, jobPostId });
-            await application.save();
+            // Step 2: Retrieve the candidate's full information
+            const user = await User.findById(userId).lean();
+
+            log("User: ", user)
+            if (!user) {
+                console.warn(`User with ID ${userId} not found.`);
+                return false;
+            }
+
+            const candidate: ICandidate | null = await Candidate.findOne({ userId }).exec();
+            if (!candidate) {
+                console.warn(`Candidate with ID ${userId} not found.`);
+                return false;
+            }
+            // Step 3: Create the application object with copied candidate information
+            const newApplicant: IApplicant = {
+                userId: candidate.userId,
+                programmingSkills: candidate.programmingSkills,
+                linkedinUrl: candidate.linkedinUrl,
+                githubUrl: candidate.githubUrl,
+                personalDescription: candidate.personalDescription,
+                languages: candidate.languages,
+                projects: candidate.projects,
+                educations: candidate.educations,
+                experiences: candidate.experiences,
+                certifications: candidate.certifications,
+                status: ApplyStatus.PENDING,
+                githubScore: 0,
+                appliedAt: new Date(),
+            };
+
+            // Step 4: Add the application to the candidate's jobApplied array
+            await Candidate.updateOne(
+                { userId: userId },
+                { $push: { jobApplied: { jobPostId, status: ApplyStatus.PENDING, appliedAt: new Date() } } }
+            );
+
+            // Step 5: Add the new applicant to the job post's applicants array
+            const jobPostUpdate = await JobPost.updateOne(
+                { _id: jobPostId },
+                { $push: { applicants: newApplicant } }
+            );
+
+            if (jobPostUpdate.modifiedCount === 0) {
+                console.warn(`Failed to update job post ${jobPostId} with new applicant.`);
+                return false;
+            }
+
+            console.log(`Candidate ${userId} successfully applied for job ${jobPostId}.`);
             return true;
-        } catch (error: any) {
+        } catch (error) {
             log(error);
             return false;
         }
     },
 
-    savedJobPost: async (candidateId: string, jobSavedId: string): Promise<boolean> => {
-        return handleSaveJobPost(candidateId, jobSavedId);
+    savedJobPost: async (userId: string, jobSavedId: string): Promise<boolean> => {
+        try {
+            // Check if the job post exists
+            const jobPostExists = await JobPost.exists({ _id: jobSavedId });
+            if (!jobPostExists) {
+                console.warn(`Job post with ID ${jobSavedId} does not exist.`);
+                return false;
+            }
+
+            // Update candidate's saved jobs without duplicating entries
+            const result = await Candidate.updateOne(
+                {
+                    userId: userId,
+                    'jobSaved.jobPostId': { $ne: jobSavedId } // Ensure it's not already saved
+                },
+                {
+                    $push: { jobSaved: { jobPostId: jobSavedId } }
+                }
+            );
+
+            // Check if a document was modified
+            return result.modifiedCount > 0;
+        } catch (error) {
+            console.error('Error saving job post:', error);
+            return false;
+        }
     },
 
     cancelJobPostSaved: async (jobSavedId: string): Promise<boolean> => {
-        return handleDeleteById(JobSaved, jobSavedId, "JobSaved");
+        try {
+            const result = await Candidate.updateOne(
+                { 'jobSaved._id': jobSavedId },
+                { $pull: { jobSaved: { _id: jobSavedId } } }
+            );
+
+            if (result.modifiedCount === 0) {
+                console.warn(`No jobSaved entry found with ID: ${jobSavedId}`);
+                return false;
+            }
+
+            console.log(`Successfully removed jobSaved entry with ID: ${jobSavedId}`);
+            return true;
+        } catch (error) {
+            console.error('Error removing jobSaved entry:', error);
+            return false;
+        }
     },
 
-    setApplyStatus: async (applicationId: string, status: string): Promise<boolean> => {
+    setApplyStatus: async (jobPostId: string, status: string): Promise<boolean> => {
         try {
-            await Application.findByIdAndUpdate(applicationId, { status: status })
+            await JobPost.findByIdAndUpdate(
+                jobPostId, { postStatus: status });
             return true;
         } catch (error) {
             log(error);

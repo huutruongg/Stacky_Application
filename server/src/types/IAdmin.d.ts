@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
+import { IUser } from './IUser';
 
 export interface IAdmin extends Document {
-  userId: string;
+  userId: IUser['_id'];
 }

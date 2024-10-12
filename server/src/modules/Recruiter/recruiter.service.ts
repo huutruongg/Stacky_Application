@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import UserRole from '../../types/EnumUserRole';
-import { Recruiter } from '../../models/recruiter.model';
-import { User } from '../../models/user.model';
 import { IRecruiter } from '../../types/IRecruiter';
 import { log } from "console";
 import { refreshToken } from "firebase-admin/app";
+import { Recruiter } from "../../models/recruiter.model";
+import { User } from "../../models/user.model";
 
 const saltRounds = 10;
 
@@ -83,7 +83,7 @@ const RecruiterService = {
         const user = await User.findOne({ privateEmail }).select('_id').exec();
         if (!user) return null;
         const userId = user._id;
-        return handleFindRecruiter({userId}, 'Error fetching recruiter by email');
+        return handleFindRecruiter({ userId }, 'Error fetching recruiter by email');
     },
 
     createRecruiter: async (

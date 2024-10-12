@@ -1,32 +1,13 @@
 import { Schema, model } from 'mongoose';
 import { IJobPost } from '../types/IJobPost';
-import ApplyStatus from '../types/EnumApplicationStatus';
-import { CertificationSchema, EducationSchema, ExperienceSchema, ProjectSchema } from './candidate.model';
-import PostStatus from '../types/EnumPostStatus';
 
 const LanguageSchema = new Schema({
   language: { type: String, required: true },
   level: { type: String, required: true }
 });
 
-const ApplicantSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  programmingSkills: { type: String },
-  linkedinUrl: { type: String },
-  githubUrl: { type: String },
-  personalDescription: { type: String },
-  languages: [LanguageSchema],
-  projects: [ProjectSchema],
-  educations: [EducationSchema],
-  experiences: [ExperienceSchema],
-  certifications: [CertificationSchema],
-  status: { type: String, enum: Object.values(ApplyStatus), default: ApplyStatus.PENDING },
-  githubScore: { type: Number, default: 0 },
-  appliedAt: { type: Date, default: Date.now },
-});
-
 const JobPostSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  recruiterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   jobTitle: { type: String, required: true },
   jobImage: { type: String, required: true },
   typeOfWork: { type: String, required: true },
@@ -47,9 +28,8 @@ const JobPostSchema = new Schema({
   jobSchedule: { type: String, required: true },
   staffLevel: { type: String, required: true },
   genderRequired: { type: String, required: true },
-  postStatus: { type: String, enum: Object.values(PostStatus), default: PostStatus.PENDING },
-  applicants: [ApplicantSchema],
-  postedAt: { type: Date, default: Date.now }
+  postStatus: { type: String, required: true },
+  postedAt: { type: Date, required: true }
 });
 
 export const JobPost = model<IJobPost>('JobPost', JobPostSchema);

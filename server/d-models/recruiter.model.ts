@@ -6,11 +6,6 @@ const ImageSchema = new Schema({
   uploadedAt: { type: Date}
 });
 
-const PaymentSchema = new Schema({
-  payAmount: { type: Number, required: true },
-  transactionDate: { type: Date, required: true }
-});
-
 const RecruiterSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   orgEmail: { type: String },
@@ -20,7 +15,6 @@ const RecruiterSchema = new Schema({
   orgTaxNumber: { type: String },
   orgAddress: { type: String },
   images: [ImageSchema],
-  payments: [PaymentSchema],
   balance: {type: Number, default: 0}
 });
 
