@@ -208,11 +208,12 @@ const JobManagementService = {
 
     createJobPosting: async (jobPostingDataReq: IJobPost): Promise<boolean> => {
         try {
-            await JobPost.create({
+            const data = await JobPost.create({
                 ...jobPostingDataReq,
                 postStatus: PostStatus.PENDING,
                 postedAt: new Date(),
             });
+            log("Job posting created successfully", data);
             return true;
         } catch (error) {
             console.error(error);

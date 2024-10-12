@@ -7,7 +7,7 @@ const LanguageSchema = new Schema({
 });
 
 const JobPostSchema = new Schema({
-  recruiterId: { type: Schema.Types.ObjectId, ref: 'Recruiter', required: true },
+  recruiterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   jobTitle: { type: String, required: true },
   jobImage: { type: String, required: true },
   typeOfWork: { type: String, required: true },
