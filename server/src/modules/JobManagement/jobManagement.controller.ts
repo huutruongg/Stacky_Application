@@ -60,8 +60,8 @@ const JobManagementController = {
                 return;
             }
 
-            const { candidateId } = req.body;
-            const result = await JobManagementService.getSavedJobPosts(candidateId);
+            const { userId } = req.body;
+            const result = await JobManagementService.getSavedJobPosts(userId);
             if (!result || result.length === 0) {
                 res.status(404).json({ success: false, message: "Jobs not found!" });
                 return;
@@ -83,8 +83,8 @@ const JobManagementController = {
                 return;
             }
 
-            const { candidateId } = req.body;
-            const result = await JobManagementService.getJobsApplied(candidateId);
+            const { userId } = req.body;
+            const result = await JobManagementService.getJobsApplied(userId);
             if (!result || result.length === 0) {
                 res.status(404).json({ success: false, message: "Jobs not found!" });
                 return;

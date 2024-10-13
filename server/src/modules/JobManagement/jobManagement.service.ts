@@ -9,6 +9,7 @@ import ApplyStatus from "../../types/EnumApplicationStatus";
 import { ICandidate, IJobApplied } from "../../types/ICandidate";
 import { Recruiter } from "../../models/recruiter.model";
 import { User } from "../../models/user.model";
+import { Types } from "mongoose";
 
 
 
@@ -112,25 +113,31 @@ const JobManagementService = {
         return handleFindByRecruiterAndPostId(recruiterId, postId);
     },
 
-    async getSavedJobPosts(candidateId: string) {
+    async getSavedJobPosts(userId: string) {
         try {
-            // Step 1: Find the saved job post IDs from the Candidate collection
-            const candidate = await Candidate
-                .findById(candidateId, 'jobSaved')
-                .lean();
-
-            if (!candidate || !candidate.jobSaved.length) {
-                return []; // No saved jobs found
+            if (!Types.ObjectId.isValid(userId)) {
+                throw new Error('Invalid user ID');
             }
-
-            const savedJobIds = candidate.jobSaved.map((job: any) => job.jobPostId);
-
-            // Step 2: Query the JobPost collection using the saved job IDs
+    
+            // Bước 1: Tìm candidate theo userId và lấy mảng jobSaved
+            const candidate = await Candidate
+                .findOne({ userId: new Types.ObjectId(userId) })
+                .select('jobSaved') // Chỉ lấy trường jobSaved để tối ưu
+                .lean();
+    
+            if (!candidate || candidate.jobSaved.length === 0) {
+                return []; // Không tìm thấy công việc đã lưu
+            }
+    
+            // Lấy danh sách jobPostId từ mảng jobSaved
+            const savedJobIds = candidate.jobSaved.map(job => job.jobPostId);
+    
+            // Bước 2: Truy vấn JobPost với danh sách jobPostId
             const savedJobPosts = await JobPost
                 .find({ _id: { $in: savedJobIds } })
-                .select('jobTitle jobImage location jobSalary orgName postedAt') // Select only necessary fields
+                .select('jobTitle jobImage location jobSalary orgName postedAt') // Chọn trường cần thiết
                 .lean();
-
+    
             return savedJobPosts;
         } catch (error) {
             console.error('Error fetching saved job posts:', error);
@@ -138,16 +145,16 @@ const JobManagementService = {
         }
     },
 
-    getJobsApplied: async (candidateId: string): Promise<IJobPost[] | null> => {
+    getJobsApplied: async (userId: string): Promise<IJobPost[] | null> => {
         try {
             // Step 1: Find the candidate's applied jobs
-            const candidate = await Candidate.findById(candidateId, 'jobApplied')
-                .lean()
-                .exec();
-
-            if (!candidate || !candidate.jobApplied.length) {
-                console.warn(`No jobs found for candidate with ID: ${candidateId}`);
-                return null;
+            const candidate = await Candidate
+                .findOne({ userId: new Types.ObjectId(userId) })
+                .select('jobApplied') // Chỉ lấy trường jobSaved để tối ưu
+                .lean();
+    
+            if (!candidate || candidate.jobApplied.length === 0) {
+                return []; // Không tìm thấy công việc đã lưu
             }
 
             // Extract the jobPost IDs from the candidate's applied jobs

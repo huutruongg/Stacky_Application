@@ -1,5 +1,5 @@
+import { IJobSaved } from './../src/types/ICandidate.d';
 import { Schema, model } from 'mongoose';
-import { IJobSaved } from '../src/types/IJobSaved';
 const JobSavedSchema = new Schema({
   candidateId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   jobPostId: { type: Schema.Types.ObjectId, ref: 'JobPost', required: true },
