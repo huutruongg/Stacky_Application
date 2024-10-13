@@ -19,8 +19,8 @@ const CandidateService = {
         }
     },
 
-    getCandidateById: async (candidateId: string): Promise<ICandidate | null> => {
-        return handleFindCandidateById(candidateId);
+    getCandidateById: async (userId: string): Promise<ICandidate | null> => {
+        return handleFindCandidateByUserId(userId);
     },
 
     getCandidatesApplied: async (jobPostId: string): Promise<ICandidate[] | null> => {

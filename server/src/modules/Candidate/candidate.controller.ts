@@ -8,8 +8,8 @@ const CandidateController = {
     // Fetch candidate by ID
     getCandidateById: async (req: Request, res: Response): Promise<void> => {
         try {
-            const candidateId = req.params.candidateId;  // Extract from req.params
-            const result = await CandidateService.getCandidateById(candidateId);
+            const userId = req.params.userId;  // Extract from req.params
+            const result = await CandidateService.getCandidateById(userId);
 
             if (!result) {
                 res.status(404).json({ success: false, message: "Candidate not found!" });
