@@ -29,15 +29,15 @@ export const EducationSchema = new Schema({
 });
 
 export const ExperienceSchema = new Schema({
-  companyName: { type: String, required: true },
-  startDate: { type: Date, required: true },
+  companyName: { type: String },
+  startDate: { type: Date },
   endDate: { type: Date },
-  jobPosition: { type: String, required: true },
-  previousJobDetails: { type: String, required: true }
+  jobPosition: { type: String },
+  previousJobDetails: { type: String }
 });
 
 export const CertificationSchema = new Schema({
-  certificateName: { type: String, required: true },
+  certificateName: { type: String },
   dateOfReceipt: { type: Date, required: true },
   certificateDetail: { type: String, required: true }
 });
