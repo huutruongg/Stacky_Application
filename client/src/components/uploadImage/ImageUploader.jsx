@@ -5,6 +5,7 @@ import IconDelete from "@/components/icons/IconDelete";
 const ImageUploader = forwardRef(({ value, onChange }, ref) => {
   const [uploadedImage, setUploadedImage] = useState(value || null);
   const [isHovered, setIsHovered] = useState(false);
+  // console.log(uploadedImage);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

@@ -29,14 +29,24 @@ export const profileCVSchema = (checkExp) =>
       }),
     avatarUrl: z
       .object({
-        file: z.instanceof(File).refine((file) => file.size <= MAX_FILE_SIZE, {
-          message: "Kích thước hình ảnh tối đa là 5MB.",
-        }),
-        preview: z.string().nonempty("Vui lòng chọn một ảnh."),
+        file: z
+          .instanceof(File)
+          .refine((file) => file.size <= MAX_FILE_SIZE, {
+            message: "Kích thước hình ảnh tối đa là 5MB.",
+          })
+          .optional()
+          .nullish(),
+        preview: z.string().optional().nullish(),
       })
-      .refine((image) => ACCEPTED_IMAGE_MIME_TYPES.includes(image.file.type), {
-        message: "Chỉ hỗ trợ các định dạng .jpg, .jpeg, .png và .webp.",
-      })
+      .refine(
+        (image) =>
+          !image ||
+          !image.file ||
+          ACCEPTED_IMAGE_MIME_TYPES.includes(image.file.type),
+        {
+          message: "Chỉ hỗ trợ các định dạng .jpg, .jpeg, .png và .webp.",
+        }
+      )
       .optional(),
     address: z.string().optional(),
     githubUrl: z
