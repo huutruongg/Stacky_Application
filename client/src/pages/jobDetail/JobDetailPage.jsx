@@ -6,9 +6,11 @@ import JobSuggest from "./JobSuggest";
 import JobSummary from "./JobSummary";
 import JobDescription from "./JobDescription";
 import JobContact from "./JobContact";
-import axios from "axios";
+import axiosInstance from "@/lib/authorizedAxios";
+import { useParams } from "react-router-dom";
 
 const JobDetailPage = () => {
+  const { jobId } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,10 +18,10 @@ const JobDetailPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:4080/job-posting/job-posting/66fd2db146227aca4f524485`
+        const response = await axiosInstance.get(
+          `http://localhost:4080/job-posting/job-posting/${jobId}`
         ); // API URL
-        console.log(response.data.result);
+        // console.log(response.data.result);
 
         setData(response.data.result); // Cập nhật dữ liệu
         setLoading(false); // Đặt loading thành false
@@ -31,7 +33,7 @@ const JobDetailPage = () => {
     };
 
     loadData();
-  }, []); // Chạy khi component mount
+  }, [jobId]); // Chạy khi component mount
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -48,9 +50,9 @@ const JobDetailPage = () => {
           <JobContact jobData={data} />
         </div>
         <div className="grid col-start-9 col-end-13 gap-7 h-fit">
-          <CompanyInfo jobData={data} />
+          <CompanyInfo />
           <GeneralInfo jobData={data} />
-          <JobSuggest jobData={data} />
+          <JobSuggest />
         </div>
       </div>
     </div>

@@ -37,7 +37,7 @@ post - http://localhost:4080/candidate/remove-object
 
 
 Job Posting:
-get - http://localhost:4080/job-posting/job-postings?page=1&pageSize=8
+get - http://localhost:4080/job-posting/job-postings
 get - http://localhost:4080/job-posting/job-posting/:id
 get - http://localhost:4080/job-posting/job-saved
 get - http://localhost:4080/job-posting/job-applied

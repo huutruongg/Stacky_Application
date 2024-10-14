@@ -23,7 +23,7 @@ function App() {
           <Route element={<Main />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/account.stacky.vn" element={<SignInPage />} />
-            <Route path="/job-detail" element={<JobDetailPage />} />
+            <Route path="/job-detail/:jobId" element={<JobDetailPage />} />
             <Route path="/job-save" element={<JobSavePage />} />
             <Route path="/profile-cv" element={<CvInformationPage />} />
             <Route path="/uploaded-cv" element={<CvUploadedPage />} />

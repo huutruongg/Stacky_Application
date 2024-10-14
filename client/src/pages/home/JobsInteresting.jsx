@@ -3,6 +3,7 @@ import ItemJobSuggest from "@/components/itemJob/ItemJobSuggest";
 import TitleField from "@/components/titleField/TitleField";
 import PaginationDemo from "@/components/pagination/Pagination";
 import { fetchData } from "@/api/fetchData";
+import JobSkeleton from "@/components/skeleton/JobSkeleton";
 
 const JobsInteresting = () => {
   const [jobData, setJobData] = useState([]);
@@ -12,9 +13,9 @@ const JobsInteresting = () => {
   const [newsPerPage, setNewsPerPage] = useState(12);
   const indexOfLastItem = currentPage * newsPerPage;
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
-  const currentProductsData = jobData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // console.log(currentProductsData);
+  // console.log(currentJobData);
 
   useEffect(() => {
     const getData = async () => {
@@ -37,15 +38,27 @@ const JobsInteresting = () => {
     setCurrentPage(page); // Cập nhật trang hiện tại
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="mb-10">
+        <TitleField>Công việc hấp dẫn</TitleField>
+        <div className="grid grid-cols-3 items-center gap-5">
+          {[...Array(newsPerPage)].map((_, index) => (
+            <JobSkeleton key={index} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="mb-10">
       <TitleField>Công việc hấp dẫn</TitleField>
       <div className="grid grid-cols-3 items-center gap-5">
-        {currentProductsData.length > 0 &&
-          currentProductsData.map((item, index) => (
+        {currentJobData.length > 0 &&
+          currentJobData.map((item, index) => (
             <ItemJobSuggest jobData={item} key={index}></ItemJobSuggest>
           ))}
       </div>

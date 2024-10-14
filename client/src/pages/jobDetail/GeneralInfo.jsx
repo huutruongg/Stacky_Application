@@ -34,7 +34,7 @@ const GeneralInfo = ({ jobData }) => {
         <ItemInfo
           icon={<IconGender></IconGender>}
           title={"Giới tính"}
-          children={"Nam/Nữ"}
+          children={jobData.genderRequired}
         ></ItemInfo>
       </div>
     </div>

@@ -1,9 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import ItemJobSave from "@/components/itemJob/ItemJobSave";
 import YouCanInterested from "@/components/youCanInterested/YouCanInterested";
 import PaginationDemo from "@/components/pagination/Pagination";
+import { useJobSave } from "@/components/context/JobSaveProvider";
 
 const JobSavePage = () => {
+  const { jobSaveData, loading } = useJobSave();
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [newsPerPage, setNewsPerPage] = useState(5);
+
+  const indexOfLastItem = currentPage * newsPerPage;
+  const indexOfFirstItem = indexOfLastItem - newsPerPage;
+  const currentSaveJobData = jobSaveData.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  console.log(currentSaveJobData);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className="page-container grid grid-cols-12 gap-7 my-10 ">
       <div className="grid col-start-1 col-end-9 h-fit rounded-xl bg-secondary">
@@ -15,20 +37,22 @@ const JobSavePage = () => {
           </p>
         </div>
         <div className="px-10 py-5">
-          <p className="mb-5">Danh sách {"6"} việc làm đã lưu</p>
+          <p className="mb-5 font-medium">
+            Danh sách <span className="text-error">{jobSaveData.length}</span>{" "}
+            việc làm đã lưu
+          </p>
           <div className="flex flex-col gap-5">
-            <ItemJobSave></ItemJobSave>
-            <ItemJobSave></ItemJobSave>
-            <ItemJobSave></ItemJobSave>
-            <ItemJobSave></ItemJobSave>
-            <ItemJobSave></ItemJobSave>
+            {currentSaveJobData.length > 0 &&
+              currentSaveJobData.map((item, index) => (
+                <ItemJobSave jobData={item} key={index}></ItemJobSave>
+              ))}
           </div>
           <div className="mt-5">
             <PaginationDemo
-              PerPage={"newsPerPage"}
-              dataBase={"sortedProducts"}
-              currentPage={"currentPage"}
-              onPageChange={"handlePageChange"}
+              PerPage={newsPerPage}
+              dataBase={jobSaveData}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
             ></PaginationDemo>
           </div>
         </div>

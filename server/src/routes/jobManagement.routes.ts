@@ -3,27 +3,34 @@ import JobManagementController from "../modules/JobManagement/jobManagement.cont
 import authenticateJWT from "../middlewares/authenticate.m";
 import UserRole from "../types/EnumUserRole";
 
-
 const router = Router();
 
-router.get('/job-postings', JobManagementController.getJobPostings);
-router.get('/job-posting/:jobPostId', JobManagementController.getJobPosting);
-router.get('/job-saved', JobManagementController.getJobPostingsSaved);
-router.get('/job-applied', JobManagementController.getJobsApplied);
-router.get('/search-job-postings', JobManagementController.findByJobPosition);
-router.get('/filter-by-location', JobManagementController.filterByLocation);
-router.get('/filter-by-industry', JobManagementController.filterByIndustry);
+router.get("/job-postings", JobManagementController.getJobPostings);
+router.get("/job-posting/:jobPostId", JobManagementController.getJobPosting);
+router.get("/job-saved/:userId", JobManagementController.getJobPostingsSaved);
+router.get("/job-applied", JobManagementController.getJobsApplied);
+router.get("/search-job-postings", JobManagementController.findByJobPosition);
+router.get("/filter-by-location", JobManagementController.filterByLocation);
+router.get("/filter-by-industry", JobManagementController.filterByIndustry);
 // router.get('/get-jobs-posted/:recruiterId', JobManagementController.getJobsPosted)
-router.post('/create-job-posting', JobManagementController.createJobPosting);
-router.delete('/delete-job-posting/:jobPostId', JobManagementController.deleteJobPosting);
-
+router.post("/create-job-posting", JobManagementController.createJobPosting);
+router.delete(
+  "/delete-job-posting/:jobPostId",
+  JobManagementController.deleteJobPosting
+);
 
 // create application and save job post
-router.post('/create-application/:jobPostId', JobManagementController.createApplication);
-router.post('/save-job/:jobPostId', JobManagementController.savedJobPost);
-router.delete('/cancel-job-saved/:jobSavedId', JobManagementController.cancelJobPostSaved)
+router.post(
+  "/create-application/:jobPostId",
+  JobManagementController.createApplication
+);
+router.post("/save-job/:jobPostId", JobManagementController.savedJobPost);
+router.delete(
+  "/cancel-job-saved/:jobSavedId",
+  JobManagementController.cancelJobPostSaved
+);
 
 // Set status
-router.post('/set-apply-status', JobManagementController.setApplyStatus)
-router.post('/censor-job-post', JobManagementController.censorJobPost)
+router.post("/set-apply-status", JobManagementController.setApplyStatus);
+router.post("/censor-job-post", JobManagementController.censorJobPost);
 export default router;

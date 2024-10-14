@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/form";
 import TitleField from "@/components/titleField/TitleField";
 import ImageUploader from "@/components/uploadImage/ImageUploader";
-import InputField from "@/components/fieldForm/InputField";
 
 const FormCompanyBasicInfo = ({ form }) => {
   const commonInputProps = {

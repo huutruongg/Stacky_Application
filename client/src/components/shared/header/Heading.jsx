@@ -7,10 +7,14 @@ import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
 import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
+import { useJobSave } from "@/components/context/JobSaveProvider";
 
 const Heading = () => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
+  const { jobSaveData, loading } = useJobSave();
+
+  // console.log(jobSaveData);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -37,7 +41,7 @@ const Heading = () => {
             <div className="flex justify-between items-center ">
               <ItemNotification
                 icon={<IconHeart />}
-                children={"99"}
+                children={!loading ? jobSaveData.length : "0"}
                 url={"/job-save"}
               />
               <ItemNotification

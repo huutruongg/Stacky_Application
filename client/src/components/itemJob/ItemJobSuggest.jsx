@@ -1,13 +1,21 @@
 import React from "react";
 import IconHeart from "@/components/icons/IconHeart";
 import imgCompany from "@/components/image/imgCompany.png";
+import { useNavigate } from "react-router-dom";
 
 const ItemJobSuggest = ({ jobData }) => {
+  const navigate = useNavigate();
+
   return (
-    <div className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border border-transparent hover:border hover:border-primary hover:bg-white">
+    <div
+      className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border hover:border hover:border-primary hover:bg-white"
+      onClick={() => {
+        navigate(`/job-detail/${jobData.jobId}`);
+      }}
+    >
       <div className="flex justify-between gap-2">
         <div className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] overflow-hidden rounded-md">
-          <a href="">
+          <a href="/company">
             <img
               src={jobData.jobImage ? jobData.jobImage : imgCompany}
               alt=""
@@ -35,7 +43,7 @@ const ItemJobSuggest = ({ jobData }) => {
           </div>
           <div>
             <a
-              href=""
+              href="/company"
               className="line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
               {jobData.orgName.toUpperCase()}
