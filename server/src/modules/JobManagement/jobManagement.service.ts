@@ -550,6 +550,23 @@ const JobManagementService = {
       return false;
     }
   },
-};
+
+
+  isSavedJobPost: async (userId: string, jobPostId: string): Promise<boolean> => {
+    try {
+      const candidate = await Candidate.findOne({ userId }).lean();
+      if (!candidate) {
+        console.warn(`Candidate with ID ${userId} not found.`);
+        return false;
+      }
+
+      const isExisting = candidate.jobSaved.find((job) => job.jobPostId.toString() === jobPostId);
+      return !!isExisting;
+    } catch (error) {
+      console.error("Error checking saved job post:", error);
+      return false;
+    }
+  }
+}
 
 export default JobManagementService;

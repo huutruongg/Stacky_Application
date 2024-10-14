@@ -34,16 +34,20 @@ const JobManagementController = {
 
   getJobDetail: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { jobPostId } = req.params;
+      const { userId, jobPostId } = req.params;
       const result = await JobManagementService.getJobPostingById(jobPostId);
+      const isSaved = await JobManagementService.isSavedJobPost(userId, jobPostId);
       if (!result) {
         res.status(404).json({ success: false, message: "Job not found!" });
         return;
       }
 
-      res.status(200).json({ success: true, result });
+      res.status(200).json({
+        success: true,
+        isLiked: isSaved,
+        result
+      });
     } catch (error) {
-      // console.error(error);
       res
         .status(500)
         .json({ success: false, message: "Internal Server Error!" });
