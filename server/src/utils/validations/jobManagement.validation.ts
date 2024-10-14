@@ -20,8 +20,7 @@ const JobManagementValidate = {
 
     jobPostIdSchema: () => {
         return Joi.object({
-            jobPostId: Joi.string().required(),
-            userId: Joi.string().required(),
+            jobPostId: Joi.string().required()
         });
     },
 
