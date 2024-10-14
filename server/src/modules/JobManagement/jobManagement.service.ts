@@ -318,6 +318,50 @@ const JobManagementService = {
     }
   },
 
+  getJobPostsByCandidate: async (userId: string): Promise<IJobPostMin[] | null> => {
+    try {
+      // Truy vấn danh sách job posts và recruiters song song
+      const [jobPosts, recruiters, candidate] = await Promise.all([
+        JobPost.find()
+          .select("_id jobTitle jobImage jobSalary location userId")
+          .lean()
+          .exec(),
+
+        Recruiter.find().select("_id orgName userId").lean().exec(),
+
+        // Lấy thông tin ứng viên (candidate) dựa vào userId
+        Candidate.findOne({ userId }).select("jobSaved").lean().exec(),
+      ]);
+
+      if (!jobPosts || jobPosts.length === 0) {
+        console.warn("No job posts found");
+        return null;
+      }
+
+      // Lấy danh sách jobId đã được lưu từ candidate
+      const savedJobIds = candidate?.jobSaved.map((job) => job.jobPostId.toString()) || [];
+
+      // Gắn thêm orgName và trạng thái isLiked vào từng job post
+      const jobsWithDetails = jobPosts.map((job) => {
+        const recruiter = recruiters.find(
+          (rec) => rec.userId.toString() === job.userId.toString()
+        );
+
+        return {
+          ...job,
+          orgName: recruiter ? recruiter.orgName : "Unknown",
+          isLiked: savedJobIds.includes(job._id.toString()),
+        };
+      });
+
+      return jobsWithDetails;
+    } catch (error) {
+      console.error("Error fetching job postings:", error);
+      return null;
+    }
+  },
+
+
   createJobPosting: async (jobPostingDataReq: IJobPost): Promise<boolean> => {
     try {
       const data = await JobPost.create({

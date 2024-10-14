@@ -18,6 +18,27 @@ const JobManagementController = {
         );
       }
 
+
+
+      if (!result || result.length === 0) {
+        res.status(404).json({ success: false, message: "Jobs not found!" });
+        return;
+      }
+
+      res.status(200).json({ success: true, result });
+    } catch (error) {
+      // log(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error!" });
+      return;
+    }
+  },
+
+  getCandidateJobs: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = req.params.userId;
+      const result = await JobManagementService.getJobPostsByCandidate(userId);
       if (!result || result.length === 0) {
         res.status(404).json({ success: false, message: "Jobs not found!" });
         return;
@@ -364,7 +385,7 @@ const JobManagementController = {
   savedJobPost: async (req: Request, res: Response): Promise<void> => {
     try {
       const { error } = JobManagementValidate.jobPostIdSchema().validate(
-        req.params
+        req.body
       );
       if (error) {
         res
@@ -373,8 +394,7 @@ const JobManagementController = {
         return;
       }
 
-      const { userId } = req.body;
-      const { jobPostId } = req.params;
+      const { userId, jobPostId } = req.body;
       const isSaved = await JobManagementService.savedJobPost(
         userId,
         jobPostId
@@ -390,7 +410,11 @@ const JobManagementController = {
 
       res
         .status(200)
-        .json({ success: true, message: "Job post saved successfully!" });
+        .json({
+          success: true,
+          isLiked: true,
+          message: "Job post saved successfully!"
+        });
     } catch (error) {
       // log(error);
       res
@@ -420,6 +444,7 @@ const JobManagementController = {
       if (!isDeleted) {
         res.status(404).json({
           success: false,
+          isLiked: false,
           message: "Job post was not found or already removed from saved list.",
         });
         return;

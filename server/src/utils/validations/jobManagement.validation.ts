@@ -13,13 +13,15 @@ const JobManagementValidate = {
 
     candidateIdSchema: () => {
         return Joi.object({
-            userId: Joi.string().required()
+            userId: Joi.string().required(),
+            jobPostId: Joi.string().required()
         });
     },
 
     jobPostIdSchema: () => {
         return Joi.object({
-            jobPostId: Joi.string().required()
+            jobPostId: Joi.string().required(),
+            userId: Joi.string().required(),
         });
     },
 
