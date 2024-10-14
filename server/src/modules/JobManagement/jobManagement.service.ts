@@ -320,7 +320,7 @@ const JobManagementService = {
 
   getJobPostsByCandidate: async (userId: string): Promise<IJobPostMin[] | null> => {
     try {
-      // Truy vấn danh sách job posts và recruiters song song
+      // Fetch job posts, recruiters, and candidate data in parallel
       const [jobPosts, recruiters, candidate] = await Promise.all([
         JobPost.find()
           .select("_id jobTitle jobImage jobSalary location userId")
@@ -329,22 +329,27 @@ const JobManagementService = {
 
         Recruiter.find().select("_id orgName userId").lean().exec(),
 
-        // Lấy thông tin ứng viên (candidate) dựa vào userId
+        // Fetch candidate by userId
         Candidate.findOne({ userId }).select("jobSaved").lean().exec(),
       ]);
+
+      console.log("Job posts: ", jobPosts);
+      console.log("Recruiters: ", recruiters);
+      console.log("Candidate: ", candidate);
 
       if (!jobPosts || jobPosts.length === 0) {
         console.warn("No job posts found");
         return null;
       }
 
-      // Lấy danh sách jobId đã được lưu từ candidate
+      // Extract job IDs saved by the candidate
       const savedJobIds = candidate?.jobSaved.map((job) => job.jobPostId.toString()) || [];
 
-      // Gắn thêm orgName và trạng thái isLiked vào từng job post
+      // Map through job posts and attach orgName and isLiked flag
       const jobsWithDetails = jobPosts.map((job) => {
+        // Handle cases where job.userId or recruiter.userId might be undefined
         const recruiter = recruiters.find(
-          (rec) => rec.userId.toString() === job.userId.toString()
+          (rec) => rec.userId?.toString() === job.userId?.toString()
         );
 
         return {

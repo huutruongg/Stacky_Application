@@ -17,9 +17,6 @@ const JobManagementController = {
           Number(pageSize)
         );
       }
-
-
-
       if (!result || result.length === 0) {
         res.status(404).json({ success: false, message: "Jobs not found!" });
         return;
@@ -32,6 +29,24 @@ const JobManagementController = {
         .status(500)
         .json({ success: false, message: "Internal Server Error!" });
       return;
+    }
+  },
+
+  getJobDetail: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { jobPostId } = req.params;
+      const result = await JobManagementService.getJobPostingById(jobPostId);
+      if (!result) {
+        res.status(404).json({ success: false, message: "Job not found!" });
+        return;
+      }
+
+      res.status(200).json({ success: true, result });
+    } catch (error) {
+      // console.error(error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error!" });
     }
   },
 
