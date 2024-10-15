@@ -180,7 +180,7 @@ const AuthController = {
                 res
                   .status(401)
                   .json({ success: false, message: "Authentication failed" });
-                res.redirect("http://localhost:5173/account.stacky.vn?token=false");
+                return res.redirect(`${process.env.CLIENT_URL}/account.stacky.vn?token=false`);
               }
 
               const candidate: IUser | null = await AuthService.getUserById(
@@ -190,7 +190,7 @@ const AuthController = {
                 res
                   .status(401)
                   .json({ success: false, message: "Authentication failed" });
-                return;
+                return res.redirect(`${process.env.CLIENT_URL}/account.stacky.vn?token=false`);;
               }
               req.session.userId = String(candidate._id);
               const accessToken = AuthService.generateAccessToken(

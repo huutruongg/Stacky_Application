@@ -22,7 +22,7 @@ router.delete("/delete-job-posting/:jobPostId", JobManagementController.deleteJo
 // create application and save job post
 router.post("/create-application/:jobPostId", JobManagementController.createApplication);
 router.post("/save-job", JobManagementController.savedJobPost);
-router.delete("/cancel-job-saved/:jobSavedId", JobManagementController.cancelJobPostSaved);
+router.delete("/cancel-job-saved/:userId/:jobSavedId", JobManagementController.cancelJobPostSaved);
 
 // Set status
 router.post("/set-apply-status", JobManagementController.setApplyStatus);

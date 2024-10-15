@@ -445,20 +445,18 @@ const JobManagementController = {
 
   cancelJobPostSaved: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { error } = JobManagementValidate.jobSavedIdSchema().validate(
-        req.params
-      );
-      if (error) {
-        res
-          .status(400)
-          .json({ success: false, message: error.details[0].message });
-        return;
-      }
+      // const { error } = JobManagementValidate.jobSavedIdSchema().validate(
+      //   req.params
+      // );
+      // if (error) {
+      //   res
+      //     .status(400)
+      //     .json({ success: false, message: error.details[0].message });
+      //   return;
+      // }
 
-      const { jobSavedId } = req.params;
-      const isDeleted = await JobManagementService.cancelJobPostSaved(
-        jobSavedId
-      );
+      const { userId, jobSavedId } = req.params;
+      const isDeleted = await JobManagementService.cancelJobPostSaved(userId, jobSavedId);
 
       if (!isDeleted) {
         res.status(404).json({

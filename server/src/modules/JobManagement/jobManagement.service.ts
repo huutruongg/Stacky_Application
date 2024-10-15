@@ -505,25 +505,29 @@ const JobManagementService = {
     }
   },
 
-  cancelJobPostSaved: async (jobSavedId: string): Promise<boolean> => {
+  cancelJobPostSaved: async (userId: string, jobPostId: string): Promise<boolean> => {
     try {
       const result = await Candidate.updateOne(
-        { "jobSaved._id": jobSavedId },
-        { $pull: { jobSaved: { _id: jobSavedId } } }
+        {
+          userId: userId,
+          "jobSaved.jobPostId": jobPostId
+        },
+        { $pull: { jobSaved: { jobPostId: jobPostId } } }
       );
 
       if (result.modifiedCount === 0) {
-        console.warn(`No jobSaved entry found with ID: ${jobSavedId}`);
+        console.warn(`No jobSaved entry found with ID: ${jobPostId}`);
         return false;
       }
 
-      console.log(`Successfully removed jobSaved entry with ID: ${jobSavedId}`);
+      console.log(`Successfully removed jobSaved entry with ID: ${jobPostId}`);
       return true;
     } catch (error) {
       console.error("Error removing jobSaved entry:", error);
       return false;
     }
-  },
+  }
+  ,
 
   setApplyStatus: async (
     jobPostId: string,
