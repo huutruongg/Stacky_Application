@@ -6,9 +6,10 @@ import UserRole from "../types/EnumUserRole";
 const router = Router();
 
 router.get("/job-postings", JobManagementController.getJobPostings);
-router.get("/job-detail/:userId/:jobPostId", JobManagementController.getJobDetail);
 router.get("/get-jobs-by-candidate/:userId", JobManagementController.getCandidateJobs);
 router.get("/job-posting/:jobPostId", JobManagementController.getJobPosting);
+router.get("/job-detail/:userId/:jobPostId", JobManagementController.getJobDetail);
+
 router.get("/job-saved/:userId", JobManagementController.getJobPostingsSaved);
 router.get("/job-applied", JobManagementController.getJobsApplied);
 router.get("/search-job-postings", JobManagementController.findByJobPosition);

@@ -7,11 +7,11 @@ import { CustomSession } from './session';
 export interface CustomRequest extends Request {
     userData: {
         userId: string;
-        email: string
+        email: string;
         role: UserRole;
     };
 }
 
 export interface CustomSessionRequest extends Request {
-    session?: CustomSession;
+    session: Session & Partial<SessionData>;
 }

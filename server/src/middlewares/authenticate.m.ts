@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
-import { CustomRequest, UserDataType } from "../types/Custom";
+import { CustomRequest } from "../types/Custom";
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ const authenticateJWT = (req: Request, res: Response, next: NextFunction): void 
         }
 
         // Attach user data to the request
-        (req as CustomRequest).userData = user as UserDataType;
+        (req as any).userData = user;
 
         // Log user role for debugging
         console.log((req as CustomRequest).userData.role);

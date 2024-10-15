@@ -180,7 +180,7 @@ const AuthController = {
                 res
                   .status(401)
                   .json({ success: false, message: "Authentication failed" });
-                return;
+                res.redirect("http://localhost:5173/account.stacky.vn?token=false");
               }
 
               const candidate: IUser | null = await AuthService.getUserById(
