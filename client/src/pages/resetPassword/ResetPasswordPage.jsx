@@ -52,16 +52,14 @@ const ResetPasswordPage = () => {
       );
 
       if (response.data.success) {
-        setIsSuccess(true);
         toast.success("Đã đặt lại mật khẩu thành công!");
+        setIsSuccess(true);
         navigate("/account.stacky.vn");
       } else {
         setErrorMessage(response.data.message);
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error(error);
-      setErrorMessage("Đã xảy ra lỗi, vui lòng thử lại!");
       toast.error("Đã xảy ra lỗi, vui lòng thử lại!");
     }
   };

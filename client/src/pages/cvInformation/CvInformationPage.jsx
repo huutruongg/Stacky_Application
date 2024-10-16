@@ -14,13 +14,12 @@ import FormProgrammingSkills from "./FormProgrammingSkills";
 import FormEducation from "./FormEducation";
 import FormWorkExperience from "./FormWorkExperience";
 import axiosInstance from "@/lib/authorizedAxios";
-import { useToast } from "@/components/ui/use-toast";
 import useAuth from "@/hooks/useAuth";
 import { fetchData } from "@/api/fetchData";
+import toast from "react-hot-toast";
 
 const CvInformationPage = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const [checkExp, setCheckExp] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,10 +39,6 @@ const CvInformationPage = () => {
         const result = await fetchData(
           `candidate/get-candidate-details/${user.userId}`
         );
-        console.log({
-          preview: result.avatarUrl || "",
-          file: null, // No file since it's a URL
-        });
 
         // Reset form with data from API
         form.reset({
@@ -150,19 +145,9 @@ const CvInformationPage = () => {
         avatarUrl: uploadedAvatarUrl,
         ...restData,
       });
-
-      toast({
-        title: "Cập nhật thành công",
-        description: "Cập nhật hồ sơ thành công",
-      });
+      toast.success("Cập nhật thành công.");
     } catch (error) {
-      console.error("Error updating profile:", error.message);
-
-      toast({
-        title: "Cập nhật thất bại",
-        description: `${error.message}`,
-        variant: "destructive",
-      });
+      toast.error("Cập nhật thất bại");
     }
   };
 

@@ -1,18 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import IconHeart from "@/components/icons/IconHeart";
 import imgCompany from "@/components/image/imgCompany.png";
 import { useNavigate } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
+import axiosInstance from "@/lib/authorizedAxios";
+import toast from "react-hot-toast";
 
 const ItemJobSuggest = ({ jobData }) => {
+  const [changeColorLiked, setChangeColorLiked] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleSaveJob = async () => {
+    try {
+      await axiosInstance.post(`/job-posting/save-job`, {
+        userId: user.userId,
+        jobPostId: jobData._id,
+      });
+      toast.success("Lưu bài viết thành công");
+    } catch (error) {
+      toast.error("Lưu bài viết thất bại");
+    }
+  };
+
+  const handleDeleteSaveJob = async () => {
+    try {
+      await axiosInstance.delete(
+        `/job-posting/cancel-job-saved/${user.userId}/${jobData._id}`
+      );
+      toast.success("Xóa bài viết thành công");
+    } catch (error) {
+      toast.error("Xóa bài viết thất bại");
+    }
+  };
 
   return (
-    <div
-      className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border hover:border hover:border-primary hover:bg-white"
-      onClick={() => {
-        navigate(`/job-detail/${jobData.jobId}`);
-      }}
-    >
+    <div className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border hover:border hover:border-primary hover:bg-white">
       <div className="flex justify-between gap-2">
         <div className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] overflow-hidden rounded-md">
           <a href="/company">
@@ -29,22 +52,33 @@ const ItemJobSuggest = ({ jobData }) => {
                 <span className="text-xs font-semibold">HOT</span>
               </div>
               <h3>
-                <a
-                  href=""
-                  className="line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
+                <div
+                  className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
+                  onClick={() => {
+                    navigate(`/job-detail/${jobData._id}`);
+                  }}
                 >
                   {jobData.jobTitle}
-                </a>
+                </div>
               </h3>
             </div>
-            <a href="">
-              <IconHeart className={"w-5 h-5"} liked={""}></IconHeart>
-            </a>
+            <div
+              className="z-10 hover:cursor-pointer"
+              onClick={
+                jobData.isLiked === true ? handleDeleteSaveJob : handleSaveJob
+              }
+            >
+              <IconHeart
+                className="w-5 h-5"
+                liked={jobData.isLiked}
+                initialLiked={changeColorLiked}
+              />
+            </div>
           </div>
           <div>
             <a
               href="/company"
-              className="line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
+              className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
               {jobData.orgName.toUpperCase()}
             </a>

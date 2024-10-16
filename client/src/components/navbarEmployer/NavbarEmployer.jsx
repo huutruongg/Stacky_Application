@@ -54,7 +54,7 @@ const ItemNavbar = ({ label, Icon, path }) => {
 
   return (
     <div
-      className="flex gap-5 items-center rounded-md hover:text-primary"
+      className="flex gap-5 items-center rounded-md hover:text-primary  custom-scrollbar"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

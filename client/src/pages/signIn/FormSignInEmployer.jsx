@@ -14,6 +14,7 @@ import InputField from "@/components/fieldForm/InputField";
 import { Modal } from "@/components/ui/modal";
 import ModalResetPassword from "./ModalResetPassword";
 import { AlertModal } from "@/components/shared/AlertModal";
+import IconTick from "@/components/icons/IconTick";
 
 const FormSignInEmployer = () => {
   const navigate = useNavigate();
@@ -78,10 +79,6 @@ const FormSignInEmployer = () => {
     [login, navigate]
   );
 
-  const onConfirm = async () => {
-    console.log("111");
-  };
-
   return (
     <div className="flex flex-col items-center justify-center p-10">
       <Form {...form}>
@@ -123,7 +120,6 @@ const FormSignInEmployer = () => {
         <AlertModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          onConfirm={onConfirm}
           loading={loading}
         />
         <Modal
@@ -131,6 +127,7 @@ const FormSignInEmployer = () => {
           onClose={onCloseUpdate}
           className={"!bg-white !px-1 min-w-[600px]"}
           title="Quên mật khẩu"
+          icon={<IconTick color={"#48038C"} className={"w-10 h-10"} />}
           description="Hãy kiểm tra email của bạn. Sau đó nhấn vào link trong hộp thư để đổi lại mật khẩu."
         >
           <ModalResetPassword modalClose={onCloseUpdate} />

@@ -7,7 +7,7 @@ import Button from "@/components/button/Button";
 import IconSend from "@/components/icons/IconSend";
 import IconHeart from "@/components/icons/IconHeart";
 
-const JobSummary = ({ jobData }) => {
+const JobSummary = ({ jobData, isliked }) => {
   const dateString = jobData.applicationDeadline;
 
   // Chuyển đổi chuỗi thành đối tượng Date
@@ -49,8 +49,13 @@ const JobSummary = ({ jobData }) => {
           <IconSend></IconSend>
           <span className="font-semibold">ỨNG TUYỂN NGAY</span>
         </Button>
-        <Button className="gap-3 px-10 border-2 border-[#48038C]">
-          <IconHeart></IconHeart>
+        <Button
+          className={`gap-3 px-10 border-2 border-[#48038C] ${
+            isliked ? "disabled:opacity-50" : ""
+          }`}
+          disabled={isliked}
+        >
+          <IconHeart liked={isliked}></IconHeart>
           <span className="font-semibold text-primary">LƯU</span>
         </Button>
       </div>

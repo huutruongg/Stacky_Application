@@ -17,8 +17,6 @@ const JobSavePage = () => {
     indexOfLastItem
   );
 
-  console.log(currentSaveJobData);
-
   const handlePageChange = (page) => {
     setCurrentPage(page); // Cập nhật trang hiện tại
   };

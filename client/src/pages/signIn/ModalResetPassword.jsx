@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Button from "@/components/button/Button";
 import { useForm } from "react-hook-form";
-
 import { Link } from "react-router-dom";
 import { Form } from "@/components/ui/form";
 import axiosInstance from "@/lib/authorizedAxios";
@@ -34,8 +33,6 @@ const ModalResetPassword = ({ modalClose }) => {
       );
       setEmailSent(true); // Đánh dấu email đã được gửi
       toast.success("Đã gửi email.");
-      // const userId = response.data.userId; // Assuming this contains the userId
-      // navigate(`/recruiter/reset-password/${userId}`);
     } catch (error) {
       console.error(error.status);
       if (error.status === 404) {
@@ -49,7 +46,7 @@ const ModalResetPassword = ({ modalClose }) => {
   };
 
   return (
-    <div className="flex flex-col gap-10 mt-5 px-10">
+    <div className="flex flex-col gap-10 my-5 px-10">
       {!emailSent ? (
         <div className="">
           <div className="flex flex-col gap-3">

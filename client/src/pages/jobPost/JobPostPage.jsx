@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form } from "@/components/ui/form";
 import Panel from "@/components/panel/Panel";
 import { useForm } from "react-hook-form";
@@ -15,10 +15,17 @@ import FormApllyDeadline from "./FormApllyDeadline";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
+import { AlertModal } from "@/components/shared/AlertModal";
+import { Modal } from "@/components/ui/modal";
+import ModalReviewJob from "./ModalReviewJob";
 
 const JobPostPage = () => {
   const { user } = useAuth();
-  console.log(user.userId);
+  const [open, setOpen] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const onCloseReview = () => setOpenReview(false);
 
   const form = useForm({
     resolver: zodResolver(postJobSchema),
@@ -36,7 +43,7 @@ const JobPostPage = () => {
       staffLevel: "",
       certificateRequired: "",
       professionalSkills: "",
-      languages: [{ language: "", level: "" }],
+      languagesRequired: [{ language: "", level: "" }],
       jobBenefit: "",
       leavePolicy: "",
       jobDescription: "",
@@ -46,42 +53,46 @@ const JobPostPage = () => {
     },
   });
 
+  const formData = form.watch();
+
+  console.log(formData);
+
   const onSubmit = async (data) => {
     const { jobImage, ...restData } = data;
-    console.log(jobImage);
-
-    // Create FormData
     const formData = new FormData();
 
-    // If the user has selected an image, append it to FormData
-    if (jobImage && jobImage.file) {
-      formData.append("files", jobImage.file); // Append each file to 'files' field
-      console.log("FormData with file:", jobImage.file);
+    if (jobImage?.file) {
+      formData.append("files", jobImage.file);
     }
 
     try {
-      // Send request to the backend
-      const imageResponse = await axiosInstance.post(
-        "/upload/recruiter-images",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Set the correct header
-          },
-        }
-      );
+      setLoading(true);
 
-      const jobImageUrl = imageResponse.data.urlImages[0];
+      let jobImageUrl = "";
+      if (jobImage?.file) {
+        const imageResponse = await axiosInstance.post(
+          "/upload/recruiter-images",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        jobImageUrl = imageResponse.data.urlImages[0];
+      }
+
       console.log({
+        userId: user.userId,
+        jobImage: jobImageUrl,
         ...restData,
-        jobImage: jobImageUrl, // URL của ảnh đã upload
       });
 
       const response = await axiosInstance.post(
         "/job-posting/create-job-posting",
         {
-          recruiterId: user.userId,
-          jobImage: jobImageUrl, // URL của ảnh đã upload
+          userId: user.userId,
+          jobImage: jobImageUrl,
           ...restData,
         }
       );
@@ -91,11 +102,13 @@ const JobPostPage = () => {
     } catch (error) {
       console.error("Lỗi khi upload file", error);
       toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div className="page-container relative mt-5">
-      {/* Panel section */}
       <Panel
         title={"Tạo tin tuyển dụng"}
         children={
@@ -105,14 +118,14 @@ const JobPostPage = () => {
       />
       <div className="custom-panel"></div>
       <div className="grid grid-cols-12 gap-5">
-        <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border-2 border-primary bg-secondary rounded-t-xl fixed-navbar">
+        <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border-2 border-primary bg-secondary rounded-t-xl">
           <NavbarEmployer />
         </div>
-        {/* Form section */}
-        <div className="grid col-start-4 col-end-13 w-full gap-5">
+
+        <div className="grid col-start-4 col-end-13 w-full">
           <Form {...form}>
             <form
-              className="space-y-5 my-5 w-full"
+              className="space-y-5 mt-5 w-full"
               onSubmit={form.handleSubmit(onSubmit)}
             >
               <FormBasicInfo form={form} />
@@ -121,13 +134,60 @@ const JobPostPage = () => {
               <FormBenefit form={form} />
               <FormJobDescription form={form} />
               <FormApllyDeadline form={form} />
-              <div className="flex justify-center">
+
+              <div className="flex items-center justify-end w-full">
+                <AlertModal
+                  isOpen={open}
+                  onClose={() => setOpen(false)}
+                  loading={loading}
+                />
+                <Modal
+                  isOpen={openReview}
+                  onClose={onCloseReview}
+                  className={"bg-white max-w-[1000px]"}
+                  title="Review Job Post"
+                >
+                  <ModalReviewJob
+                    jobData={formData}
+                    modalClose={onCloseReview}
+                  />
+                  <div className="sticky bg-white bottom-0 flex items-center justify-center gap-5 py-5">
+                    <Button
+                      className="text-center px-10 disabled:opacity-50 border-2 border-primary text-primary hover:opacity-60"
+                      type="button"
+                      onClick={() => setOpenReview(false)}
+                    >
+                      Trở lại
+                    </Button>
+                    <Button
+                      kind="primary"
+                      className="text-center px-10 disabled:opacity-50"
+                      type="button" // Changed to 'button' to prevent immediate submission
+                      onClick={form.handleSubmit(onSubmit)} // Ensure this calls the onSubmit function
+                      isLoading={loading} // Set loading state
+                    >
+                      Đăng bài viết
+                    </Button>
+                  </div>
+                </Modal>
+              </div>
+
+              <div className="sticky bottom-0 py-5 bg-white flex items-center justify-center gap-5">
                 <Button
                   kind="primary"
-                  className="w-fit px-10 disabled:opacity-50"
-                  type="submit"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="button"
+                  onClick={() => setOpenReview(true)}
                 >
-                  Lưu CV
+                  Xem trước
+                </Button>
+                <Button
+                  kind="primary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="submit"
+                  isLoading={loading}
+                >
+                  Đăng bài viết
                 </Button>
               </div>
             </form>

@@ -33,7 +33,7 @@ export const postJobSchema = z.object({
   staffLevel: z.string().min(1, "Vị trí tuyển dụng là bắt buộc"),
   certificateRequired: z.string().min(1, "Chứng chỉ cần thiết là bắt buộc"),
   professionalSkills: z.string().min(1, "Kỹ năng chuyên môn là bắt buộc"),
-  languages: z
+  languagesRequired: z
     .array(
       z.object({
         language: z.string().optional(),

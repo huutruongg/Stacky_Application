@@ -62,7 +62,7 @@ const FormLanguageAbility = ({ form }) => {
   // Initialize field array for dynamic form fields
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "languages", // Name should match the form's field name
+    name: "languagesRequired", // Name should match the form's field name
   });
 
   const handleAddLanguage = (e) => {
@@ -88,7 +88,7 @@ const FormLanguageAbility = ({ form }) => {
               {/* Language Select Field */}
               <SelectField
                 control={form.control}
-                name={`languages.${index}.language`} // Adjust field name structure
+                name={`languagesRequired.${index}.language`} // Adjust field name structure
                 labelName={"Ngoại ngữ"}
                 placeholder="Chọn ngoại ngữ"
                 options={[
@@ -102,7 +102,7 @@ const FormLanguageAbility = ({ form }) => {
               {/* Proficiency Level Select Field */}
               <SelectField
                 control={form.control}
-                name={`languages.${index}.level`} // Adjust field name structure
+                name={`languagesRequired.${index}.level`} // Adjust field name structure
                 labelName={"Mức độ thông thạo"}
                 placeholder="Chọn mức độ"
                 options={[

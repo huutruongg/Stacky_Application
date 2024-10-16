@@ -2,7 +2,7 @@ import Button from "@/components/button/Button";
 import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
-const JobDescription = ({ jobData, isliked }) => {
+const ModalReviewJob = ({ jobData }) => {
   const dateString = jobData.applicationDeadline;
 
   // Chuyển đổi chuỗi thành đối tượng Date
@@ -20,12 +20,23 @@ const JobDescription = ({ jobData, isliked }) => {
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <TitleField children={"Chi tiết tuyển dụng"}></TitleField>
       <div className="flex flex-col gap-5">
+        {jobData.jobImage ? (
+          <div className="flex items-center justify-center h-[220px] w-full overflow-hidden">
+            <img
+              src={jobData.jobImage.preview}
+              alt=""
+              className="w-[400px] bg-cover bg-center h-full object-cover rounded-md"
+            />
+          </div>
+        ) : (
+          ""
+        )}
         <div className="">
           <h3 className="text-text1 font-medium text-base mb-1">
             Mô tả công việc
           </h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobDescription.split("\\n").map((line, index) => (
+            {jobData.jobDescription.split("\n").map((line, index) => (
               <li key={index}>
                 {line.replace(/^-/, "").trim()}{" "}
                 {/* Loại bỏ ký tự '-' và khoảng trắng */}
@@ -82,7 +93,7 @@ const JobDescription = ({ jobData, isliked }) => {
           <div className="text-text1 text-sm px-5">
             {jobData.jobBenefit !== "" ? (
               <div>
-                {jobData.jobBenefit.split("\\n").map((line, index) => (
+                {jobData.jobBenefit.split("\n").map((line, index) => (
                   <li key={index}>
                     {line.replace(/^-/, "").trim()}{" "}
                     {/* Loại bỏ ký tự '-' và khoảng trắng */}
@@ -132,23 +143,9 @@ const JobDescription = ({ jobData, isliked }) => {
         <div className="">
           <span>Hạn nộp hồ sơ: {formattedDate}</span>
         </div>
-        <div className="flex justify-center items-center gap-10 mt-5">
-          <Button kind="primary" className="gap-3 px-16">
-            <span className="font-semibold">ỨNG TUYỂN NGAY</span>
-          </Button>
-          {isliked ? (
-            <Button className="gap-3 px-10 border-2 border-[#48038C]">
-              <span className="font-semibold text-primary">XÓA TIN</span>
-            </Button>
-          ) : (
-            <Button className="gap-3 px-10 border-2 border-[#48038C]">
-              <span className="font-semibold text-primary">LƯU TIN</span>
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );
 };
 
-export default JobDescription;
+export default ModalReviewJob;
