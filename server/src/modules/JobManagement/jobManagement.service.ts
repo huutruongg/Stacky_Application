@@ -200,10 +200,45 @@ const JobManagementService = {
     }
   },
 
-  findJobPostingsByJobPosition: async (
-    key: string
-  ): Promise<IJobPostMin[] | null> => {
-    return handleFindByField(JobPost, "jobTitle", key);
+  findJobPostingsByJobPosition: async (key: string, location: string, industry: string): Promise<any[] | null> => {
+    try {
+      // Step 1: Build the query dynamically based on the provided parameters
+      const query: any = {};
+      if (key) query.jobTitle = { $regex: key, $options: 'i' };
+      if (location) query.location = { $regex: location, $options: 'i' };
+      if (industry) query.typeOfIndustry = { $regex: industry, $options: 'i' };
+
+      // Step 2: Find job posts and only select necessary fields, including userId
+      const jobPosts = await JobPost.find(query)
+        .select('jobTitle jobImage location jobSalary typeOfIndustry userId')
+        .exec();
+      log("Job posts: ", jobPosts);
+      // Step 3: Extract the userIds (recruiter ids) from the job posts
+      const recruiterIds = jobPosts.map(post => post.userId).filter(id => id); 
+      log("Recruiter IDs: ", recruiterIds);
+      // Step 4: Fetch the recruiters based on the userIds, selecting only the orgName
+      const recruiters = await Recruiter.find({ userId: { $in: recruiterIds } })
+        .select('orgName userId')
+        .exec();
+      log("Recruiters: ", recruiters);
+      // Step 5: Create a map of recruiterId to orgName for quick lookups
+      const recruiterMap = recruiters.reduce((acc, recruiter) => {
+        acc[String(recruiter.userId)] = recruiter.orgName;
+        return acc;
+    }, {} as { [key: string]: string });
+    // Step 6: Combine the job posts and recruiter names into a new array
+    const jobPostsWithOrgNames = jobPosts.map(post => {
+        return {
+            ...post.toObject(),
+            orgName: recruiterMap[String(post.userId)] || 'Unknown', 
+        };
+    });
+
+      return jobPostsWithOrgNames;
+    } catch (error) {
+      console.log("Error:", error);
+      return null;
+    }
   },
 
   filterJobPostingByLocation: async (
@@ -281,37 +316,64 @@ const JobManagementService = {
   getJobPostings: async (): Promise<IJobPostMin[] | null> => {
     try {
       // Perform both queries concurrently
-      const [jobPosts, recruiters] = await Promise.all([
-        JobPost.find()
-          .select("_id jobTitle jobImage jobSalary location recruiterId")
-          .lean()
-          .exec(),
+      // const [jobPosts, recruiters] = await Promise.all([
+      //   JobPost.find()
+      //     .select("_id jobTitle jobImage jobSalary location recruiterId")
+      //     .lean()
+      //     .exec(),
 
-        Recruiter.find().select("_id orgName").lean().exec(),
-      ]);
+      //   Recruiter.find().select("_id orgName").lean().exec(),
+      // ]);
 
-      if (!jobPosts || jobPosts.length === 0) {
-        console.warn("No job posts found");
-        return null;
-      }
+      // if (!jobPosts || jobPosts.length === 0) {
+      //   console.warn("No job posts found");
+      //   return null;
+      // }
 
-      // Create a recruiter map for quick lookup
-      const recruiterMap = new Map<string, string>();
-      recruiters.forEach((recruiter) => {
-        recruiterMap.set(String(recruiter._id), recruiter.orgName);
-      });
+      // // Create a recruiter map for quick lookup
+      // const recruiterMap = new Map<string, string>();
+      // recruiters.forEach((recruiter) => {
+      //   recruiterMap.set(String(recruiter._id), recruiter.orgName);
+      // });
 
-      // Merge job posts with recruiter organization names
-      const mergedResults: IJobPostMin[] = jobPosts.map((post) => ({
-        jobId: post._id,
-        jobTitle: post.jobTitle,
-        jobImage: post.jobImage,
-        jobSalary: post.jobSalary,
-        location: post.location,
-        orgName: recruiterMap.get(String(post.userId)) || "Unknown", // Handle missing orgName
-      }));
+      // // Merge job posts with recruiter organization names
+      // const mergedResults: IJobPostMin[] = jobPosts.map((post) => ({
+      //   jobId: post._id,
+      //   jobTitle: post.jobTitle,
+      //   jobImage: post.jobImage,
+      //   jobSalary: post.jobSalary,
+      //   location: post.location,
+      //   orgName: recruiterMap.get(String(post.userId)) || "Unknown", // Handle missing orgName
+      // }));
 
-      return mergedResults;
+      // return mergedResults;
+
+      const jobPosts = await JobPost.find()
+        .select('jobTitle jobImage location jobSalary typeOfIndustry userId')
+        .exec();
+      log("Job posts: ", jobPosts);
+      // Step 3: Extract the userIds (recruiter ids) from the job posts
+      const recruiterIds = jobPosts.map(post => post.userId).filter(id => id); 
+      log("Recruiter IDs: ", recruiterIds);
+      // Step 4: Fetch the recruiters based on the userIds, selecting only the orgName
+      const recruiters = await Recruiter.find({ userId: { $in: recruiterIds } })
+        .select('orgName userId')
+        .exec();
+      log("Recruiters: ", recruiters);
+      // Step 5: Create a map of recruiterId to orgName for quick lookups
+      const recruiterMap = recruiters.reduce((acc, recruiter) => {
+        acc[String(recruiter.userId)] = recruiter.orgName;
+        return acc;
+    }, {} as { [key: string]: string });
+    // Step 6: Combine the job posts and recruiter names into a new array
+    const jobPostsWithOrgNames = jobPosts.map(post => {
+        return {
+            ...post.toObject(),
+            orgName: recruiterMap[String(post.userId)] || 'Unknown', 
+        };
+    });
+
+      return jobPostsWithOrgNames;
     } catch (error) {
       console.error("Error fetching job postings by page:", error);
       return null;

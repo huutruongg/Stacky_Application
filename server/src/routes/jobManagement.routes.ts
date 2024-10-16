@@ -13,8 +13,8 @@ router.get("/job-detail/:userId/:jobPostId", JobManagementController.getJobDetai
 router.get("/job-saved/:userId", JobManagementController.getJobPostingsSaved);
 router.get("/job-applied", JobManagementController.getJobsApplied);
 router.get("/search-job-postings", JobManagementController.findByJobPosition);
-router.get("/filter-by-location", JobManagementController.filterByLocation);
-router.get("/filter-by-industry", JobManagementController.filterByIndustry);
+// router.get("/filter-by-location", JobManagementController.filterByLocation);
+// router.get("/filter-by-industry", JobManagementController.filterByIndustry);
 // router.get('/get-jobs-posted/:recruiterId', JobManagementController.getJobsPosted)
 router.post("/create-job-posting", JobManagementController.createJobPosting);
 router.delete("/delete-job-posting/:jobPostId", JobManagementController.deleteJobPosting);

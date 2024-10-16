@@ -203,9 +203,9 @@ const JobManagementController = {
       //     return;
       // }
 
-      const { keySearch } = req.query;
+      const { keySearch, location, industry } = req.query;
       const result = await JobManagementService.findJobPostingsByJobPosition(
-        keySearch as string
+        keySearch as string, location as string, industry as string
       );
       if (!result || result.length === 0) {
         res.status(404).json({ success: false, message: "Jobs not found!" });
