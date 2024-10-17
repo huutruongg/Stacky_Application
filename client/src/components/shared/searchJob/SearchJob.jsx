@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+// SearchJob.jsx
+import React, { useState } from "react";
 import IconClose from "@/components/icons/IconClose";
 import IconLocation from "@/components/icons/IconLocation";
 import IconSearch from "@/components/icons/IconSearch";
@@ -8,56 +9,38 @@ import ComboboxMajor from "@/components/combobox/ComboboxMajor";
 import IconBag from "@/components/icons/IconBag";
 import { fetchData } from "@/api/fetchData";
 
-const SearchJob = () => {
-  const [jobData, setJobData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const SearchJob = ({ onSearchResults }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedMajor, setSelectedMajor] = useState("");
-
-  let queryParams = [];
-
-  if (searchInput) {
-    queryParams.push(`keySearch=${searchInput}`);
-  }
-  if (selectedMajor) {
-    queryParams.push(`industry=${selectedMajor}`);
-  }
-  if (selectedProvince) {
-    queryParams.push(`location=${selectedProvince}`);
-  }
-
-  console.log(`job-posting/search-job-postings?${queryParams.join("&")}`);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
+    setLoading(true); // Start loading
     try {
       const result = await fetchData(
-        `job-posting/search-job-postings?${queryParams.join("&")}`
+        `job-posting/search-job-postings?keySearch=${encodeURIComponent(
+          searchInput.trim()
+        )}&industry=${encodeURIComponent(
+          selectedMajor.trim()
+        )}&location=${encodeURIComponent(selectedProvince.trim())}`
       );
-      setJobData(result);
-      setLoading(false);
+      onSearchResults(result); // Pass results back to parent component
     } catch (error) {
       console.error("Error while fetching jobs data:", error);
-      setError(error);
-      setLoading(false);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
-  const handleClearInput = () => {
-    setSearchInput(""); // Clear the input field
-  };
+  const handleClearInput = () => setSearchInput("");
 
-  const handleProvinceSelect = (value) => {
-    setSelectedProvince(value); // Update selected province
-  };
+  const handleProvinceSelect = (value) => setSelectedProvince(value);
 
-  const handleMajorSelect = (value) => {
-    setSelectedMajor(value); // Update selected province
-  };
+  const handleMajorSelect = (value) => setSelectedMajor(value);
 
   return (
-    <div className="flex justify-between items-center bg-white rounded-full p-2 border-[1px] border-solid border-secondary">
+    <div className="flex justify-between items-center bg-white rounded-full p-2 border border-secondary">
       <div className="relative flex items-center min-w-[500px]">
         <IconSearch className="absolute m-2 w-5 h-5" />
         <input
@@ -68,30 +51,32 @@ const SearchJob = () => {
           className="w-full pl-10 pr-5 py-1 outline-none rounded-lg"
         />
         {searchInput && (
-          <div className="cursor-pointer" onClick={handleClearInput}>
-            <IconClose className="hover:bg-secondary rounded-full w-6 h-6" />
-          </div>
+          <IconClose
+            className="cursor-pointer hover:bg-secondary rounded-full w-6 h-6 ml-2"
+            onClick={handleClearInput}
+          />
         )}
       </div>
       <div className="flex items-center border-x px-2 ml-2">
-        <IconLocation color="#b3b8bd" className="absolute m-2 z-10 w-5 h-5" />
+        <IconLocation className="absolute m-2 w-5 h-5 text-gray-400" />
         <ComboboxLocation
           valueProvinces={selectedProvince}
           onSelectProvince={handleProvinceSelect}
         />
       </div>
       <div className="flex items-center border-r px-2 mr-4">
-        <IconBag color="#b3b8bd" className="absolute m-2 z-10 w-5 h-5" />
+        <IconBag className="absolute m-2 w-5 h-5 text-gray-400" />
         <ComboboxMajor
           valueMajor={selectedMajor}
           onSelectMajor={handleMajorSelect}
         />
       </div>
-      <div className="flex items-center justify-center bg-button text-white rounded-full px-5">
-        <Button className="max-h-10" onClick={handleSearch}>
-          Tìm kiếm
-        </Button>
-      </div>
+      <Button
+        className="bg-button text-white rounded-full px-5 max-h-10"
+        onClick={handleSearch}
+      >
+        {loading ? "Loading..." : "Tìm kiếm"}
+      </Button>
     </div>
   );
 };
