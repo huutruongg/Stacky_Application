@@ -7,30 +7,25 @@ import Button from "@/components/button/Button";
 import ComboboxLocation from "@/components/combobox/ComboboxLocation";
 import ComboboxMajor from "@/components/combobox/ComboboxMajor";
 import IconBag from "@/components/icons/IconBag";
-import { fetchData } from "@/api/fetchData";
+import { useNavigate } from "react-router-dom";
 
-const SearchJob = ({ onSearchResults }) => {
+const SearchJob = () => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedMajor, setSelectedMajor] = useState("");
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Use the useNavigate hook for navigation
 
-  const handleSearch = async () => {
-    setLoading(true); // Start loading
-    try {
-      const result = await fetchData(
-        `job-posting/search-job-postings?keySearch=${encodeURIComponent(
-          searchInput.trim()
-        )}&industry=${encodeURIComponent(
-          selectedMajor.trim()
-        )}&location=${encodeURIComponent(selectedProvince.trim())}`
-      );
-      onSearchResults(result); // Pass results back to parent component
-    } catch (error) {
-      console.error("Error while fetching jobs data:", error);
-    } finally {
-      setLoading(false); // End loading
-    }
+  const handleSearch = () => {
+    // Prepare search parameters
+    const params = new URLSearchParams({
+      keySearch: searchInput.trim(),
+      industry: selectedMajor.trim(),
+      location: selectedProvince.trim(),
+    }).toString();
+
+    // Navigate to the search-job page with query parameters
+    navigate(`/search-job?${params}`);
+    console.log(params);
   };
 
   const handleClearInput = () => setSearchInput("");
@@ -75,7 +70,7 @@ const SearchJob = ({ onSearchResults }) => {
         className="bg-button text-white rounded-full px-5 max-h-10"
         onClick={handleSearch}
       >
-        {loading ? "Loading..." : "Tìm kiếm"}
+        Tìm kiếm
       </Button>
     </div>
   );
