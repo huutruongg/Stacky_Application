@@ -54,11 +54,9 @@ const CompanyInfoPage = () => {
         }
       );
 
-      console.log("Upload successful", response.data);
-      toast.success("Tạo bài viết thành công!!!");
+      toast.success("Tạo bài viết thành công.");
     } catch (error) {
-      console.error("Lỗi khi upload file", error);
-      toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
+      toast.error("Tạo bài viết thất bại.");
     }
   };
 
@@ -73,7 +71,7 @@ const CompanyInfoPage = () => {
         />
         <div className="custom-panel"></div>
         <div className="grid grid-cols-12 gap-5">
-          <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border bg-secondary rounded-t-xl fixed-navbar">
+          <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border bg-secondary rounded-t-xl custom-scrollbar">
             <NavbarEmployer />
           </div>
           {/* Form section */}

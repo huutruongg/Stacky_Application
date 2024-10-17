@@ -14,8 +14,6 @@ const Heading = () => {
   const [isHovered, setIsHovered] = useState(false);
   const { jobSaveData, loading } = useJobSave();
 
-  // console.log(jobSaveData);
-
   const handleMouseEnter = () => {
     setIsHovered(true);
   };
@@ -40,7 +38,7 @@ const Heading = () => {
           {user ? (
             <div className="flex justify-between items-center ">
               <ItemNotification
-                icon={<IconHeart />}
+                icon={<IconHeart defaultLiked={false} />}
                 children={!loading ? jobSaveData.length : "0"}
                 url={"/job-save"}
               />

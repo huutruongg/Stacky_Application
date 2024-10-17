@@ -1,9 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import YouCanInterested from "@/components/youCanInterested/YouCanInterested";
 import PaginationDemo from "@/components/pagination/Pagination";
 import ItemJobUploaded from "@/components/itemJob/ItemJobUploaded";
+import { fetchData } from "@/api/fetchData";
+import useAuth from "@/hooks/useAuth";
 
 const CvUploadedPage = () => {
+  const { user } = useAuth();
+  const [jobData, setJobData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [newsPerPage, setNewsPerPage] = useState(12);
+  const indexOfLastItem = currentPage * newsPerPage;
+  const indexOfFirstItem = indexOfLastItem - newsPerPage;
+  const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        // Gọi API với type là 'job-postings' và phân trang
+        const result = await fetchData(`job-posting/job-applied`, {
+          userId: user.userId,
+        });
+        setJobData(result); // Giả sử API trả về dữ liệu trong result.data
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error while fetching jobs data:", error);
+        setError(error); // Cập nhật lỗi
+        setLoading(false);
+      }
+    };
+    getData();
+  }, []);
+
+  console.log(jobData);
+
   return (
     <div className="page-container grid grid-cols-12 gap-7 my-10">
       <div className="grid col-start-1 col-end-9 h-fit rounded-xl bg-secondary">
@@ -29,20 +66,18 @@ const CvUploadedPage = () => {
             </span>
           </div>
           <div className="flex flex-col gap-5">
-            <ItemJobUploaded></ItemJobUploaded>
-            <ItemJobUploaded></ItemJobUploaded>
-            <ItemJobUploaded></ItemJobUploaded>
-            <ItemJobUploaded></ItemJobUploaded>
-            <ItemJobUploaded></ItemJobUploaded>
-            <ItemJobUploaded></ItemJobUploaded>
+            {currentJobData.length > 0 &&
+              currentJobData.map((item, index) => (
+                <ItemJobUploaded jobData={item} key={index} />
+              ))}
           </div>
           <div className="mt-5">
             <PaginationDemo
-              PerPage={"newsPerPage"}
-              dataBase={"sortedProducts"}
-              currentPage={"currentPage"}
-              onPageChange={"handlePageChange"}
-            ></PaginationDemo>
+              PerPage={newsPerPage}
+              dataBase={jobData}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </div>

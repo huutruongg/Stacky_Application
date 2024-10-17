@@ -2,8 +2,24 @@ import React from "react";
 import imgCompany from "@/components/image/imgCompany.png";
 import IconPrice from "@/components/icons/IconPrice";
 import dayjs from "dayjs";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+import axiosInstance from "@/lib/authorizedAxios";
 
 const ItemJobSave = ({ jobData }) => {
+  const { user } = useAuth();
+
+  const handleSaveJob = async () => {
+    try {
+      await axiosInstance.delete(
+        `/job-posting/cancel-job-saved/${user.userId}/${jobData._id}`
+      );
+      toast.success("Xóa bài viết thành công");
+    } catch (error) {
+      toast.error("Xóa bài viết thất bại");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-5 bg-white p-5 rounded-lg border hover:border hover:border-primary">
       <div className="flex justify-between items-center gap-4">
@@ -51,7 +67,10 @@ const ItemJobSave = ({ jobData }) => {
               <button className="px-5 py-1 text-white bg-primary rounded-md hover:opacity-80">
                 Ứng tuyển
               </button>
-              <button className="px-5 py-1 rounded-md hover:opacity-70 border border-primary">
+              <button
+                className="px-5 py-1 rounded-md hover:opacity-70 border border-primary"
+                onClick={handleSaveJob}
+              >
                 Hủy bỏ
               </button>
             </div>

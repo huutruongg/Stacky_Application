@@ -5,7 +5,6 @@ import Panel from "@/components/panel/Panel";
 import React from "react";
 
 const JobPostManagerPage = () => {
-
   return (
     <div className="page-container relative mt-5">
       {/* Panel section */}
@@ -16,7 +15,7 @@ const JobPostManagerPage = () => {
       />
       <div className="custom-panel"></div>
       <div className="grid grid-cols-12 gap-5">
-        <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border-2 border-primary bg-secondary rounded-t-xl fixed-navbar">
+        <div className="sticky top-[208px] left-0 h-[calc(100vh-208px)] overflow-y-auto grid col-start-1 col-end-4 border-2 border-primary bg-secondary rounded-t-xl custom-scrollbar">
           <NavbarEmployer />
         </div>
         {/* Form section */}
@@ -38,14 +37,7 @@ const JobPostManagerPage = () => {
                 {"2"} Không được duyệt
               </span>
             </div>
-            <div className="flex flex-col gap-5">
-              <ItemJobUploaded></ItemJobUploaded>
-              <ItemJobUploaded></ItemJobUploaded>
-              <ItemJobUploaded></ItemJobUploaded>
-              <ItemJobUploaded></ItemJobUploaded>
-              <ItemJobUploaded></ItemJobUploaded>
-              <ItemJobUploaded></ItemJobUploaded>
-            </div>
+            <div className="flex flex-col gap-5"></div>
             <div className="mt-5">
               <PaginationDemo
                 PerPage={"newsPerPage"}

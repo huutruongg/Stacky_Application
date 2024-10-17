@@ -21,6 +21,10 @@ export const JobSaveProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
+      if (!user) {
+        console.warn("User is not available");
+        return;
+      }
       try {
         const response = await axiosInstance.get(
           `/job-posting/job-saved/${user.userId}`
@@ -34,7 +38,7 @@ export const JobSaveProvider = ({ children }) => {
     };
 
     fetchSavedJobs();
-  }, []);
+  }, [user]);
 
   const value = useMemo(
     () => ({ jobSaveData, loading }),

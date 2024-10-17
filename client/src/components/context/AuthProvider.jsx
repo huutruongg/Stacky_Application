@@ -1,3 +1,4 @@
+import axiosInstance from "@/lib/authorizedAxios";
 import React, { createContext, useState, useEffect } from "react";
 
 // Define the context
@@ -25,7 +26,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("accessToken", token);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axiosInstance.post(`/auth/logout`);
+    } catch (error) {
+      console.log(error);
+    }
     setUser(null);
     setAccessToken(null);
     localStorage.removeItem("userInfo");

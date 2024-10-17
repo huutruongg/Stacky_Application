@@ -13,6 +13,7 @@ import LayoutEmployer from "./components/shared/LayoutEmployer";
 import CompanyInfoPage from "./pages/companyInfo/CompanyInfoPage";
 import ResetPasswordPage from "./pages/resetPassword/ResetPasswordPage";
 import JobPostManagerPage from "./pages/jobPostManager/JobPostManagerPage";
+import SearchJobPage from "./pages/searchJob/SearchJobPage";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               path="/recruiter/reset-password/:userId"
               element={<ResetPasswordPage />}
             />
+            <Route path="/search-job" element={<SearchJobPage />} />
           </Route>
           <Route element={<LayoutEmployer />}>
             <Route path="/tools" element={<JobPostPage />} />

@@ -6,13 +6,14 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store/configureStore.jsx";
 import { AuthProvider } from "./components/context/AuthProvider.jsx";
-import { Toaster } from "react-hot-toast";
 import { JobSaveProvider } from "./components/context/JobSaveProvider.jsx";
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
@@ -20,10 +21,9 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <JobSaveProvider>
           <App />
-          <Toaster></Toaster>
+          <Toaster position="top-right" reverseOrder={false}></Toaster>
         </JobSaveProvider>
       </AuthProvider>
     </BrowserRouter>
-    {/* <ToastContainer bodyClassName="font-primary text-sm"></ToastContainer> */}
   </Provider>
 );

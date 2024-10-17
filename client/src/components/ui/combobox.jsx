@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,77 +18,59 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const provinces = [
-  {
-    value: "ha_noi",
-    label: "Hà Nội",
-  },
-  {
-    value: "ho_chi_minh",
-    label: "Thành phố Hồ Chí Minh",
-  },
-  {
-    value: "da_nang",
-    label: "Đà Nẵng",
-  },
-  {
-    value: "hai_phong",
-    label: "Hải Phòng",
-  },
-  {
-    value: "nha_trang",
-    label: "Nha Trang",
-  },
-  {
-    value: "can_tho",
-    label: "Cần Thơ",
-  },
-  {
-    value: "vinh",
-    label: "Vinh",
-  },
-];
-
-export function ComboboxDemo() {
+export function Combobox({
+  items = [],
+  onSelect,
+  buttonPlaceholder = "Select an item",
+  buttonClassName = "",
+  popoverClassName = "",
+  searchPlaceholder = "Search...",
+  listHeight = "h-[300px]",
+  listWidth = "w-[200px]",
+  defaultSelected = "",
+}) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(defaultSelected);
+
+  const handleSelect = (selectedValue) => {
+    setValue(selectedValue === value ? "" : selectedValue);
+    setOpen(false);
+    if (onSelect) onSelect(selectedValue);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="secondary"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] pl-8 justify-between"
+          className={cn(
+            "pl-8 text-text5 font-medium justify-between hover:bg-[#f4ebfecc] rounded-full",
+            buttonClassName
+          )}
         >
-          {value
-            ? provinces.find((province) => province.value === value)?.label
-            : "Tất cả tỉnh thành"}
+          {value ? items.find((item) => item.value === value)?.label : buttonPlaceholder}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] bg-white">
+      <PopoverContent className={cn(listHeight, listWidth, popoverClassName, "bg-white")}>
         <Command>
-          <CommandInput placeholder="Search..." className="h-9" />
+          <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList>
-            <CommandEmpty>No province found.</CommandEmpty>
+            <CommandEmpty>No items found.</CommandEmpty>
             <CommandGroup>
-              {provinces.map((province) => (
+              {items.map((item) => (
                 <CommandItem
-                  key={province.value}
-                  value={province.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                  className="hover:bg-secondary"
+                  key={item.value}
+                  value={item.value}
+                  onSelect={() => handleSelect(item.value)}
+                  className="hover:bg-[#f4ebfecc]"
                 >
-                  {province.label}
+                  {item.label}
                   <CheckIcon
                     className={cn(
                       "ml-auto h-4 w-4",
-                      value === province.value ? "opacity-100" : "opacity-0"
+                      value === item.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>

@@ -14,6 +14,7 @@ export const Modal = ({
   description,
   children,
   className,
+  icon,
 }) => {
   const onChange = (open) => {
     if (!open) {
@@ -22,13 +23,15 @@ export const Modal = ({
   };
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
-      <DialogContent className={className}>
-        <DialogHeader className="flex items-center gap-5">
+      <DialogContent
+        className={`${className} px-5 pt-5 max-h-[90vh] overflow-y-auto custom-scrollbar`}
+      >
+        <DialogHeader className="flex items-center">
           <DialogTitle className="w-fit text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]">
             {title}
           </DialogTitle>
           <div className="flex items-center gap-5 leading-6 w-96">
-            <IconTick color={"#48038C"} className={"w-10 h-10"} />
+            {icon}
             <DialogDescription className="w-fit text-primary">
               {description}
             </DialogDescription>
