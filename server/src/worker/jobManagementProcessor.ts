@@ -42,13 +42,13 @@ export const jobManagementProcessor = async (req: Request, res: Response) => {
       await JobManagementController.findByJobPosition(req, res);
       break;
 
-    case req.url.includes('/filter-by-location') && req.method === 'GET':
-      await JobManagementController.filterByLocation(req, res);
-      break;
+    // case req.url.includes('/filter-by-location') && req.method === 'GET':
+    //   await JobManagementController.filterByLocation(req, res);
+    //   break;
 
-    case req.url.includes('/filter-by-industry') && req.method === 'GET':
-      await JobManagementController.filterByIndustry(req, res);
-      break;
+    // case req.url.includes('/filter-by-industry') && req.method === 'GET':
+    //   await JobManagementController.filterByIndustry(req, res);
+    //   break;
 
     case req.url.includes('/create-job-posting') && req.method === 'POST':
       await JobManagementController.createJobPosting(req, res);

@@ -207,20 +207,20 @@ const JobManagementService = {
       if (key) query.jobTitle = { $regex: key, $options: 'i' };
       if (location) query.location = { $regex: location, $options: 'i' };
       if (industry) query.typeOfIndustry = { $regex: industry, $options: 'i' };
-
+      log("Query: ", query);
       // Step 2: Find job posts and only select necessary fields, including userId
       const jobPosts = await JobPost.find(query)
         .select('jobTitle jobImage location jobSalary typeOfIndustry userId')
         .exec();
-      log("Job posts: ", jobPosts);
+      // log("Job posts: ", jobPosts);
       // Step 3: Extract the userIds (recruiter ids) from the job posts
       const recruiterIds = jobPosts.map(post => post.userId).filter(id => id); 
-      log("Recruiter IDs: ", recruiterIds);
+      // log("Recruiter IDs: ", recruiterIds);
       // Step 4: Fetch the recruiters based on the userIds, selecting only the orgName
       const recruiters = await Recruiter.find({ userId: { $in: recruiterIds } })
         .select('orgName userId')
         .exec();
-      log("Recruiters: ", recruiters);
+      // log("Recruiters: ", recruiters);
       // Step 5: Create a map of recruiterId to orgName for quick lookups
       const recruiterMap = recruiters.reduce((acc, recruiter) => {
         acc[String(recruiter.userId)] = recruiter.orgName;

@@ -204,8 +204,18 @@ const JobManagementController = {
       // }
 
       const { keySearch, location, industry } = req.query;
+      if (typeof keySearch !== 'string' || typeof location !== 'string' || typeof industry !== 'string') {
+        res.status(400).json({ success: false, message: "Invalid query parameters!" });
+        return;
+      }
+
+      const keyString = keySearch.replace(/-/g, ' ');
+      const locationString = location.replace(/-/g, ' ');
+      const industryString = industry.replace(/-/g, ' ');
+      log("LOGGGGGGGGGG: ", keyString.trim() as string, locationString.trim() as string, industryString.trim() as string);
+
       const result = await JobManagementService.findJobPostingsByJobPosition(
-        keySearch as string, location as string, industry as string
+        keyString.trim() as string, locationString.trim() as string, industryString.trim() as string
       );
       if (!result || result.length === 0) {
         res.status(404).json({ success: false, message: "Jobs not found!" });
@@ -222,68 +232,68 @@ const JobManagementController = {
     }
   },
 
-  filterByLocation: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { error } = JobManagementValidate.filterByLocationSchema().validate(
-        req.query
-      );
-      if (error) {
-        res
-          .status(400)
-          .json({ success: false, message: error.details[0].message });
-        return;
-      }
+  // filterByLocation: async (req: Request, res: Response): Promise<void> => {
+  //   try {
+  //     const { error } = JobManagementValidate.filterByLocationSchema().validate(
+  //       req.query
+  //     );
+  //     if (error) {
+  //       res
+  //         .status(400)
+  //         .json({ success: false, message: error.details[0].message });
+  //       return;
+  //     }
 
-      const { locationSelection } = req.query;
-      // log("LOGGGGGGGGGG: ", locationSelection)
-      const result = await JobManagementService.filterJobPostingByLocation(
-        locationSelection as string
-      );
-      if (!result || result.length === 0) {
-        res.status(404).json({ success: false, message: "Jobs not found!" });
-        return;
-      }
+  //     const { locationSelection } = req.query;
+  //     // log("LOGGGGGGGGGG: ", locationSelection)
+  //     const result = await JobManagementService.filterJobPostingByLocation(
+  //       locationSelection as string
+  //     );
+  //     if (!result || result.length === 0) {
+  //       res.status(404).json({ success: false, message: "Jobs not found!" });
+  //       return;
+  //     }
 
-      res.status(200).json({ success: true, result });
-    } catch (error) {
-      // log(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal Server Error!" });
-      return;
-    }
-  },
+  //     res.status(200).json({ success: true, result });
+  //   } catch (error) {
+  //     // log(error);
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: "Internal Server Error!" });
+  //     return;
+  //   }
+  // },
 
-  filterByIndustry: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { error } = JobManagementValidate.filterByIndustrySchema().validate(
-        req.query
-      );
-      if (error) {
-        res
-          .status(400)
-          .json({ success: false, message: error.details[0].message });
-        return;
-      }
+  // filterByIndustry: async (req: Request, res: Response): Promise<void> => {
+  //   try {
+  //     const { error } = JobManagementValidate.filterByIndustrySchema().validate(
+  //       req.query
+  //     );
+  //     if (error) {
+  //       res
+  //         .status(400)
+  //         .json({ success: false, message: error.details[0].message });
+  //       return;
+  //     }
 
-      const { industrySelection } = req.query;
-      const result = await JobManagementService.filterJobPostingByIndustry(
-        industrySelection as string
-      );
-      if (!result || result.length === 0) {
-        res.status(404).json({ success: false, message: "Jobs not found!" });
-        return;
-      }
+  //     const { industrySelection } = req.query;
+  //     const result = await JobManagementService.filterJobPostingByIndustry(
+  //       industrySelection as string
+  //     );
+  //     if (!result || result.length === 0) {
+  //       res.status(404).json({ success: false, message: "Jobs not found!" });
+  //       return;
+  //     }
 
-      res.status(200).json({ success: true, result });
-    } catch (error) {
-      // log(error);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal Server Error!" });
-      return;
-    }
-  },
+  //     res.status(200).json({ success: true, result });
+  //   } catch (error) {
+  //     // log(error);
+  //     res
+  //       .status(500)
+  //       .json({ success: false, message: "Internal Server Error!" });
+  //     return;
+  //   }
+  // },
 
   createJobPosting: async (req: Request, res: Response): Promise<void> => {
     try {
