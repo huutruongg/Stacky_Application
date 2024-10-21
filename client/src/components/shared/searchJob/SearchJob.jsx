@@ -1,5 +1,4 @@
-// SearchJob.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IconClose from "@/components/icons/IconClose";
 import IconLocation from "@/components/icons/IconLocation";
 import IconSearch from "@/components/icons/IconSearch";
@@ -7,13 +6,30 @@ import Button from "@/components/button/Button";
 import ComboboxLocation from "@/components/combobox/ComboboxLocation";
 import ComboboxMajor from "@/components/combobox/ComboboxMajor";
 import IconBag from "@/components/icons/IconBag";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SearchJob = () => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedMajor, setSelectedMajor] = useState("");
   const navigate = useNavigate(); // Use the useNavigate hook for navigation
+  const location = useLocation(); // Use the useLocation hook to get the curent URL and extract query parameters
+
+  console.log(searchInput);
+  console.log(selectedProvince);
+  console.log(selectedMajor);
+
+  // Extract values from query parameters when component is rendered
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const keySearch = params.get("keySearch") || "";
+    const industry = params.get("industry") || "";
+    const locationParam = params.get("location") || "";
+
+    setSearchInput(keySearch);
+    setSelectedMajor(industry);
+    setSelectedProvince(locationParam);
+  }, [location.search]);
 
   const handleSearch = () => {
     // Prepare search parameters

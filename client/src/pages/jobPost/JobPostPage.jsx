@@ -157,7 +157,7 @@ const JobPostPage = () => {
                       type="button"
                       onClick={() => setOpenReview(false)}
                     >
-                      Trở lại
+                      Tiếp tục chỉnh sửa
                     </Button>
                     <Button
                       kind="primary"

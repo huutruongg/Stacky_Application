@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import IconBack from "../icons/IconBack";
+import IconNext from "../icons/IconNext";
 
 const Pagination = ({ className, ...props }) => (
   <nav
@@ -24,7 +26,7 @@ const PaginationContent = React.forwardRef(({ className, ...props }, ref) => (
 PaginationContent.displayName = "PaginationContent";
 
 const PaginationItem = React.forwardRef(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props} />
+  <li ref={ref} className={cn("flex items-center", className)} {...props} />
 ));
 PaginationItem.displayName = "PaginationItem";
 
@@ -50,8 +52,7 @@ const PaginationPrevious = ({ className, ...props }) => (
     className={cn("gap-1 pl-2.5", className)}
     {...props}
   >
-    <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
+    <IconBack></IconBack>
   </PaginationLink>
 );
 PaginationPrevious.displayName = "PaginationPrevious";
@@ -63,8 +64,7 @@ const PaginationNext = ({ className, ...props }) => (
     className={cn("gap-1 pr-2.5", className)}
     {...props}
   >
-    <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
+    <IconNext></IconNext>
   </PaginationLink>
 );
 PaginationNext.displayName = "PaginationNext";

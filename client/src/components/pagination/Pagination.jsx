@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Pagination,
   PaginationContent,
@@ -9,41 +9,40 @@ import {
 } from "@/components/ui/pagination";
 
 const PaginationDemo = ({ dataBase, currentPage, onPageChange, PerPage }) => {
-  const [newsPerPage] = useState(PerPage);
+  // Tính tổng số trang
+  const totalPages = Math.ceil(dataBase.length / PerPage);
 
-  // Tính tổng số trang dựa trên dữ liệu
-  const totalPages = Math.ceil(dataBase.length / newsPerPage);
+  // Giới hạn số trang hiển thị quanh trang hiện tại
+  const maxPageNumbersToShow = 3;
+  const startPage = Math.max(
+    1,
+    currentPage - Math.floor(maxPageNumbersToShow / 2)
+  );
+  const endPage = Math.min(totalPages, startPage + maxPageNumbersToShow - 1);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
-  // Tạo danh sách số trang
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  // Chọn trang mới
+  // Chuyển trang
   const choosePage = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       onPageChange(pageNumber);
     }
   };
 
-  // Chuyển đến trang tiếp theo
   const nextPage = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
+    if (currentPage < totalPages) onPageChange(currentPage + 1);
   };
 
-  // Quay lại trang trước
   const previousPage = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
+    if (currentPage > 1) onPageChange(currentPage - 1);
   };
 
   return (
     <Pagination>
       <PaginationContent>
+        {/* Nút "Trang trước" */}
         <PaginationItem>
           <PaginationPrevious
             onClick={previousPage}
@@ -57,22 +56,39 @@ const PaginationDemo = ({ dataBase, currentPage, onPageChange, PerPage }) => {
           />
         </PaginationItem>
 
-        {/* Chỉ hiển thị một số trang xung quanh trang hiện tại */}
+        {/* Hiển thị các trang */}
+        {startPage > 1 && (
+          <PaginationItem>
+            <PaginationLink onClick={() => choosePage(1)}>1</PaginationLink>
+            {startPage > 2 && <span className="px-2">...</span>}
+          </PaginationItem>
+        )}
+
         {pageNumbers.map((number) => (
-          <PaginationItem key={number} onClick={() => choosePage(number)}>
+          <PaginationItem key={number}>
             <PaginationLink
+              onClick={() => choosePage(number)}
               className={
                 currentPage === number
-                  ? "bg-primary text-white"
-                  : "hover:text-primary"
+                  ? "rounded-full text-primary border-[2px] border-primary"
+                  : "rounded-full hover:text-primary"
               }
-              href={`#${number}`}
             >
               {number}
             </PaginationLink>
           </PaginationItem>
         ))}
 
+        {endPage < totalPages && (
+          <PaginationItem>
+            {endPage < totalPages - 1 && <span className="px-2">...</span>}
+            <PaginationLink onClick={() => choosePage(totalPages)}>
+              {totalPages}
+            </PaginationLink>
+          </PaginationItem>
+        )}
+
+        {/* Nút "Trang sau" */}
         <PaginationItem>
           <PaginationNext
             onClick={nextPage}
