@@ -1,0 +1,59 @@
+Auth:
+post - http://localhost:5050/auth/register
+post - http://localhost:5050/auth/login
+post - http://localhost:5050/auth/logout
+get - http://localhost:5050/auth/google/callback
+get - http://localhost:5050/auth/github/callback
+post - http://localhost:5050/auth/regenerate-access-token
+
+Email:
+post - http://localhost:5050/email/send-email
+
+Github:
+get - http://localhost:5050/github/calculate-score
+
+Upload:
+post - http://localhost:5050/upload/recruiter-images
+post - http://localhost:5050/upload/candidate-image
+delete - http://localhost:5050/upload/recruiter-images/delete
+delete - http://localhost:5050/upload/candidate-images/delete
+
+
+
+Recruiter:
+get - http://localhost:5050/recruiter/get-company-info/:recruiterId
+post - http://localhost:5050/recruiter/forgot-password
+post - http://localhost:5050/recruiter/reset-password/:userId
+post - http://localhost:5050/recruiter/change-password/:userId
+post - http://localhost:5050/recruiter/update-company-profile
+post - http://localhost:5050/recruiter/update-company-contact
+
+
+Candidate:
+get - http://localhost:5050/candidate/get-candidate
+post - http://localhost:5050/candidate/update-info
+post - http://localhost:5050/candidate/delete-candidate/:userId
+post - http://localhost:5050/candidate/remove-object
+
+
+Job Posting:
+get - http://localhost:5050/job-post/get-all
+get - http://localhost:5050/job-post/get-all-by-candidate
+get - http://localhost:5050/job-post/get-job-detail/:jobPostId
+get - http://localhost:5050/job-post/get-job-detail-by-candidate/:jobPostId
+get - http://localhost:5050/job-post/get-job-saved
+get - http://localhost:5050/job-post/get-job-applied
+get - http://localhost:5050/job-post/find-job-posts?keySearch=Software&location=HN&industry=IT
+post - http://localhost:5050/job-post/create-job-post
+delete - http://localhost:5050/job-post/delete-job-post/:jobPostId
+post - http://localhost:5050/job-post/create-application/:jobPostId
+post - http://localhost:5050/job-post/save-job-post/:jobPostId
+post - http://localhost:5050/job-post/unsave-job-post/:jobPostId
+post - http://localhost:5050/job-post/set-apply-status
+post - http://localhost:5050/job-post/censor-job-post
+
+
+Payment:
+post - http://localhost:5050/payment/create-transaction
+post - http://localhost:5050/payment/callback
+post - http://localhost:5050/payment/check-status-transaction

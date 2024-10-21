@@ -28,9 +28,11 @@ import PaymentService from "../../src/services/PaymentService";
 import AuthRoutes from "./AuthRoutes";
 import CandidateRoutes from "./CandidateRoutes";
 import RecruiterRoutes from "./RecruiterRoutes";
-import JobPostRoutes from "./JobPostRoute";
-import UploadRouter from "./UploadRouter";
+import JobPostRoutes from "./JobPostRoutes";
+import UploadRouter from "./UploadRoutes";
 import PaymentRoutes from "./PaymentRoutes";
+import EmailController from "../controllers/EmailController";
+import EmailRoutes from "./EmailRoutes";
 
 class Routes {
     public router: Router;
@@ -64,6 +66,7 @@ class Routes {
         this.router.use('/candidate', this.lazyLoadCandidateRoutes());
         this.router.use('/recruiter', this.lazyLoadRecruiterRoutes());
         this.router.use('/job-post', this.lazyLoadJobPostRoutes());
+        this.router.use('/email', this.lazyLoadEmailRoutes());
         this.router.use('/upload', this.lazyLoadUploadRoutes());
         this.router.use('/payment', this.lazyLoadPaymentRoutes());
     }
@@ -114,5 +117,14 @@ class Routes {
             paymentRouter.getRouter()(req, res, next);
         }
     }
+
+    private lazyLoadEmailRoutes() {
+        return (req: Request, res: Response, next: NextFunction) => {
+            const emailController = new EmailController();
+            const emailRoutes = new EmailRoutes(emailController);
+            emailRoutes.getRouter()(req, res, next);
+        }
+    }
 }
+
 export default new Routes().router;

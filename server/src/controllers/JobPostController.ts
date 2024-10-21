@@ -191,7 +191,7 @@ export default class JobPostController extends BaseController {
 
     async createApplication(req: Request, res: Response) {
         try {
-            const { jobPostId } = req.body;
+            const { jobPostId } = req.params;
             const userInfo = await (req as any).userData;
             log('userInfo', userInfo);
             if (!userInfo) {
@@ -209,7 +209,7 @@ export default class JobPostController extends BaseController {
 
     async saveJobPost(req: Request, res: Response) {
         try {
-            const { jobPostId } = req.body;
+            const { jobPostId } = req.params;
             const userInfo = await (req as any).userData;
             log('userInfo', userInfo);
             if (!userInfo) {
@@ -227,13 +227,13 @@ export default class JobPostController extends BaseController {
 
     async unSaveJobPost(req: Request, res: Response) {
         try {
-            const { jobSavedId } = req.params;
+            const { jobPostId } = req.params;
             const userInfo = await (req as any).userData;
             log('userInfo', userInfo);
             if (!userInfo) {
                 return this.sendError(res, 401, new Error('Authentication required!').message);
             }
-            const isDeleted = await this.jobPostService.unSaveJobPost(userInfo.userId, jobSavedId);
+            const isDeleted = await this.jobPostService.unSaveJobPost(userInfo.userId, jobPostId);
 
             if (!isDeleted) {
                 return this.sendError(res, 400, 'Failed to unsave job post!');

@@ -26,8 +26,8 @@ export default class JobPostRoutes extends BaseRoutes {
         this.router.post("/create-job-post", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.RECRUITER), this.jobPostController.createJobPost);
         this.router.delete("/delete-job-post/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.RECRUITER), this.jobPostController.deleteJobPost);
 
-        this.router.post("/create-application", authenticateJWT, this.jobPostController.createApplication);
-        this.router.post("/save-job-post", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.saveJobPost);
+        this.router.post("/create-application/:jobPostId", authenticateJWT, this.jobPostController.createApplication);
+        this.router.post("/save-job-post/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.saveJobPost);
         this.router.delete("/unsave-job-post/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.unSaveJobPost);
 
         this.router.post("/set-apply-status", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.RECRUITER), this.jobPostController.setApplyStatus);

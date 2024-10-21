@@ -1,5 +1,5 @@
 import { Router } from "express";
-import UploadController from "../../src/controllers/UploadController";
+import UploadController from "../controllers/UploadController";
 import multer from 'multer'
 import { BaseRoutes } from "./BaseRoutes";
 
