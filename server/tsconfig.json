@@ -9,12 +9,15 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./global.d.ts"
+    ]
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules"
+    "src/**/*.ts",
+    "types/**/*.d.ts",
+    "global.d.ts"
   ]
 }
