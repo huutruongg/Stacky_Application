@@ -15,6 +15,7 @@ import { Modal } from "@/components/ui/modal";
 import ModalResetPassword from "./ModalResetPassword";
 import { AlertModal } from "@/components/shared/AlertModal";
 import IconTick from "@/components/icons/IconTick";
+import { decodeJWT } from "@/utils/jwt";
 
 const FormSignInEmployer = () => {
   const navigate = useNavigate();
@@ -43,27 +44,22 @@ const FormSignInEmployer = () => {
         const { email, password } = values;
 
         // Gửi request đăng nhập
-        const { data } = await axiosInstance.post(`/auth/login/recruiter`, {
-          email,
+        const { data } = await axiosInstance.post(`/auth/login`, {
+          privateEmail: email,
           password,
         });
 
-        // console.log(data.accessToken);
+        const response = await axiosInstance.get("/auth/get-access-token", {
+          withCredentials: true,
+        });
+        const accessToken = response.data.accessToken;
 
-        const { userId, role: roleName, accessToken } = data;
+        const decodedAccessToken = decodeJWT(accessToken);
+        const { userId, email: userEmail, role: roleName } = decodedAccessToken;
 
-        console.log(data);
+        const userInfo = { userId, email: userEmail, role: roleName };
 
-        if (!accessToken || !userId) {
-          throw new Error(
-            "Invalid response structure: missing accessToken or userId"
-          );
-        }
-
-        // Lưu thông tin user và token vào localStorage và gọi hàm login từ context
-        const userInfo = { userId, role: roleName };
         login(userInfo, accessToken); // Sử dụng hàm login từ context để lưu user và token
-        console.log(userInfo);
 
         // Điều hướng sau khi đăng nhập thành công
         navigate("/");

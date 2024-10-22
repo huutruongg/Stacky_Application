@@ -2,18 +2,13 @@ import React from "react";
 import imgCompany from "@/components/image/imgCompany.png";
 import IconPrice from "@/components/icons/IconPrice";
 import dayjs from "dayjs";
-import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/authorizedAxios";
 
 const ItemJobSave = ({ jobData }) => {
-  const { user } = useAuth();
-
-  const handleSaveJob = async () => {
+  const handleDeleteSaveJob = async () => {
     try {
-      await axiosInstance.delete(
-        `/job-posting/cancel-job-saved/${user.userId}/${jobData._id}`
-      );
+      await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
       toast.success("Xóa bài viết thành công");
     } catch (error) {
       toast.error("Xóa bài viết thất bại");
@@ -69,7 +64,7 @@ const ItemJobSave = ({ jobData }) => {
               </button>
               <button
                 className="px-5 py-1 rounded-md hover:opacity-70 border border-primary"
-                onClick={handleSaveJob}
+                onClick={handleDeleteSaveJob}
               >
                 Hủy bỏ
               </button>

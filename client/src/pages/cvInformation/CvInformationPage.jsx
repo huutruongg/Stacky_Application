@@ -36,9 +36,7 @@ const CvInformationPage = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        const result = await fetchData(
-          `candidate/get-candidate-details/${user.userId}`
-        );
+        const result = await fetchData(`candidate/get-candidate`);
 
         // Reset form with data from API
         form.reset({
@@ -141,7 +139,6 @@ const CvInformationPage = () => {
       }
 
       await axiosInstance.put("/candidate/submit-profile", {
-        userId: user.userId,
         avatarUrl: uploadedAvatarUrl,
         ...restData,
       });

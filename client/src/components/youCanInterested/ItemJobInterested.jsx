@@ -20,9 +20,9 @@ const ItemJobInterested = () => {
                 Nhân viên kế toán Nhân viên kế toán Nhân viên kế toán
               </a>
             </h3>
-            <a href="">
+            <div>
               <IconHeart className={"w-5 h-5"} liked={""}></IconHeart>
-            </a>
+            </div>
           </div>
           <div>
             <a

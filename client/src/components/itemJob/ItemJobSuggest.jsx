@@ -2,21 +2,18 @@ import React, { useEffect, useState } from "react";
 import IconHeart from "@/components/icons/IconHeart";
 import imgCompany from "@/components/image/imgCompany.png";
 import { useNavigate } from "react-router-dom";
-import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 
 const ItemJobSuggest = ({ jobData }) => {
   const [changeColorLiked, setChangeColorLiked] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+
+  console.log(jobData);
 
   const handleSaveJob = async () => {
     try {
-      await axiosInstance.post(`/job-posting/save-job`, {
-        userId: user.userId,
-        jobPostId: jobData._id,
-      });
+      await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
       toast.success("Lưu bài viết thành công");
     } catch (error) {
       toast.error("Lưu bài viết thất bại");
@@ -25,9 +22,7 @@ const ItemJobSuggest = ({ jobData }) => {
 
   const handleDeleteSaveJob = async () => {
     try {
-      await axiosInstance.delete(
-        `/job-posting/cancel-job-saved/${user.userId}/${jobData._id}`
-      );
+      await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
       toast.success("Xóa bài viết thành công");
     } catch (error) {
       toast.error("Xóa bài viết thất bại");
@@ -80,7 +75,7 @@ const ItemJobSuggest = ({ jobData }) => {
               href="/company"
               className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
-              {jobData.orgName.toUpperCase()}
+              {/* {jobData.orgName.toUpperCase()} */}
             </a>
           </div>
           <div className="flex items-center gap-2">

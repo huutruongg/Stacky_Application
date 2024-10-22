@@ -14,13 +14,11 @@ import FormJobDescription from "./FormJobDescription";
 import FormApllyDeadline from "./FormApllyDeadline";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
-import useAuth from "@/hooks/useAuth";
 import { AlertModal } from "@/components/shared/AlertModal";
 import { Modal } from "@/components/ui/modal";
 import ModalReviewJob from "./ModalReviewJob";
 
 const JobPostPage = () => {
-  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -82,20 +80,10 @@ const JobPostPage = () => {
         jobImageUrl = imageResponse.data.urlImages[0];
       }
 
-      console.log({
-        userId: user.userId,
+      const response = await axiosInstance.post("/job-post/create-job-post", {
         jobImage: jobImageUrl,
         ...restData,
       });
-
-      const response = await axiosInstance.post(
-        "/job-posting/create-job-posting",
-        {
-          userId: user.userId,
-          jobImage: jobImageUrl,
-          ...restData,
-        }
-      );
 
       console.log("Upload successful", response.data);
       toast.success("Tạo bài viết thành công!!!");

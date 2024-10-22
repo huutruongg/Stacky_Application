@@ -1,13 +1,13 @@
 import axios from "@/api/axios";
 
 export const requestAuthRegisterRecruiter = (data) => {
-  return axios.post("/auth/signup/recruiter", {
+  return axios.post("/auth/register", {
     ...data,
   });
 };
 
 export const requestAuthLoginRecruiter = (data) => {
-  return axios.post("/auth/login/recruiter", {
+  return axios.post("/auth/login", {
     ...data,
   });
 };
