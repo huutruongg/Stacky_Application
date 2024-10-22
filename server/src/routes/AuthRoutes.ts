@@ -21,7 +21,7 @@ export default class AuthRoutes extends BaseRoutes {
         this.router.post('/logout', this.authController.logout);
         this.router.get('/google/callback', this.authController.loginWithOAuth('google'));
         this.router.get('/github/callback', this.authController.loginWithOAuth('github'));
-        // this.router.get('/get-access-token', this.authController.getAccessToken);
+        this.router.get('/get-access-token', this.authController.getAccessToken);
         this.router.post('/regenerate-access-token', this.authController.regenerateAccessToken);
     }
 

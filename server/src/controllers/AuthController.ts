@@ -158,15 +158,17 @@ export default class AuthController extends BaseController {
         });
     }
 
-    // public async getAccessToken(req: Request, res: Response) {
-    //     try {
-    //         const userInfo = (req as any).userData;
-    //         if (!userInfo) return this.sendError(res, 401, new Error('Authentication required').message);
-    //         return this.sendResponse(res, 200, { success: true, userInfo: userInfo.accessToken });
-    //     } catch (error) {
-    //         return this.sendError(res, 500, new Error('Failed to get access token').message);
-    //     }
-    // }
+    public async getAccessToken(req: Request, res: Response) {
+        try {
+            // const userInfo = (req as any).userData;
+            const accessToken = req.cookies['accessToken'] || req.headers['authorization']?.split(' ')[1];
+
+            if (!accessToken) return this.sendError(res, 401, new Error('Authentication required').message);
+            return this.sendResponse(res, 200, { success: true, userInfo: accessToken });
+        } catch (error) {
+            return this.sendError(res, 500, new Error('Failed to get access token').message);
+        }
+    }
 
     public async regenerateAccessToken(req: Request, res: Response) {
         const { refreshToken } = req.body;
