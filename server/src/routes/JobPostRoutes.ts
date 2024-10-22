@@ -16,7 +16,7 @@ export default class JobPostRoutes extends BaseRoutes {
 
     private initializeRoutes(): void {
         this.router.get("/get-all", this.jobPostController.getAllJobPosts);
-        this.router.get("/get-all-by-candidate", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.getJobsByCandidate);
+        // this.router.get("/get-all-by-candidate", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.getJobsByCandidate);
         this.router.get("/get-job-detail/:jobPostId", this.jobPostController.getJobDetail);
         this.router.get("/get-job-detail-by-candidate/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.getJobDetailByCandidate);
         this.router.get("/get-job-saved", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.getSavedJobs);

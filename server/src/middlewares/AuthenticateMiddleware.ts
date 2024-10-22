@@ -46,7 +46,6 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
             res.status(401).json({ message: "Authentication failed!" });
             return;
         }
-
         // Attach decoded user data to the request object
         (req as any).userData = decodedToken as IUserDataType;
 

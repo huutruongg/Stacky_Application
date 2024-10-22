@@ -17,15 +17,14 @@ export default class JobPostController extends BaseController {
     public async getAllJobPosts(req: Request, res: Response) {
         try {
             const { page, pageSize } = req.query;
+            const userInfo = await (req as any).userData;
+            log('userInfo', userInfo);
             let result;
 
             if (!page || !pageSize) {
                 result = await this.jobPostService.getAllJobPosts();
             } else {
-                result = await this.jobPostService.getJobPostsByPage(
-                    Number(page),
-                    Number(pageSize)
-                );
+                result = await this.jobPostService.getJobPostsByPage(Number(page), Number(pageSize));
             }
 
             if (!result) {

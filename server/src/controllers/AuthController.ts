@@ -164,7 +164,7 @@ export default class AuthController extends BaseController {
             const accessToken = req.cookies['accessToken'] || req.headers['authorization']?.split(' ')[1];
 
             if (!accessToken) return this.sendError(res, 401, new Error('Authentication required').message);
-            return this.sendResponse(res, 200, { success: true, userInfo: accessToken });
+            return this.sendResponse(res, 200, { success: true, accessToken });
         } catch (error) {
             return this.sendError(res, 500, new Error('Failed to get access token').message);
         }
