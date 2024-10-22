@@ -22,8 +22,8 @@ export default class CandidateController extends BaseController {
         try {
             const userInfo = await (req as any).userData;
             const userId = userInfo.userId;
-            const candidate = await this.candidateService.findCandidateById(userId);
-
+            const candidate = await this.candidateService.getCandidateByUserId(userId);
+            log("Candidate: ", candidate);
             if (!candidate) {
                 return this.sendError(res, 404, "Candidate not found");
             }
