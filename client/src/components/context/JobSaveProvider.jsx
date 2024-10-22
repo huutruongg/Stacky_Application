@@ -26,9 +26,7 @@ export const JobSaveProvider = ({ children }) => {
         return;
       }
       try {
-        const response = await axiosInstance.get(
-          `/job-posting/job-saved/${user.userId}`
-        );
+        const response = await axiosInstance.get(`job-post/get-job-saved`);
         setJobSaveData(response.data.result || []); // Assuming result holds the job data
       } catch (error) {
         console.error("Error fetching saved jobs:", error);

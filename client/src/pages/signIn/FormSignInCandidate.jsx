@@ -2,9 +2,9 @@ import React, { useEffect, useCallback, useState } from "react";
 import IconGoogle from "@/components/icons/IconGoogle";
 import IconGithub from "@/components/icons/IconGithub";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "@/api/axios";
 import useAuth from "@/hooks/useAuth";
 import axiosInstance from "@/lib/authorizedAxios";
+import { decodeJWT } from "@/utils/jwt";
 
 const FormSignInCandidate = () => {
   const location = useLocation();
@@ -13,30 +13,12 @@ const FormSignInCandidate = () => {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleLogin = useCallback(() => {
-    window.location.href = "http://localhost:4080/auth/google/callback";
+    window.location.href = "http://localhost:5050/auth/google/callback";
   }, []);
 
   const handleGithubLogin = useCallback(() => {
-    window.location.href = "http://localhost:4080/auth/github/callback";
+    window.location.href = "http://localhost:5050/auth/github/callback";
   }, []);
-
-  const decodeJWT = (token) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-          .join("")
-      );
-
-      return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error("Lỗi giải mã token:", error);
-      return null;
-    }
-  };
 
   const handleTokenRetrieval = useCallback(async () => {
     setLoading(true);
@@ -44,10 +26,12 @@ const FormSignInCandidate = () => {
       const response = await axiosInstance.get("/auth/get-access-token", {
         withCredentials: true,
       });
-      const { accessToken } = response.data;
+      const accessToken = response.data.accessToken;
+      console.log(response.data.accessToken);
 
       const decodedAccessToken = decodeJWT(accessToken);
       const { userId, email: userEmail, role: roleName } = decodedAccessToken;
+      console.log(decodedAccessToken);
 
       const userInfo = { userId, email: userEmail, role: roleName };
       login(userInfo, accessToken);

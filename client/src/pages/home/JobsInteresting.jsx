@@ -4,10 +4,8 @@ import TitleField from "@/components/titleField/TitleField";
 import PaginationDemo from "@/components/pagination/Pagination";
 import { fetchData } from "@/api/fetchData";
 import JobSkeleton from "@/components/skeleton/JobSkeleton";
-import useAuth from "@/hooks/useAuth";
 
 const JobsInteresting = () => {
-  const { user } = useAuth();
   const [jobData, setJobData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,19 +15,14 @@ const JobsInteresting = () => {
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
 
+  console.log(jobData);
+
   useEffect(() => {
     const getData = async () => {
       try {
         // Gọi API với type là 'job-postings' và phân trang
-        if (user) {
-          const result = await fetchData(
-            `job-posting/get-jobs-by-candidate/${user.userId}`
-          );
-          setJobData(result); // Giả sử API trả về dữ liệu trong result.data
-        } else {
-          const result = await fetchData(`job-posting/job-postings`);
-          setJobData(result); // Giả sử API trả về dữ liệu trong result.data
-        }
+        const result = await fetchData(`job-post/get-all`);
+        setJobData(result); // Giả sử API trả về dữ liệu trong result.
         setLoading(false);
       } catch (error) {
         console.error("Error while fetching jobs data:", error);

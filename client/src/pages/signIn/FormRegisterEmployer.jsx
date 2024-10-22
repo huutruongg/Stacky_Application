@@ -32,10 +32,7 @@ const FormRegisterEmployer = () => {
     try {
       registerEmployerSchema.parse(data); // Validate the form data
       const { confirmPassword, ...formData } = data; // Extract fields to exclude
-      const response = await axiosInstance.post(
-        `/auth/signup/recruiter`,
-        formData
-      );
+      const response = await axiosInstance.post(`/auth/register`, formData);
       toast.success("Đăng kí thành công!!!");
       // console.log("Response Data:", response.data); // Log the successful response
     } catch (error) {
