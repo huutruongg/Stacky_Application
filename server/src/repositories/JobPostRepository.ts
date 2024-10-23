@@ -101,31 +101,4 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         const jobPost = await this.model.findOne({ _id: jobPostId, userId: userId }).lean();
         return !!jobPost;
     }
-
-    async updateApplyStatus(
-        jobPostId: string,
-        applicantId: string,
-        status: ApplyStatus
-    ): Promise<boolean> {
-        const result = await JobPostModel.updateOne(
-            {
-                _id: jobPostId,
-                "applicants._id": applicantId
-            },
-            {
-                $set: { "applicants.$.status": status }
-            }
-        );
-
-        return result.modifiedCount > 0; // Trả về true nếu cập nhật thành công
-    }
-
-    async updatePostStatus(jobPostId: string, status: PostStatus): Promise<boolean> {
-        const result = await this.model.updateOne(
-            { _id: jobPostId },
-            { $set: { postStatus: status } }
-        );
-
-        return result.modifiedCount > 0;
-    }
 }

@@ -1,47 +1,37 @@
 import admin, { ServiceAccount } from 'firebase-admin';
 import * as serviceAccount from '../config/Firebase.json';
-import { Bucket } from '@google-cloud/storage';
 
 export default class UploadService {
-    private bucket: Bucket;
+    private bucket;
 
     constructor() {
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount as ServiceAccount),
-            storageBucket: process.env.STORAGE_BUCKET,
-        });
+        // Initialize Firebase Admin SDK
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount as ServiceAccount),
+                storageBucket: process.env.STORAGE_BUCKET,
+            });
+        }
 
         this.bucket = admin.storage().bucket();
     }
 
-    public async uploadImagesToFirebase(
-        files: Express.Multer.File[],
-        folderName: string
-    ): Promise<string[]> {
+    public async getPublicUrlImages(files: Express.Multer.File[], folderName: string): Promise<string[]> {
         const uploadedFileUrls: string[] = [];
 
         for (const file of files) {
-            const uniqueFileName = `${Date.now()}-${file.originalname}`;
+            const fileBuffer = file.buffer; // Get the file buffer
+            const uniqueFileName = `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`;
+
+            // Upload to Firebase Storage
             const fileRef = this.bucket.file(`${folderName}/${uniqueFileName}`);
+            await fileRef.save(fileBuffer, {
+                public: true, // Make the file publicly accessible
+            });
 
-            try {
-                // Sử dụng createWriteStream để upload file
-                const stream = fileRef.createWriteStream({
-                    metadata: {
-                        contentType: file.mimetype,
-                    },
-                    public: true, // Đặt file ở chế độ public
-                    resumable: false, // Tắt resumable để đơn giản hóa
-                });
-
-                stream.end(file.buffer); // Ghi dữ liệu vào stream
-
-                const fileUrl = `https://storage.googleapis.com/${this.bucket.name}/${folderName}/${uniqueFileName}`;
-                uploadedFileUrls.push(fileUrl);
-                console.log(`Uploaded: ${fileUrl}`);
-            } catch (error) {
-                console.error(`Failed to upload ${file.originalname}:`, error);
-            }
+            // Get the public URL of the uploaded file
+            const fileUrl = `https://storage.googleapis.com/${this.bucket.name}/${folderName}/${uniqueFileName}`;
+            uploadedFileUrls.push(fileUrl); // Push the public URL to the array
         }
 
         return uploadedFileUrls;
@@ -51,32 +41,27 @@ export default class UploadService {
         try {
             for (const fileId of fileIds) {
                 const fileName = fileId.split('/').pop();
-                if (!fileName) {
-                    console.warn(`Invalid file ID: ${fileId}`);
-                    continue;
-                }
-
                 const filePath = `${folderPath}/${fileName}`;
                 const file = this.bucket.file(filePath);
-
                 const [exists] = await file.exists();
+
                 if (!exists) {
-                    console.error(`File not found: ${filePath}`);
-                    continue;
+                    console.error(`Error: File does not exist: ${filePath}`);
+                    continue; // Skip to the next file
                 }
 
                 try {
                     await file.delete();
-                    console.log(`Deleted: ${filePath}`);
-                } catch (error) {
-                    console.error(`Error deleting ${filePath}:`, error);
+                    console.log(`Image deleted successfully: ${filePath}`);
+                } catch (err) {
+                    console.error('Error deleting image:', err);
                 }
             }
 
-            console.log('All deletions completed.');
+            console.log('All file deletion attempts completed.');
             return true;
         } catch (error) {
-            console.error('Error during deletion process:', error);
+            console.error('Error during image deletion process:', error);
             return false;
         }
     }

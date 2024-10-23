@@ -68,33 +68,6 @@ export default class AuthService {
         return user;
     }
 
-    // async handleUserOAuth(
-    //     provider: string,
-    //     providerId: string,
-    //     privateEmail: string,
-    //     fullName: string,
-    //     accessToken: string
-    // ): Promise<IUser | null> {
-    //     const existingUser = await this.userRepository.findByEmail(privateEmail);
-    //     if (!existingUser) {
-    //         console.log('Creating new user...');
-    //         const newUser = await this.userRepository.createUser({
-    //             privateEmail,
-    //             role: UserRole.CANDIDATE
-    //         });
-    //         log("newUser: ", newUser);
-    //         const res = await this.candidateRepository.createCandidate({
-    //             userId: newUser._id,
-    //             fullName
-    //         });
-    //         log("res: ", res);
-    //         await this.candidateRepository.updateOauth(String(newUser._id), provider, providerId, accessToken);
-    //         return newUser;
-    //     }
-    //     await this.candidateRepository.updateOauth(String(existingUser._id), provider, providerId, accessToken);
-    //     return existingUser;
-    // }
-
     async handleUserOAuth(
         provider: string,
         providerId: string,
@@ -144,9 +117,9 @@ export default class AuthService {
         return await this.userRepository.findById(id);
     }
 
-    async generateAccessToken(userId: string, privateEmail: string, role: string): Promise<string> {
+    async generateAccessToken(userId: string, role: string): Promise<string> {
         try {
-            const payload = { userId, privateEmail, role };
+            const payload = { userId, role };
             const token = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET as string, {
                 expiresIn: process.env.JWT_ACCESS_EXPIRATION
             });
@@ -158,9 +131,9 @@ export default class AuthService {
     }
 
     // Generate Refresh Token with error handling and logging
-    async generateRefreshToken(userId: string, privateEmail: string, role: string): Promise<string> {
+    async generateRefreshToken(userId: string, role: string): Promise<string> {
         try {
-            const payload = { userId, privateEmail, role };
+            const payload = { userId, role };
             const token = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET as string, {
                 expiresIn: process.env.JWT_REFRESH_EXPIRATION
             });
@@ -230,6 +203,15 @@ export default class AuthService {
             return jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_SECRET as string);
         } catch (error) {
             return null;
+        }
+    }
+
+    async isRefreshTokenValid(refreshToken: string): Promise<boolean> {
+        try {
+            const isValid = await this.userRepository.isRefreshTokenValid(refreshToken);
+            return isValid!!;
+        } catch (error) {
+            return false;
         }
     }
 }

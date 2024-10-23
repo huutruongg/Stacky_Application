@@ -16,6 +16,7 @@ export default class AuthRoutes extends BaseRoutes {
 
     private initializeRoutes(): void {
         this.router.get('/login', this.serveLoginPage);
+        this.router.get('/logout', this.serveLogoutPage);
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authController.login);
         this.router.post('/logout', this.authController.logout);
@@ -27,6 +28,10 @@ export default class AuthRoutes extends BaseRoutes {
 
     private serveLoginPage(req: Request, res: Response): void {
         res.sendFile(path.join(__dirname, '../views/index.html'));
+    }
+
+    private serveLogoutPage(req: Request, res: Response): void {
+        res.sendFile(path.join(__dirname, '../views/logout.html'));
     }
 }
 

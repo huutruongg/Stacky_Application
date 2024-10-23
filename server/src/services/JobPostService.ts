@@ -169,13 +169,13 @@ export default class JobPostService {
                 console.warn(`No saved jobs found for user: ${userId}`);
                 return [];
             }
-            log("savedJobIds", savedJobIds);
+            // log("savedJobIds", savedJobIds);
             const jobPosts = await this.jobPostRepository.getJobPostByIds(savedJobIds as string[]);
             if (!jobPosts || jobPosts.length === 0) {
                 console.warn(`No job posts found for saved jobs: ${savedJobIds}`);
                 return [];
             }
-            log(jobPosts.map((job) => this.toJobPostDTO(job)))
+            // log(jobPosts.map((job) => this.toJobPostDTO(job)))
             return jobPosts.map((job) => this.toJobPostDTO(job));
         } catch (error) {
             console.error('Error fetching job posts with orgName:', error);
@@ -322,7 +322,7 @@ export default class JobPostService {
         }
     }
 
-    async setApplyStatus(userId: string, jobPostId: string, applicantId: string, status: ApplyStatus
+    async setApplyStatus(userId: string, jobPostId: string, candidateId: string, status: ApplyStatus
     ): Promise<boolean> {
         try {
             const isOwner = await this.jobPostRepository.isJobOwner(userId, jobPostId);
@@ -331,32 +331,22 @@ export default class JobPostService {
                 console.warn(`User ${userId} is not the owner of job post ${jobPostId}.`);
                 return false;
             }
-            const updated = await this.jobPostRepository.updateApplyStatus(
+            const updated = await this.candidateRepository.updateApplyStatus(
                 jobPostId,
-                applicantId,
+                candidateId,
                 status
             );
 
             if (!updated) {
-                console.warn(`Failed to update status for applicant ${applicantId}.`);
+                console.warn(`Failed to update status for candidate ${candidateId}.`);
                 return false;
             }
 
-            console.log(`Applicant ${applicantId} status updated successfully.`);
+            console.log(`Applicant ${candidateId} status updated successfully.`);
             return true;
         } catch (error) {
             console.error('Error updating applicant status:', error);
             return false;
         }
-    }
-
-    async censorJobPost(role: string, jobPostId: string, status: PostStatus): Promise<boolean> {
-        if (role !== UserRole.ADMIN) {
-            console.warn(`User with role ${role} is not authorized to censor job posts.`);
-            return false;
-        }
-
-        const updated = await this.jobPostRepository.updatePostStatus(jobPostId, status);
-        return updated;
     }
 }

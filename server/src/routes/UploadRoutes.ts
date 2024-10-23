@@ -10,16 +10,16 @@ export default class UploadRouter extends BaseRoutes {
   constructor(uploadController: UploadController) {
     super();
     this.uploadController = uploadController;
-    this.storage = multer.diskStorage({});
+    this.storage =  multer.memoryStorage();
     this.upload = multer({ storage: this.storage });
     this.autoBindControllerMethods(this.uploadController);
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.post('/recruiter-images', this.upload.array('files'), this.uploadController.uploadRecruiterImages);
-    this.router.post('/candidate-image', this.upload.array('files'), this.uploadController.uploadCandidateImages);
-    this.router.delete('/recruiter-images/delete', this.uploadController.deleteRecruiterImages);
-    this.router.delete('/candidate-images/delete', this.uploadController.deleteCandidateImages);
+    this.router.post('/recruiter-images', this.upload.array('files'), this.uploadController.uploadRecruiterImages); // Done
+    this.router.post('/candidate-image', this.upload.array('files'), this.uploadController.uploadCandidateImages); // Done
+    this.router.delete('/recruiter-images/delete', this.uploadController.deleteRecruiterImages); // Done
+    this.router.delete('/candidate-images/delete', this.uploadController.deleteCandidateImages); // Done
   }
 }

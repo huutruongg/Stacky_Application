@@ -160,4 +160,15 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
         );
         return result.modifiedCount > 0;
     }
+
+    async updateApplyStatus(userId: string, jobPostId: string, status: string): Promise<boolean> {
+        const result = await this.model.updateOne(
+            {
+                userId,
+                "jobApplied.jobPostId": jobPostId,
+            },
+            { $set: { "jobApplied.$.status": status } }
+        );
+        return result.modifiedCount > 0;
+    }
 }

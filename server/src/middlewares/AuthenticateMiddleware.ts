@@ -8,20 +8,18 @@ import { log } from "console";
 
 dotenv.config();
 
-// Helper function to set cookies for authentication (tokens)
 export const setAuthCookies = async (req: Request, res: Response, user: IUser): Promise<void> => {
     const authService = new AuthService();
-    const accessToken = await authService.generateAccessToken(String(user._id), user.privateEmail, user.role);
-    const refreshToken = await authService.generateRefreshToken(String(user._id), user.privateEmail, user.role);
-    // Set accessToken as a cookie
+    const accessToken = await authService.generateAccessToken(String(user._id), user.role);
+    const refreshToken = await authService.generateRefreshToken(String(user._id), user.role);
+
     res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: 1 * 60 * 1000, // 1 minutes
     });
 
-    // Set refreshToken as a cookie
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -29,27 +27,83 @@ export const setAuthCookies = async (req: Request, res: Response, user: IUser): 
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    (req as any).userData = { userId: String(user._id), role: user.role, } as IUserDataType;
+    (req as any).userData = { userId: String(user._id), role: user.role } as IUserDataType;
 };
 
-// JWT Authentication Middleware
-export const authenticateJWT = (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.cookies['accessToken'] || req.headers['authorization']?.split(' ')[1];
+// JWT Authentication Middleware with proper refreshToken validation
+export const authenticateJWT = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const accessToken = req.cookies['accessToken'] || req.headers['authorization']?.split(' ')[1];
+    const refreshToken = req.cookies['refreshToken'] || req.headers['x-refresh-token'];
 
-    if (!token) {
+    log('accessToken', accessToken);
+    log('refreshToken', refreshToken);
+
+    // Nếu không có accessToken, kiểm tra refreshToken
+    if (!accessToken && refreshToken) {
+        jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET as string, async (refreshErr: any, decodedRefreshToken: any) => {
+            if (refreshErr) {
+                return res.status(403).json({ message: "Invalid refresh token!" });
+            }
+
+            // Tạo accessToken mới từ refreshToken
+            const newAccessToken = jwt.sign(
+                { userId: decodedRefreshToken.userId, role: decodedRefreshToken.role },
+                process.env.JWT_ACCESS_TOKEN_SECRET as string,
+                { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1m' }
+            );
+
+            // Lưu lại accessToken mới vào cookie
+            res.cookie('accessToken', newAccessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+                maxAge: 1 * 60 * 1000, // 15 phút
+            });
+
+            // Gắn thông tin người dùng vào request để tiếp tục xử lý
+            (req as any).userData = decodedRefreshToken;
+            return next();
+        });
+    } else if (accessToken) {
+        // Nếu có accessToken, xác thực nó
+        jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_SECRET as string, (err: any, decodedToken: any) => {
+            if (err && err.name === 'TokenExpiredError' && refreshToken) {
+                // Nếu accessToken hết hạn và có refreshToken
+                jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET as string, async (refreshErr: any, decodedRefreshToken: any) => {
+                    if (refreshErr) {
+                        return res.status(403).json({ message: "Invalid refresh token!" });
+                    }
+                    // Tạo accessToken mới từ refreshToken
+                    const newAccessToken = jwt.sign(
+                        { userId: decodedRefreshToken.userId, role: decodedRefreshToken.role },
+                        process.env.JWT_ACCESS_TOKEN_SECRET as string,
+                        { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1m' }
+                    );
+                    res.clearCookie('accessToken');
+                    // Lưu lại accessToken mới vào cookie
+                    res.cookie('accessToken', newAccessToken, {
+                        httpOnly: true,
+                        secure: process.env.NODE_ENV === 'production',
+                        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+                        maxAge: 1 * 60 * 1000, // 15 phút
+                    });
+
+                    // Gắn thông tin người dùng vào request để tiếp tục xử lý
+                    (req as any).userData = decodedRefreshToken;
+                    return next();
+                });
+            } else if (err) {
+                // Trường hợp accessToken không hợp lệ hoặc có lỗi khác
+                return res.status(403).json({ message: "Invalid access token!" });
+            } else {
+                // Token hợp lệ, tiếp tục xử lý
+                (req as any).userData = decodedToken;
+                return next();
+            }
+        });
+    } else {
+        // Trường hợp không có accessToken hoặc refreshToken
         res.status(401).json({ message: "Authentication required!" });
         return;
     }
-
-    jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET as string, (err: any, decodedToken: any) => {
-        if (err) {
-            res.status(401).json({ message: "Authentication failed!" });
-            return;
-        }
-        // Attach decoded user data to the request object
-        (req as any).userData = decodedToken as IUserDataType;
-
-        // Move to the next middleware
-        next();
-    });
 };

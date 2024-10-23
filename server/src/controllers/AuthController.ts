@@ -195,15 +195,22 @@ export default class AuthController extends BaseController {
 
   public async logout(req: Request, res: Response) {
     req.session.destroy((err) => {
-      if (err) return this.sendError(res, 500, "Logout failed");
+      if (err) {
+        return this.sendError(res, 500, "Logout failed");
+      }
+      // Clear cookies
       res.clearCookie("refreshToken");
       res.clearCookie("accessToken");
+      // Clear the session cookie (connect.sid)
+      res.clearCookie("connect.sid", { path: '/' }); // Chú ý: bạn có thể cần truyền path phù hợp
+      log("Logged out successfully");
       this.sendResponse(res, 200, {
         success: true,
         message: "Logged out successfully",
       });
     });
   }
+  
 
   public async getAccessToken(req: Request, res: Response) {
     try {
@@ -241,7 +248,6 @@ export default class AuthController extends BaseController {
       if (!user) return this.sendError(res, 401, "Invalid refresh token");
       const accessToken = await this.authService.generateAccessToken(
         String(user._id),
-        user.privateEmail,
         user.role
       );
       if (!accessToken)

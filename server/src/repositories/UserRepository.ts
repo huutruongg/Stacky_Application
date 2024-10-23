@@ -51,4 +51,9 @@ export default class UserRepository extends BaseRepository<IUser> {
         const user = await this.model.findOne({ _id: userId, role: 'ADMIN' }).lean();
         return !!user; 
     }
+
+    async isRefreshTokenValid(refreshToken: string): Promise<boolean> {
+        const user = await this.model.findOne({ refreshToken }).lean();
+        return !!user;
+    }
 }

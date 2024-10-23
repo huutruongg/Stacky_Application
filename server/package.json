@@ -5,7 +5,8 @@
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "dev": "nodemon src/server.local.ts",
-    "ngrok": "ngrok http --domain=happily-novel-chamois.ngrok-free.app 5050"
+    "ngrok": "ngrok http --domain=happily-novel-chamois.ngrok-free.app 5050",
+    "inspect": "node --inspect -r ts-node/register src/server.local.ts"
   },
   "keywords": [],
   "author": "",

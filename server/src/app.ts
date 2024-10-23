@@ -23,7 +23,7 @@ class App {
 
   private initializeMiddleware(): void {
     // Enable trust proxy
-    this.app.set('trust proxy', 1);
+    // this.app.set('trust proxy', 1);
 
     // Middleware for logging
     this.app.use(morgan('dev'));
@@ -63,7 +63,7 @@ class App {
 
     // Middleware for enabling CORS (Cross-Origin Resource Sharing)
     this.app.use(cors({
-      origin: [process.env.URL_CLIENT as string, 'https://happily-novel-chamois.ngrok-free.app'],
+      origin: [process.env.URL_CLIENT as string, 'https://happily-novel-chamois.ngrok-free.app', 'http://localhost:5050'],
       credentials: true,
       optionsSuccessStatus: 200,
     }));
@@ -89,7 +89,7 @@ class App {
   // Initialize routes
   private initializeRoutes(): void {
     this.app.use('/', routes);
-    
+
     this.app.use('/home', (req, res) => {
       res.send('Welcome to the home page');
     }

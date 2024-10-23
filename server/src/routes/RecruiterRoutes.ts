@@ -15,7 +15,7 @@ export default class RecruiterRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/forgot-password', this.recruiterController.forgotPassword);
+        this.router.post('/forgot-password', this.recruiterController.forgotPassword); 
         this.router.post('/reset-password/:userId', this.recruiterController.resetPassword);
         this.router.post('/change-password/:userId', authenticateJWT, authorizeJWT(UserRole.RECRUITER), this.recruiterController.resetPassword);
 

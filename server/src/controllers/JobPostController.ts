@@ -141,7 +141,7 @@ export default class JobPostController extends BaseController {
                 keyString.trim() as string, locationString.trim() as string, industryString.trim() as string
             );
             if (!result || result.length === 0) {
-                return this.sendError(res, 404, 'Jobs not found!');
+                return this.sendResponse(res, 200, { success: true, result: [] });
             }
 
             return this.sendResponse(res, 200, { success: true, result });
@@ -246,35 +246,17 @@ export default class JobPostController extends BaseController {
 
     async setApplyStatus(req: Request, res: Response) {
         try {
-            const { jobPostId, applicantId, status } = req.body;
+            const { jobPostId, candidateId, status } = req.body;
             const userInfo = await (req as any).userData;
             log('userInfo', userInfo);
             if (!userInfo) {
                 return this.sendError(res, 401, new Error('Authentication required!').message);
             }
-            const result = await this.jobPostService.setApplyStatus(userInfo.userId, jobPostId, applicantId, status);
+            const result = await this.jobPostService.setApplyStatus(userInfo.userId, jobPostId, candidateId, status);
             if (!result) {
                 return this.sendError(res, 400, 'Failed to set apply status!');
             }
             return this.sendResponse(res, 200, { success: true, message: 'Apply status set successfully!' });
-        } catch (error) {
-            return this.sendError(res, 500, 'Internal Server Error!');
-        }
-    }
-
-    async censorJobPost(req: Request, res: Response) {
-        try {
-            const { jobPostId, status } = req.body;
-            const userInfo = await (req as any).userData;
-            log('userInfo', userInfo);
-            if (!userInfo) {
-                return this.sendError(res, 401, new Error('Authentication required!').message);
-            }
-            const result = await this.jobPostService.censorJobPost(userInfo.role, jobPostId, status);
-            if (!result) {
-                return this.sendError(res, 400, 'Failed to censor job post!');
-            }
-            return this.sendResponse(res, 200, { success: true, message: 'Job post censored successfully!' });
         } catch (error) {
             return this.sendError(res, 500, 'Internal Server Error!');
         }
