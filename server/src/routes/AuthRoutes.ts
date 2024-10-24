@@ -1,7 +1,6 @@
-import { Router, Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import AuthController from "../controllers/AuthController";
 import path from "path";
-import passport from "passport";
 import { BaseRoutes } from "./BaseRoutes";
 
 export default class AuthRoutes extends BaseRoutes {
@@ -23,7 +22,6 @@ export default class AuthRoutes extends BaseRoutes {
         this.router.get('/google/callback', this.authController.loginWithOAuth('google'));
         this.router.get('/github/callback', this.authController.loginWithOAuth('github'));
         this.router.get('/get-access-token', this.authController.getAccessToken);
-        this.router.post('/regenerate-access-token', this.authController.regenerateAccessToken);
     }
 
     private serveLoginPage(req: Request, res: Response): void {

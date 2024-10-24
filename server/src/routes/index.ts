@@ -33,6 +33,7 @@ import UploadRouter from "./UploadRoutes";
 import PaymentRoutes from "./PaymentRoutes";
 import EmailController from "../controllers/EmailController";
 import EmailRoutes from "./EmailRoutes";
+import ApplicantService from "../services/ApplicantService";
 
 class Routes {
     public router: Router;
@@ -90,7 +91,8 @@ class Routes {
     private lazyLoadRecruiterRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
             const recruiterService = new RecruiterService(this.recruiterRepository);
-            const recruiterController = new RecruiterController(recruiterService, this.authService);
+            const applicantService = new ApplicantService(this.applicantRepository);
+            const recruiterController = new RecruiterController(recruiterService, this.authService, applicantService);
             const recruiterRoutes = new RecruiterRoutes(recruiterController);
             recruiterRoutes.getRouter()(req, res, next);
         };

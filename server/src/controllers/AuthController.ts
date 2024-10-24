@@ -210,7 +210,7 @@ export default class AuthController extends BaseController {
       });
     });
   }
-  
+
 
   public async getAccessToken(req: Request, res: Response) {
     try {
@@ -235,27 +235,6 @@ export default class AuthController extends BaseController {
         500,
         new Error("Failed to get access token").message
       );
-    }
-  }
-
-  public async regenerateAccessToken(req: Request, res: Response) {
-    const { refreshToken } = req.body;
-    if (!refreshToken)
-      return this.sendError(res, 401, "Refresh token not found");
-
-    try {
-      const user = await this.authService.getUserByRefreshToken(refreshToken);
-      if (!user) return this.sendError(res, 401, "Invalid refresh token");
-      const accessToken = await this.authService.generateAccessToken(
-        String(user._id),
-        user.role
-      );
-      if (!accessToken)
-        return this.sendError(res, 401, "Invalid refresh token");
-
-      this.sendResponse(res, 200, { success: true, accessToken });
-    } catch (error) {
-      this.sendError(res, 500, "Failed to regenerate access token");
     }
   }
 }

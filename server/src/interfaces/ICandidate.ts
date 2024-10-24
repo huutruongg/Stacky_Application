@@ -36,10 +36,16 @@ export interface ICandidate extends Document {
 export interface IApplicant extends Document {
     jobPostId: IJobPost['_id'];
     userId: IUser['_id'];
-    programmingSkills?: string;
-    linkedinUrl?: string;
-    githubUrl?: string;
-    personalDescription?: string;
+    programmingSkills: string;
+    fullName: string;
+    publicEmail: string;
+    phoneNumber: string;
+    birthDate: Date;
+    avatarUrl: string;
+    address: string;
+    linkedinUrl: string;
+    githubUrl: string;
+    personalDescription: string;
     languages: ILanguage[];
     projects: IProject[];
     educations: IEducation[];
@@ -48,4 +54,4 @@ export interface IApplicant extends Document {
     status: ApplyStatus;
     githubScore: number;
     appliedAt: Date;
-  }
+}

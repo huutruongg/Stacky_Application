@@ -22,4 +22,8 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
     async deleteApplication(userId: string, jobPostId: string): Promise<IApplicant | null> {
         return await this.model.findOneAndDelete({ userId, jobPostId }).exec();
     }
+
+    async findCandidatesApplied(jobPostId: string): Promise<IApplicant[] | null> {
+        return await this.model.find({ jobPostId: jobPostId }).exec();
+    }
 }

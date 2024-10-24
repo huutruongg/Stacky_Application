@@ -3,14 +3,16 @@ import AuthService from "../services/AuthService";
 import RecruiterService from "../services/RecruiterService";
 import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
+import ApplicantService from "../services/ApplicantService";
 export default class RecruiterController extends BaseController {
     private recruiterService: RecruiterService;
     private authService: AuthService;
-
-    constructor(recruiterService: RecruiterService, authService: AuthService) {
+    private applicantService: ApplicantService;
+    constructor(recruiterService: RecruiterService, authService: AuthService, applicantService: ApplicantService) {
         super();
         this.recruiterService = recruiterService;
         this.authService = authService;
+        this.applicantService = applicantService;
     }
 
     public async forgotPassword(req: Request, res: Response): Promise<void> {
@@ -54,5 +56,17 @@ export default class RecruiterController extends BaseController {
             log("Error fetching company info:", error);
             return this.sendError(res, 500, "An error occurred while fetching the company info.");
         }
+    }
+
+    async getApplicants(req: Request, res: Response) {
+        const jobPostId = req.params.jobPostId;
+        if (!jobPostId) {
+            return this.sendError(res, 400, new Error("Job Post ID is required.").message);
+        }
+        const applicants = await this.applicantService.getCandidatesApplied(jobPostId);
+        if (!applicants) {
+            return this.sendError(res, 404, new Error("No applicants found.").message);
+        }
+        return this.sendResponse(res, 200, { success: true, result: applicants });
     }
 }
