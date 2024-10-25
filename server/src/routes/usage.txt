@@ -21,7 +21,7 @@ delete - http://localhost:5050/upload/candidate-images/delete
 
 
 Recruiter:
-get - http://localhost:5050/recruiter/get-company-info/:recruiterId
+get - http://localhost:5050/recruiter/get-company-info/:userId
 post - http://localhost:5050/recruiter/forgot-password
 post - http://localhost:5050/recruiter/reset-password/:userId
 post - http://localhost:5050/recruiter/change-password/:userId
@@ -33,7 +33,13 @@ Candidate:
 get - http://localhost:5050/candidate/get-candidate
 post - http://localhost:5050/candidate/update-info
 post - http://localhost:5050/candidate/delete-candidate/:userId
-post - http://localhost:5050/candidate/remove-object
+get - http://localhost:5050/candidate/get-profile
+put - http://localhost:5050/candidate/update-profile => {
+    "avatarUrl": "https://images2.thanhnien.vn/528068263637045248/2024/1/31/jw1-17066873444681386177978.jpg",
+    "fullName": "Truong Cong Huu",
+    "publicEmail": "huune123@gmail.com",
+    "phoneNumber": "0011223344"
+}
 
 
 Job Posting:
@@ -50,7 +56,8 @@ post - http://localhost:5050/job-post/create-application/:jobPostId
 post - http://localhost:5050/job-post/save-job-post/:jobPostId
 post - http://localhost:5050/job-post/unsave-job-post/:jobPostId
 post - http://localhost:5050/job-post/set-apply-status
-post - http://localhost:5050/job-post/censor-job-post
+get - http://localhost:5050/job-post/get-related-job-posts?jobTitle=A&location=b&yearsOfExperience=C
+
 
 
 Payment:
