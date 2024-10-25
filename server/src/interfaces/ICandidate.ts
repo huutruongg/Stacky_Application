@@ -55,3 +55,10 @@ export interface IApplicant extends Document {
     githubScore: number;
     appliedAt: Date;
 }
+
+export interface IProfile {
+    avatarUrl: string;
+    fullName: string;
+    publicEmail: string;
+    phoneNumber: string;
+}

@@ -1,22 +1,29 @@
+import { ObjectId } from "mongoose";
+import { IImage } from "../interfaces/IImage";
+
 export class RecruiterDTO {
-    _id: number;
+    _id: ObjectId;
     orgEmail: string;
     orgName: string;
     orgField: string;
     orgScale: string;
     orgTaxNumber: string;
     orgAddress: string;
-    images: string[];
+    orgImage: string;
+    coverImage: string;
+    images: IImage[];
 
     constructor(
-        _id: number,
+        _id: ObjectId,
         orgEmail: string,
         orgName: string,
         orgField: string,
         orgScale: string,
         orgTaxNumber: string,
         orgAddress: string,
-        images: string[]
+        orgImage: string,
+        coverImage: string,
+        images: IImage[]
     ) {
         this._id = _id;
         this.orgEmail = orgEmail;
@@ -25,6 +32,8 @@ export class RecruiterDTO {
         this.orgScale = orgScale;
         this.orgTaxNumber = orgTaxNumber;
         this.orgAddress = orgAddress;
+        this.orgImage = orgImage;
+        this.coverImage = coverImage;
         this.images = images;
     }
 
@@ -37,6 +46,8 @@ export class RecruiterDTO {
             orgScale: this.orgScale,
             orgTaxNumber: this.orgTaxNumber,
             orgAddress: this.orgAddress,
+            orgImage: this.orgImage,
+            coverImage: this.coverImage,
             images: this.images
         };
     }

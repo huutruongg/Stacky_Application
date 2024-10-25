@@ -1,4 +1,4 @@
-import { ICandidate } from "../interfaces/ICandidate";
+import { ICandidate, IProfile } from "../interfaces/ICandidate";
 import CandidateRepository from "../repositories/CandidateRepository";
 import { Types } from "mongoose";
 
@@ -31,9 +31,9 @@ export default class CandidateService {
     }
 
     async updateOauth(
-        userId: string, 
-        provider: string, 
-        providerId: string, 
+        userId: string,
+        provider: string,
+        providerId: string,
         accessToken: string
     ): Promise<ICandidate | null> {
         return await this.candidateRepository.updateOauth(userId, provider, providerId, accessToken);
@@ -87,5 +87,20 @@ export default class CandidateService {
             ...handleSubdocuments('experiences', data.experiences),
             ...handleSubdocuments('certifications', data.certifications),
         ];
+    }
+
+    async updateCandidateProfile(userId: string, data: Partial<IProfile>): Promise<boolean | null> {
+        try {
+            const candidateUpdate = {
+                fullName: data.fullName,
+                avatarUrl: data.avatarUrl,
+                publicEmail: data.publicEmail
+            }
+            const candidate = await this.candidateRepository.updateAccountProfile(userId, candidateUpdate);
+            return candidate !== null;
+        } catch (error) {
+            console.error("Error updating account profile:", error);
+            return null;
+        }
     }
 }

@@ -21,6 +21,8 @@ const RecruiterSchema = new Schema({
     orgScale: { type: String },
     orgTaxNumber: { type: String },
     orgAddress: { type: String },
+    orgImage: { type: String },
+    coverImage: { type: String },
     images: [ImageSchema],
     payments: [PaymentSchema],
     balance: { type: Number, default: 0 }

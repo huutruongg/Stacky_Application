@@ -125,31 +125,7 @@ export default class JobPostController extends BaseController {
         }
     }
 
-    public async findByCondition(req: Request, res: Response) {
-        try {
-            const { keySearch, location, industry } = req.query;
-            if (typeof keySearch !== 'string' || typeof location !== 'string' || typeof industry !== 'string') {
-                return this.sendError(res, 400, 'Invalid query parameters!');
-            }
-
-            const keyString = keySearch.replace(/-/g, ' ');
-            const locationString = location.replace(/-/g, ' ');
-            const industryString = industry.replace(/-/g, ' ');
-            log("LOGGGGGGGGGG: ", keyString.trim() as string, locationString.trim() as string, industryString.trim() as string);
-
-            const result = await this.jobPostService.findByCondition(
-                keyString.trim() as string, locationString.trim() as string, industryString.trim() as string
-            );
-            if (!result || result.length === 0) {
-                return this.sendResponse(res, 200, { success: true, result: [] });
-            }
-
-            return this.sendResponse(res, 200, { success: true, result });
-        }
-        catch (error) {
-            return this.sendError(res, 500, 'Internal Server Error!');
-        }
-    }
+    
 
     async createJobPost(req: Request, res: Response) {
         try {
@@ -261,4 +237,50 @@ export default class JobPostController extends BaseController {
             return this.sendError(res, 500, 'Internal Server Error!');
         }
     }
+
+    private async processJobPostRequest(
+        req: Request,
+        res: Response,
+        fields: { key: string, fallback: string }[]
+    ) {
+        try {
+            const queryParams: Record<string, string> = {};
+    
+            for (const { key, fallback } of fields) {
+                const value = req.query[key];
+                if (typeof value !== 'string') {
+                    return this.sendError(res, 400, `Invalid query parameter: ${key}`);
+                }
+                queryParams[key] = value.replace(/-/g, ' ').trim();
+            }
+    
+            log("LOGGGGGGGGGG: ", queryParams);
+    
+            const result = await this.jobPostService.findByCondition(queryParams);
+            if (!result || result.length === 0) {
+                return this.sendResponse(res, 200, { success: true, result: [] });
+            }
+    
+            return this.sendResponse(res, 200, { success: true, result });
+        } catch (error) {
+            return this.sendError(res, 500, 'Internal Server Error!');
+        }
+    }
+    
+    public async findByCondition(req: Request, res: Response) {
+        return this.processJobPostRequest(req, res, [
+            { key: 'keySearch', fallback: '' },
+            { key: 'location', fallback: '' },
+            { key: 'industry', fallback: '' },
+        ]);
+    }
+    
+    public async getRelatedJobPosts(req: Request, res: Response) {
+        return this.processJobPostRequest(req, res, [
+            { key: 'jobTitle', fallback: '' },
+            { key: 'location', fallback: '' },
+            { key: 'yearsOfExperience', fallback: '' },
+        ]);
+    }
+    
 }

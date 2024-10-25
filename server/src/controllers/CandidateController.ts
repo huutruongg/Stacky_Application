@@ -4,6 +4,7 @@ import CandidateService from "../services/CandidateService";
 import UserService from "../services/UserService";
 import { log } from "console";
 import { IUserDataType } from "../interfaces/IUserData";
+import { IProfile } from "../interfaces/ICandidate";
 
 export default class CandidateController extends BaseController {
     private candidateService: CandidateService;
@@ -29,7 +30,7 @@ export default class CandidateController extends BaseController {
             }
             return this.sendResponse(res, 200, { success: true, result: candidate });
         } catch (error) {
-            return this.handleServerError(res, error);
+            return this.sendError(res, 500, "Failed to get candidate");
         }
     }
 
@@ -47,7 +48,7 @@ export default class CandidateController extends BaseController {
             }
             return this.sendResponse(res, 200, { success: true, message: "Candidate updated successfully" });
         } catch (error) {
-            return this.handleServerError(res, error);
+            return this.sendError(res, 500, "Failed to get candidate");
         }
     }
 
@@ -65,12 +66,43 @@ export default class CandidateController extends BaseController {
                 return this.sendError(res, 500, "Failed to delete candidate");
             }
         } catch (error) {
-            return this.handleServerError(res, error);
+            return this.sendError(res, 500, "Failed to delete candidate");
         }
     }
 
-    private handleServerError(res: Response, error: unknown) {
-        log("Error: ", error);
-        return this.sendError(res, 500, (error as Error).message);
+    async getCandidateProfile(req: Request, res: Response) {
+        try {
+            const userInfo = await (req as any).userData;
+            const userId = userInfo.userId;
+            const candidate = await this.candidateService.getCandidateByUserId(userId);
+            const user = await this.userService.getUserById(userId);
+            if (!candidate || !user) {
+                return this.sendError(res, 404, "Candidate not found");
+            }
+            const data = {
+                avatarUrl: candidate.avatarUrl,
+                fullName: candidate.fullName,
+                publicEmail: candidate.publicEmail,
+                phoneNumber: user.phoneNumber
+            } as IProfile;
+            return this.sendResponse(res, 200, { success: true, result: data });
+        } catch (error) {
+            return this.sendError(res, 500, "Failed to get candidate");
+        }
+    }
+
+    async updateCandidateProfile(req: Request, res: Response) {
+        try {
+            const data = req.body;
+            const userInfo = await (req as any).userData;
+            const isProfileUpdated = await this.candidateService.updateCandidateProfile(userInfo.userId, data);
+            const isUserUpdated = await this.userService.updateUserProfile(userInfo.userId, data);
+            if (!isProfileUpdated || !isUserUpdated) {
+                return this.sendError(res, 500, "Failed to update candidate profile");
+            }
+            return this.sendResponse(res, 200, { success: true, message: "Candidate profile updated successfully" });
+        } catch (error) {
+            return this.sendError(res, 500, "Failed to update candidate profile");
+        }
     }
 }

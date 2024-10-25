@@ -1,5 +1,5 @@
 import { log } from "console";
-import { ICandidate } from "../interfaces/ICandidate";
+import { ICandidate, IProfile } from "../interfaces/ICandidate";
 import CandidateModel from "../models/CandidateModel";
 import { BaseRepository } from "./BaseRepository";
 import { FlattenMaps, Types } from "mongoose";
@@ -168,6 +168,14 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
                 "jobApplied.jobPostId": jobPostId,
             },
             { $set: { "jobApplied.$.status": status } }
+        );
+        return result.modifiedCount > 0;
+    }
+
+    async updateAccountProfile(userId: string, data: Partial<IProfile>): Promise<boolean> {
+        const result = await this.model.updateOne(
+            { userId: new Types.ObjectId(userId) },
+            data
         );
         return result.modifiedCount > 0;
     }

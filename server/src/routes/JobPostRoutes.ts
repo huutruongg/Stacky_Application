@@ -28,5 +28,6 @@ export default class JobPostRoutes extends BaseRoutes {
         this.router.post("/save-job-post/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.saveJobPost); // Done
         this.router.delete("/unsave-job-post/:jobPostId", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.CANDIDATE), this.jobPostController.unSaveJobPost); // Done
         this.router.post("/set-apply-status", authenticateJWT, authorizeJWT(UserRole.ADMIN, UserRole.RECRUITER), this.jobPostController.setApplyStatus); 
+        this.router.get('/get-related-job-posts', this.jobPostController.getRelatedJobPosts); // Done
     }
 }

@@ -1,3 +1,4 @@
+import { IProfile } from "../interfaces/ICandidate";
 import UserRepository from "../repositories/UserRepository";
 
 export default class UserService {
@@ -29,5 +30,10 @@ export default class UserService {
 
   async getUserByEmail(email: string) {
     return this.userRepository.findOne(email);
+  }
+
+  async updateUserProfile(id: string, data: IProfile) {
+    const userUpdate = { phoneNumber: data.phoneNumber };
+    return this.userRepository.update(id, userUpdate);
   }
 }

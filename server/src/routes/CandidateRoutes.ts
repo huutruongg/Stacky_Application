@@ -23,9 +23,11 @@ export default class CandidateRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/get-candidate', authenticateJWT, this.candidateController.getCandidate);
-        this.router.put('/update-info', authenticateJWT, this.candidateController.updateCandidate);
-        this.router.delete('/delete-candidate/:userId', authenticateJWT, this.candidateController.deleteCandidate);
+        this.router.get('/get-candidate', authenticateJWT, this.candidateController.getCandidate); // Done
+        this.router.get('/get-profile', authenticateJWT, authorizeJWT(UserRole.CANDIDATE), this.candidateController.getCandidateProfile); // Done
+        this.router.put('/update-profile', authenticateJWT, this.candidateController.updateCandidateProfile); // Done
+        this.router.put('/update-info', authenticateJWT, this.candidateController.updateCandidate); // Done
+        this.router.delete('/delete-candidate/:userId', authenticateJWT, this.candidateController.deleteCandidate); // Done
         this.router.post('/get-github-score', authenticateJWT, this.githubController.getGithubScore)
     }
 }

@@ -11,6 +11,8 @@ export interface IRecruiter extends Document {
     orgScale: string;
     orgTaxNumber: string;
     orgAddress: string;
+    orgImage: string;
+    coverImage: string;
     images: IImage[],
     payments: IPayment[],
     balance: number;

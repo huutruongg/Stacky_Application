@@ -207,13 +207,25 @@ export default class JobPostService {
         }
     }
 
-    async findByCondition(jobTitle: string, location: string, industry: string): Promise<JobPostDTO[]> {
+    async findByCondition(queryParams: { [key: string]: string }): Promise<JobPostDTO[]> {
         try {
             const query: any = {};
-            if (jobTitle) query.jobTitle = { $regex: jobTitle, $options: 'i' };
-            if (location) query.location = { $regex: location, $options: 'i' };
-            if (industry) query.typeOfIndustry = { $regex: industry, $options: 'i' };
+    
+            if (queryParams.jobTitle) {
+                query.jobTitle = { $regex: queryParams.jobTitle, $options: 'i' };
+            }
+            if (queryParams.location) {
+                query.location = { $regex: queryParams.location, $options: 'i' };
+            }
+            if (queryParams.industry) {
+                query.typeOfIndustry = { $regex: queryParams.industry, $options: 'i' };
+            }
+            if (queryParams.yearsOfExperience) {
+                query.yearsOfExperience = { $regex: queryParams.yearsOfExperience, $options: 'i' };
+            }
+            
             log("Query: ", query);
+    
             // Find job posts by condition
             const jobPosts = await this.jobPostRepository.findAllByCondition(query);
             // Convert to DTO
@@ -223,6 +235,7 @@ export default class JobPostService {
             throw new Error('Could not find job posts by condition');
         }
     }
+    
 
     async createApplication(userId: string, jobPostId: string): Promise<boolean> {
         try {
