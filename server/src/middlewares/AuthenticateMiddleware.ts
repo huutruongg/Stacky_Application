@@ -17,7 +17,7 @@ export const setAuthCookies = async (req: Request, res: Response, user: IUser): 
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        maxAge: 1 * 60 * 1000, // 1 minutes
+        maxAge: 30 * 60 * 1000, // 30 minutes
     });
 
     res.cookie('refreshToken', refreshToken, {
@@ -49,7 +49,7 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
             const newAccessToken = jwt.sign(
                 { userId: decodedRefreshToken.userId, role: decodedRefreshToken.role },
                 process.env.JWT_ACCESS_TOKEN_SECRET as string,
-                { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1m' }
+                { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '30m' }
             );
 
             // Lưu lại accessToken mới vào cookie
@@ -57,7 +57,7 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-                maxAge: 1 * 60 * 1000, // 15 phút
+                maxAge: 30 * 60 * 1000, // 30 phút
             });
 
             // Gắn thông tin người dùng vào request để tiếp tục xử lý
@@ -77,7 +77,7 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
                     const newAccessToken = jwt.sign(
                         { userId: decodedRefreshToken.userId, role: decodedRefreshToken.role },
                         process.env.JWT_ACCESS_TOKEN_SECRET as string,
-                        { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1m' }
+                        { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '30m' }
                     );
                     res.clearCookie('accessToken');
                     // Lưu lại accessToken mới vào cookie
@@ -85,7 +85,7 @@ export const authenticateJWT = async (req: Request, res: Response, next: NextFun
                         httpOnly: true,
                         secure: process.env.NODE_ENV === 'production',
                         sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-                        maxAge: 1 * 60 * 1000, // 15 phút
+                        maxAge: 30 * 60 * 1000, // 30 phút
                     });
 
                     // Gắn thông tin người dùng vào request để tiếp tục xử lý
