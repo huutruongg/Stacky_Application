@@ -59,14 +59,39 @@ export default class RecruiterController extends BaseController {
     }
 
     async getApplicants(req: Request, res: Response) {
-        const jobPostId = req.params.jobPostId;
-        if (!jobPostId) {
-            return this.sendError(res, 400, new Error("Job Post ID is required.").message);
+        try {
+            const jobPostId = req.params.jobPostId;
+            if (!jobPostId) {
+                return this.sendError(res, 400, new Error("Job Post ID is required.").message);
+            }
+            const applicants = await this.applicantService.getCandidatesApplied(jobPostId);
+            if (!applicants) {
+                return this.sendError(res, 404, new Error("No applicants found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, result: applicants });
+        } catch (error) {
+            log("Error fetching applicants:", error);
+            return this.sendError(res, 500, "An error occurred while fetching the applicants.");
+
         }
-        const applicants = await this.applicantService.getCandidatesApplied(jobPostId);
-        if (!applicants) {
-            return this.sendError(res, 404, new Error("No applicants found.").message);
+    }
+
+    async updateComapanyInfo(req: Request, res: Response) {
+        try {
+            const data = req.body;
+            const userInfo = (req as any).userData;
+            if (!data || !userInfo) {
+                return this.sendError(res, 400, new Error("Company info is required.").message);
+            }
+            const updatedInfo = await this.recruiterService.updateCompanyInfo(userInfo.userId, data);
+            if (!updatedInfo) {
+                return this.sendError(res, 404, new Error("Company info not found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, message: "Company info updated successfully!" });
+
+        } catch (error) {
+            log("Error updating company info:", error);
+            return this.sendError(res, 500, "An error occurred while updating the company info.");
         }
-        return this.sendResponse(res, 200, { success: true, result: applicants });
     }
 }

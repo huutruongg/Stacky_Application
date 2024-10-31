@@ -7,11 +7,17 @@ export class RecruiterDTO {
     orgName: string;
     orgField: string;
     orgScale: string;
+    orgWebsiteUrl: string;
+    orgFacebookLink: string;
+    orgLinkedinLink: string;
+    orgYoutubeLink: string;
+    orgIntroduction: string;
+    orgBenefits: string;
     orgTaxNumber: string;
     orgAddress: string;
     orgImage: string;
-    coverImage: string;
-    images: IImage[];
+    orgCoverImage: string;
+    orgImages: IImage[];
 
     constructor(
         _id: ObjectId,
@@ -21,9 +27,15 @@ export class RecruiterDTO {
         orgScale: string,
         orgTaxNumber: string,
         orgAddress: string,
+        orgWebsiteUrl: string,
+        orgFacebookLink: string,
+        orgLinkedinLink: string,
+        orgYoutubeLink: string,
+        orgIntroduction: string,
+        orgBenefits: string,
         orgImage: string,
-        coverImage: string,
-        images: IImage[]
+        orgCoverImage: string,
+        orgImages: IImage[]
     ) {
         this._id = _id;
         this.orgEmail = orgEmail;
@@ -32,9 +44,15 @@ export class RecruiterDTO {
         this.orgScale = orgScale;
         this.orgTaxNumber = orgTaxNumber;
         this.orgAddress = orgAddress;
+        this.orgWebsiteUrl = orgWebsiteUrl;
+        this.orgFacebookLink = orgFacebookLink;
+        this.orgLinkedinLink = orgLinkedinLink;
+        this.orgYoutubeLink = orgYoutubeLink;
+        this.orgIntroduction = orgIntroduction;
+        this.orgBenefits = orgBenefits;
         this.orgImage = orgImage;
-        this.coverImage = coverImage;
-        this.images = images;
+        this.orgCoverImage = orgCoverImage;
+        this.orgImages = orgImages;
     }
 
     toJSON() {
@@ -46,9 +64,15 @@ export class RecruiterDTO {
             orgScale: this.orgScale,
             orgTaxNumber: this.orgTaxNumber,
             orgAddress: this.orgAddress,
+            orgWebsiteUrl: this.orgWebsiteUrl,
+            orgFacebookLink: this.orgFacebookLink,
+            orgLinkedinLink: this.orgLinkedinLink,
+            orgYoutubeLink: this.orgYoutubeLink,
+            orgIntroduction: this.orgIntroduction,
+            orgBenefits: this.orgBenefits,
             orgImage: this.orgImage,
-            coverImage: this.coverImage,
-            images: this.images
+            orgCoverImage: this.orgCoverImage,
+            orgImages: this.orgImages
         };
     }
 }

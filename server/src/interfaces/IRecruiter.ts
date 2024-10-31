@@ -7,13 +7,19 @@ export interface IRecruiter extends Document {
     userId: IUser['_id'];
     orgEmail: string;
     orgName: string;
+    orgIntroduction: string;
+    orgBenefits: string;
     orgField: string;
     orgScale: string;
+    orgWebsiteUrl: string;
+    orgFacebookLink: string;
+    orgLinkedinLink: string;
+    orgYoutubeLink: string;
     orgTaxNumber: string;
     orgAddress: string;
     orgImage: string;
-    coverImage: string;
-    images: IImage[],
+    orgCoverImage: string;
+    orgImages: IImage[];
     payments: IPayment[],
     balance: number;
 }

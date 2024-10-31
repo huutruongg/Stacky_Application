@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Recruiter Images</title>
+  <style>
+    .dropzone {
+      border: 2px dashed #cccccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      margin: 20px 0;
+    }
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .image-box {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .remove-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 0;
+    }
+    .upload-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .hidden-input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Upload Recruiter Images</h1>
+
+  <div id="dropzone" class="dropzone">
+    <p>Drop image files to upload, or click here to browse.</p>
+    <input type="file" id="fileInput" multiple accept="image/*" class="hidden-input">
+  </div>
+
+  <div id="imageContainer" class="image-container"></div>
+
+  <button id="uploadButton" class="upload-button" disabled>Submit</button>
+
+  <script>
+    const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const imageContainer = document.getElementById('imageContainer');
+const uploadButton = document.getElementById('uploadButton');
+
+let selectedFiles = [];
+
+dropzone.addEventListener('click', () => {
+  fileInput.click();
+});
+
+dropzone.addEventListener('dragover', (event) => {
+  event.preventDefault();
+});
+
+dropzone.addEventListener('drop', (event) => {
+  event.preventDefault();
+  handleFiles(event.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', (event) => {
+  handleFiles(event.target.files);
+});
+
+function handleFiles(files) {
+  for (const file of files) { // Use for...of loop for better handling
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();  // Use FileReader to create a data URL
+      reader.onload = (e) => {
+        file.preview = e.target.result; // Store the data URL in the file.preview
+        selectedFiles.push(file);
+        displayImage(file);
+      };
+      reader.readAsDataURL(file); // Read the file as a data URL
+    } else {
+      alert('Only image files are allowed');
+    }
+  }
+  uploadButton.disabled = selectedFiles.length === 0;
+}
+
+function displayImage(file) {
+  const imageBox = document.createElement('div');
+  imageBox.classList.add('image-box');
+
+  const img = document.createElement('img');
+  img.src = file.preview; // Use the correct data URL
+  img.alt = file.name;  // Set the alt text to the file name
+
+  const removeButton = document.createElement('button');
+  removeButton.classList.add('remove-button');
+  removeButton.textContent = '×';
+  removeButton.onclick = () => removeFile(file, imageBox);
+
+  imageBox.appendChild(img);
+  imageBox.appendChild(removeButton);
+  imageContainer.appendChild(imageBox);
+}
+
+function removeFile(file, imageBox) {
+  selectedFiles = selectedFiles.filter(f => f !== file);
+  imageBox.remove();
+  URL.revokeObjectURL(file.preview); // Important to revoke the URL after removal
+  uploadButton.disabled = selectedFiles.length === 0;
+}
+
+    // Upload images to server
+    uploadButton.addEventListener('click', async () => {
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+
+      uploadButton.textContent = 'Uploading...';
+      uploadButton.disabled = true;
+
+      try {
+        const response = await fetch('/upload/recruiter-images', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const result = await response.json();
+        console.log(result.urlImages);
+        if (result.success) {
+          alert('Images uploaded successfully!');
+          selectedFiles = [];
+          imageContainer.innerHTML = ''; // Clear images after upload
+        } else {
+          alert('Failed to upload images: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Error uploading images:', error);
+        alert('An error occurred while uploading images.');
+      } finally {
+        uploadButton.textContent = 'Submit';
+        uploadButton.disabled = selectedFiles.length === 0;
+      }
+    });
+  </script>
+
+</body>
+</html>

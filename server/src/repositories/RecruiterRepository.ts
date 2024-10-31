@@ -3,7 +3,8 @@ import { log } from "console";
 import { IOrganizationName, IRecruiter } from "../interfaces/IRecruiter";
 import RecruiterModel from "../models/RecruiterModel";
 import { BaseRepository } from "./BaseRepository";
-import { Types } from "mongoose";
+import { ObjectId, Types } from "mongoose";
+import { RecruiterDTO } from "../dtos/RecruiterDTO";
 
 export default class RecruiterRepository extends BaseRepository<IRecruiter> {
     constructor() {
@@ -24,6 +25,11 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
 
     async updateRecruiter(data: Partial<IRecruiter>): Promise<IRecruiter | null> {
         return await this.model.findOneAndUpdate({ userId: data.userId }, data).exec();
+    }
+
+    async updateOne(userId: string, data: RecruiterDTO): Promise<boolean | null> {
+        const updatedRecruiter = await this.model.findOneAndUpdate({ userId: new Types.ObjectId(userId) }, data).exec();
+        return updatedRecruiter ? true : false;
     }
 
     async deleteRecruiter(userId: string): Promise<IRecruiter | null> {

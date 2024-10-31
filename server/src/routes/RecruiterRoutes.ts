@@ -19,8 +19,8 @@ export default class RecruiterRoutes extends BaseRoutes {
         this.router.post('/reset-password/:userId', this.recruiterController.resetPassword);
         this.router.post('/change-password/:userId', authenticateJWT, authorizeJWT(UserRole.RECRUITER), this.recruiterController.resetPassword);
         this.router.get('/get-candidates-applied/:jobPostId', this.recruiterController.getApplicants);
-        // this.router.post('/update-company-profile', RecruiterController.updateComapanyProfile);
-        // this.router.post('/update-company-contact', RecruiterController.updateComapanyContact);
+        // this.router.post('/update-company-account', RecruiterController.updateComapanyAccount);
+        this.router.put('/update-company-info', authenticateJWT, this.recruiterController.updateComapanyInfo);
         this.router.get('/get-company-info/:userId', this.recruiterController.getCompanyInfo);
     }
 }

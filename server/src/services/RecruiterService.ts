@@ -3,6 +3,7 @@ import { RecruiterDTO } from "../dtos/RecruiterDTO";
 import { IRecruiter } from "../interfaces/IRecruiter";
 import RecruiterRepository from "../repositories/RecruiterRepository";
 import { IImage } from "../interfaces/IImage";
+import { log } from "console";
 
 export default class RecruiterService {
   private recruiterRepository: RecruiterRepository;
@@ -12,19 +13,25 @@ export default class RecruiterService {
   }
 
   async toRecruiterDTO(recruiter: IRecruiter): Promise<RecruiterDTO> {
-    const { _id ,orgEmail, orgName, orgField, orgScale, orgTaxNumber, orgAddress, orgImage, coverImage, images } = recruiter;
+    const { _id, orgEmail, orgName, orgField, orgWebsiteUrl, orgFacebookLink, orgLinkedinLink, orgYoutubeLink, orgIntroduction, orgBenefits, orgScale, orgTaxNumber, orgAddress, orgImage, orgCoverImage, orgImages } = recruiter;
     return new RecruiterDTO(
-            _id as ObjectId,
-            orgEmail,
-            orgName,
-            orgField,
-            orgScale,
-            orgTaxNumber,
-            orgAddress,
-            orgImage,
-            coverImage,
-            images as IImage[]
-        );
+      _id as ObjectId,
+      orgEmail,
+      orgName,
+      orgField,
+      orgScale,
+      orgTaxNumber,
+      orgAddress,
+      orgWebsiteUrl,
+      orgFacebookLink,
+      orgLinkedinLink,
+      orgYoutubeLink,
+      orgIntroduction,
+      orgBenefits,
+      orgImage,
+      orgCoverImage,
+      orgImages as IImage[]
+    );
   }
 
   async getRecruiterById(id: string) {
@@ -32,7 +39,7 @@ export default class RecruiterService {
   }
 
   async getRecruiterByUserId(userId: string) {
-    const data : IRecruiter | null = await this.recruiterRepository.findOne({ userId });
+    const data: IRecruiter | null = await this.recruiterRepository.findOne({ userId });
     if (!data) {
       return null;
     }
@@ -43,5 +50,17 @@ export default class RecruiterService {
     return this.recruiterRepository.findOne({ email });
   }
 
-  
+  async updateCompanyInfo(userId: string, recruiter: RecruiterDTO) {
+    const data = await this.recruiterRepository.findOne({ userId });
+    if (!data) {
+      return null;
+    }
+    recruiter.orgImages = recruiter.orgImages.map((url) => ({
+      imageUrl: url,
+      uploadedAt: new Date()
+    } as unknown as IImage));
+
+    const updatedRecruiter = await this.recruiterRepository.updateOne(userId, recruiter);
+    return !!updatedRecruiter;
+  }
 }

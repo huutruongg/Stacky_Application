@@ -8,8 +8,7 @@ const UserSchema = new Schema({
     password: { type: String },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.CANDIDATE },
     phoneNumber: { type: String },
-    createdAt: { type: Date, default: Date.now },
-    refreshToken:{ type: String}
+    createdAt: { type: Date, default: Date.now }
 });
 
 // Create and export the UserModel

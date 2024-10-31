@@ -15,21 +15,20 @@ export default class EmailController extends BaseController {
         const { to, subject, text } = req.body;
 
         if (!to || !subject || !text) {
-            this.sendError(res, 400, "Missing required fields: 'to', 'subject', and 'text'.");
-            return;
+           return this.sendError(res, 400, "Missing required fields: 'to', 'subject', and 'text'.");
         }
 
         try {
             const sent = await this.emailService.sendEmail(to, subject, text);
 
             if (sent) {
-                this.sendResponse(res, 200, { success: true, message: "Sent successfully!" });
+                return this.sendResponse(res, 200, { success: true, message: "Sent successfully!" });
             } else {
-                this.sendError(res, 500, "Failed to send email.");
+                return this.sendError(res, 500, "Failed to send email.");
             }
         } catch (error) {
             log("Error sending email:", error);
-            this.sendError(res, 500, "An error occurred while sending the email.");
+            return this.sendError(res, 500, "An error occurred while sending the email.");
         }
     }
 }

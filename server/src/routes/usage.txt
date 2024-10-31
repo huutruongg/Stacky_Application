@@ -25,8 +25,8 @@ get - http://localhost:5050/recruiter/get-company-info/:userId
 post - http://localhost:5050/recruiter/forgot-password
 post - http://localhost:5050/recruiter/reset-password/:userId
 post - http://localhost:5050/recruiter/change-password/:userId
-post - http://localhost:5050/recruiter/update-company-profile
-post - http://localhost:5050/recruiter/update-company-contact
+post - http://localhost:5050/recruiter/update-company-account
+put - http://localhost:5050/recruiter/update-company-info
 
 
 Candidate:
