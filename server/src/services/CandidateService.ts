@@ -1,3 +1,4 @@
+import { log } from "console";
 import { ICandidate, IProfile } from "../interfaces/ICandidate";
 import CandidateRepository from "../repositories/CandidateRepository";
 import { Types } from "mongoose";
@@ -40,7 +41,26 @@ export default class CandidateService {
     }
 
     async updateProfile(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {
-        return await this.candidateRepository.updateCandidate(userId, data);
+        // log("gender", typeof (data.gender));
+        // log("gender boolean", typeof (Boolean(data.gender)))
+        const dataToUpdate = {
+            fullName: data.fullName,
+            jobPosition: data.jobPosition,
+            publicEmail: data.publicEmail,
+            phoneNumber: data.phoneNumber,
+            gender: Boolean(data.gender),
+            birthDate: data.birthDate,
+            avatarUrl: data.avatarUrl,
+            address: data.address,
+            linkedinUrl: data.linkedinUrl,
+            githubUrl: data.githubUrl,
+            personalDescription: data.personalDescription,
+            programmingSkills: data.programmingSkills
+        }
+        // log("Data to update:", dataToUpdate);
+        const result = await this.candidateRepository.updateCandidate(userId, dataToUpdate);
+        // log("Update result:", result);
+        return result;
     }
 
     async updateProfessionalInfo(userId: string, data: Partial<ICandidate>): Promise<boolean> {

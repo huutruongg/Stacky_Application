@@ -4,15 +4,18 @@ import RecruiterService from "../services/RecruiterService";
 import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
 import ApplicantService from "../services/ApplicantService";
+import UserService from "../services/UserService";
 export default class RecruiterController extends BaseController {
     private recruiterService: RecruiterService;
     private authService: AuthService;
     private applicantService: ApplicantService;
-    constructor(recruiterService: RecruiterService, authService: AuthService, applicantService: ApplicantService) {
+    private userServices: UserService;
+    constructor(recruiterService: RecruiterService, authService: AuthService, applicantService: ApplicantService, userServices: UserService) {
         super();
         this.recruiterService = recruiterService;
         this.authService = authService;
         this.applicantService = applicantService;
+        this.userServices = userServices;
     }
 
     public async forgotPassword(req: Request, res: Response): Promise<void> {
@@ -92,6 +95,26 @@ export default class RecruiterController extends BaseController {
         } catch (error) {
             log("Error updating company info:", error);
             return this.sendError(res, 500, "An error occurred while updating the company info.");
+        }
+    }
+
+    async updateComapanyAccount(req: Request, res: Response) {
+        try {
+            const data = req.body;
+            const userInfo = (req as any).userData;
+            if (!data || !userInfo) {
+                return this.sendError(res, 400, new Error("Company account is required.").message);
+            }
+            const updatedCompany = await this.recruiterService.updateCompanyAccount(userInfo.userId, data);
+            const updatedUser = await this.userServices.updateUserProfile(userInfo.userId, data);
+            if (!updatedCompany || !updatedUser) {
+                return this.sendError(res, 404, new Error("Company account not found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, message: "Company account updated successfully!" });
+
+        } catch (error) {
+            log("Error updating company account:", error);
+            return this.sendError(res, 500, "An error occurred while updating the company account.");
         }
     }
 }

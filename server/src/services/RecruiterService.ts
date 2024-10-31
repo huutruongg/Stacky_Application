@@ -63,4 +63,13 @@ export default class RecruiterService {
     const updatedRecruiter = await this.recruiterRepository.updateOne(userId, recruiter);
     return !!updatedRecruiter;
   }
+
+  async updateCompanyAccount(userId: string, recruiter: any) {
+    const dataToUpdate = {
+      orgName: recruiter.orgName,
+      orgEmail: recruiter.orgEmail
+    }
+    const updatedRecruiter = await this.recruiterRepository.updateCompanyAccount(userId, dataToUpdate);
+    return !!updatedRecruiter;
+  }
 }

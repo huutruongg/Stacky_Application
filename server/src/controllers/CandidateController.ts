@@ -38,11 +38,10 @@ export default class CandidateController extends BaseController {
         try {
             const data = req.body;
             const userInfo = await (req as any).userData;
-            log("userInfo", userInfo);
-            log("data", data);
             const isProfileUpdated = await this.candidateService.updateProfile(userInfo.userId, data);
             const isProfessionalInfoUpdated = await this.candidateService.updateProfessionalInfo(userInfo.userId, data);
-
+            // log("isProfileUpdated", isProfileUpdated);
+            // log("isProfessionalInfoUpdated", isProfessionalInfoUpdated);
             if (!isProfileUpdated || !isProfessionalInfoUpdated) {
                 return this.sendError(res, 500, "Failed to update candidate");
             }

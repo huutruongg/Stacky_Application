@@ -92,7 +92,8 @@ class Routes {
         return (req: Request, res: Response, next: NextFunction) => {
             const recruiterService = new RecruiterService(this.recruiterRepository);
             const applicantService = new ApplicantService(this.applicantRepository);
-            const recruiterController = new RecruiterController(recruiterService, this.authService, applicantService);
+            const userService = new UserService(this.userRepository);
+            const recruiterController = new RecruiterController(recruiterService, this.authService, applicantService, userService);
             const recruiterRoutes = new RecruiterRoutes(recruiterController);
             recruiterRoutes.getRouter()(req, res, next);
         };

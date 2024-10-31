@@ -27,6 +27,10 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
         return await this.model.findOneAndUpdate({ userId: data.userId }, data).exec();
     }
 
+    async updateCompanyAccount(userId: string, data: any): Promise<IRecruiter | null> {
+        return await this.model.findOneAndUpdate({ userId: new Types.ObjectId(userId) }, data).exec();
+    }
+
     async updateOne(userId: string, data: RecruiterDTO): Promise<boolean | null> {
         const updatedRecruiter = await this.model.findOneAndUpdate({ userId: new Types.ObjectId(userId) }, data).exec();
         return updatedRecruiter ? true : false;

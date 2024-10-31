@@ -62,11 +62,12 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
     }
 
     async updateCandidate(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {
-        return await this.model.findOneAndUpdate(
+        const result = await this.model.findOneAndUpdate(
             { userId: new Types.ObjectId(userId) },
             data,
             { new: true }
         ).exec();
+        return result;
     }
 
     async deleteCandidate(userId: string): Promise<boolean> {
