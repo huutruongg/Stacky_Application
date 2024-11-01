@@ -64,7 +64,7 @@ export default class CandidateService {
     }
 
     async updateProfessionalInfo(userId: string, data: Partial<ICandidate>): Promise<boolean> {
-        const bulkOps = this.prepareBulkOperations(userId, data);
+        const bulkOps = await this.prepareBulkOperations(userId, data);
         if (bulkOps.length > 0) {
             await this.candidateRepository.bulkUpdate(bulkOps);
         }
@@ -78,36 +78,62 @@ export default class CandidateService {
         return await this.candidateRepository.deleteCandidate(userId);
     }
 
-    private prepareBulkOperations(userId: string, data: Partial<ICandidate>): any[] {
-        const handleSubdocuments = (fieldName: string, subdocs: any[] | undefined) => {
-            if (!subdocs) return [];
-            return subdocs.map(subdoc => {
-                if (subdoc._id) {
-                    return {
-                        updateOne: {
-                            filter: { userId: new Types.ObjectId(userId), [`${fieldName}._id`]: subdoc._id },
-                            update: { $set: { [`${fieldName}.$`]: subdoc } }
-                        }
-                    };
-                } else {
-                    return {
-                        updateOne: {
-                            filter: { userId: new Types.ObjectId(userId) },
-                            update: { $push: { [fieldName]: subdoc } }
-                        }
-                    };
-                }
-            });
-        };
+    // private prepareBulkOperations(userId: string, data: Partial<ICandidate>): any[] {
+    //     const handleSubdocuments = (fieldName: string, subdocs: any[] | undefined) => {
+    //         if (!subdocs) return [];
+    //         return subdocs.map(subdoc => {
+    //             if (subdoc._id) {
+    //                 return {
+    //                     updateOne: {
+    //                         filter: { userId: new Types.ObjectId(userId), [`${fieldName}._id`]: subdoc._id },
+    //                         update: { $set: { [`${fieldName}.$`]: subdoc } }
+    //                     }
+    //                 };
+    //             } else {
+    //                 return {
+    //                     updateOne: {
+    //                         filter: { userId: new Types.ObjectId(userId) },
+    //                         update: { $push: { [fieldName]: subdoc } }
+    //                     }
+    //                 };
+    //             }
+    //         });
+    //     };
 
-        return [
-            ...handleSubdocuments('languages', data.languages),
-            ...handleSubdocuments('projects', data.projects),
-            ...handleSubdocuments('educations', data.educations),
-            ...handleSubdocuments('experiences', data.experiences),
-            ...handleSubdocuments('certifications', data.certifications),
-        ];
+    //     return [
+    //         ...handleSubdocuments('languages', data.languages),
+    //         ...handleSubdocuments('projects', data.projects),
+    //         ...handleSubdocuments('educations', data.educations),
+    //         ...handleSubdocuments('experiences', data.experiences),
+    //         ...handleSubdocuments('certifications', data.certifications),
+    //     ];
+    // }
+
+    async prepareBulkOperations(userId: string, data: Partial<ICandidate>): Promise<any[]> {
+        const bulkOps: any[] = [];
+    
+        const replaceField = (fieldName: string, items: any[] | undefined) => {
+            if (items) {
+                bulkOps.push({
+                    updateOne: {
+                        filter: { userId: new Types.ObjectId(userId) },
+                        update: { $set: { [fieldName]: items } }
+                    }
+                });
+            }
+        };
+    
+        // Apply replace logic for each field
+        replaceField('languages', data.languages);
+        replaceField('projects', data.projects);
+        replaceField('educations', data.educations);
+        replaceField('experiences', data.experiences);
+        replaceField('certifications', data.certifications);
+    
+        return bulkOps;
     }
+    
+
 
     async updateCandidateProfile(userId: string, data: Partial<IProfile>): Promise<boolean | null> {
         try {
