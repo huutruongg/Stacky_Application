@@ -27,7 +27,7 @@ const SearchJobPage = () => {
       setLoading(true);
       try {
         const result = await fetchData(
-          `job-posting/search-job-postings?keySearch=${encodeURIComponent(
+          `job-post/find-job-posts?keySearch=${encodeURIComponent(
             keySearch
           )}&industry=${encodeURIComponent(
             industry

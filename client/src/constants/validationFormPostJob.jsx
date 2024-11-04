@@ -11,15 +11,9 @@ const ACCEPTED_IMAGE_MIME_TYPES = [
 // Define the validation schema for a job posting form
 export const postJobSchema = z.object({
   jobImage: z
-    .object({
-      file: z.instanceof(File).refine((file) => file.size <= MAX_FILE_SIZE, {
-        message: "Kích thước hình ảnh tối đa là 5MB.",
-      }),
-      preview: z.string().nonempty("Vui lòng chọn một ảnh."),
-    })
-    .refine((image) => ACCEPTED_IMAGE_MIME_TYPES.includes(image.file.type), {
-      message: "Chỉ hỗ trợ các định dạng .jpg, .jpeg, .png và .webp.",
-    }),
+  .string()
+  .url("Vui lòng nhập một URL hợp lệ cho Facebook.")
+  .optional(),
   // Other fields...
   jobTitle: z.string().min(1, "Tên công việc là bắt buộc"),
   typeOfWork: z.string().min(1, "Loại hình công việc là bắt buộc"),

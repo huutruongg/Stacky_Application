@@ -1,14 +1,6 @@
 import { z } from "zod";
 
-const MAX_FILE_SIZE = 5000000;
-const ACCEPTED_IMAGE_MIME_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
-
-export const profileCVSchema = (checkExp) =>
+export const profileCVSchema = (hasExperience) =>
   z.object({
     fullName: z.string().nonempty("Họ và Tên không được để trống"),
     jobPosition: z.string().nonempty("Vị trí ứng tuyển không được để trống"),
@@ -27,27 +19,7 @@ export const profileCVSchema = (checkExp) =>
       .refine((date) => date !== null, {
         message: "Ngày sinh không được để trống",
       }),
-    avatarUrl: z
-      .object({
-        file: z
-          .instanceof(File)
-          .refine((file) => file.size <= MAX_FILE_SIZE, {
-            message: "Kích thước hình ảnh tối đa là 5MB.",
-          })
-          .optional()
-          .nullish(),
-        preview: z.string().optional().nullish(),
-      })
-      .refine(
-        (image) =>
-          !image ||
-          !image.file ||
-          ACCEPTED_IMAGE_MIME_TYPES.includes(image.file.type),
-        {
-          message: "Chỉ hỗ trợ các định dạng .jpg, .jpeg, .png và .webp.",
-        }
-      )
-      .optional(),
+    avatarUrl: z.string().optional().nullable(),
     address: z.string().optional(),
     githubUrl: z
       .string()
@@ -132,7 +104,7 @@ export const profileCVSchema = (checkExp) =>
       .optional(),
 
     // Work Experiences
-    experiences: checkExp
+    experiences: hasExperience
       ? z.array(
           z.object({
             companyName: z.string().nonempty("Tên công ty không được để trống"),

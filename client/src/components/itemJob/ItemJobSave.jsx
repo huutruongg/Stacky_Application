@@ -4,6 +4,7 @@ import IconPrice from "@/components/icons/IconPrice";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/authorizedAxios";
+import Buttonchild from "../button/Buttonchild";
 
 const ItemJobSave = ({ jobData }) => {
   const handleDeleteSaveJob = async () => {
@@ -59,15 +60,16 @@ const ItemJobSave = ({ jobData }) => {
               <span>{jobData.location}</span>
             </div>
             <div className="flex items-center gap-5">
-              <button className="px-5 py-1 text-white bg-primary rounded-md hover:opacity-80">
+              <Buttonchild kind="primary" className="px-5 py-1">
                 Ứng tuyển
-              </button>
-              <button
-                className="px-5 py-1 rounded-md hover:opacity-70 border border-primary"
+              </Buttonchild>
+              <Buttonchild
+                kind="secondary"
+                className="px-5 py-1"
                 onClick={handleDeleteSaveJob}
               >
                 Hủy bỏ
-              </button>
+              </Buttonchild>
             </div>
           </div>
         </div>

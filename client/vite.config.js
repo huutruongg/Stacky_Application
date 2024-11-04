@@ -14,6 +14,11 @@ export default defineConfig({
       types: `${path.resolve(__dirname, "./src/@types")}`,
     },
   },
+  server: {
+    hmr: {
+      overlay: false, // Disable HMR error overlay
+    },
+  },
   commonjsOptions: {
     esmExternals: true,
   },

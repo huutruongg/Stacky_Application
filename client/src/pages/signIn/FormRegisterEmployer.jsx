@@ -174,7 +174,9 @@ const FormRegisterEmployer = () => {
           <div className="flex items-center text-center">
             <Button
               kind="primary"
-              className="w-full disabled:opacity-50"
+              className={`w-full disabled:opacity-50 ${
+                !termsAccepted ? "hover:bg-primary" : ""
+              }`}
               type="submit"
               disabled={!termsAccepted}
             >

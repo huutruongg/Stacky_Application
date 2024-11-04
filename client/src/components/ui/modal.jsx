@@ -24,13 +24,13 @@ export const Modal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onChange}>
       <DialogContent
-        className={`${className} px-5 pt-5 max-h-[90vh] overflow-y-auto custom-scrollbar`}
+        className={`${className} max-h-[90vh] overflow-y-auto custom-scrollbar`}
       >
-        <DialogHeader className="flex items-center">
+        <DialogHeader className="flex p-5 items-center bg-secondary">
           <DialogTitle className="w-fit text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]">
             {title}
           </DialogTitle>
-          <div className="flex items-center gap-5 leading-6 w-96">
+          <div className="flex justify-center items-center gap-5 leading-6 w-96">
             {icon}
             <DialogDescription className="w-fit text-primary">
               {description}

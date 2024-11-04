@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import IconPrice from "@/components/icons/IconPrice";
 import IconTimer from "@/components/icons/IconTimer";
 import IconLocation from "@/components/icons/IconLocation";
@@ -6,8 +6,13 @@ import IconHourglass from "@/components/icons/IconHourglass";
 import Button from "@/components/button/Button";
 import IconSend from "@/components/icons/IconSend";
 import IconHeart from "@/components/icons/IconHeart";
+import toast from "react-hot-toast";
 
 const JobSummary = ({ jobData, isliked }) => {
+  const [liked, setLiked] = useState(isliked); // Initialize with the jobData's liked status
+
+  console.log(liked);
+
   const dateString = jobData.applicationDeadline;
 
   // Chuyển đổi chuỗi thành đối tượng Date
@@ -20,6 +25,17 @@ const JobSummary = ({ jobData, isliked }) => {
 
   // Tạo chuỗi định dạng DD/MM/YYYY
   const formattedDate = `${day}/${month}/${year}`;
+
+  const handleSaveJob = async () => {
+    try {
+      await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
+      toast.success("Lưu bài viết thành công");
+      setLiked(true); // Update the liked state
+    } catch (error) {
+      toast.error("Lưu bài viết thất bại");
+    }
+  };
+
   return (
     <div className="bg-secondary p-8 rounded-xl">
       <h2 className="font-semibold text-2xl mb-7">Front-end developer</h2>
@@ -51,11 +67,12 @@ const JobSummary = ({ jobData, isliked }) => {
         </Button>
         <Button
           className={`gap-3 px-10 border-2 border-[#48038C] ${
-            isliked ? "disabled:opacity-50" : ""
+            liked ? "disabled:opacity-50" : ""
           }`}
-          disabled={isliked}
+          disabled={liked}
+          onClick={handleSaveJob}
         >
-          <IconHeart liked={isliked}></IconHeart>
+          <IconHeart liked={liked}></IconHeart>
           <span className="font-semibold text-primary">LƯU</span>
         </Button>
       </div>

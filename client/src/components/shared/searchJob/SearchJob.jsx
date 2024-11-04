@@ -15,9 +15,9 @@ const SearchJob = () => {
   const navigate = useNavigate(); // Use the useNavigate hook for navigation
   const location = useLocation(); // Use the useLocation hook to get the curent URL and extract query parameters
 
-  console.log(searchInput);
-  console.log(selectedProvince);
-  console.log(selectedMajor);
+  // console.log(searchInput);
+  // console.log(selectedProvince);
+  // console.log(selectedMajor);
 
   // Extract values from query parameters when component is rendered
   useEffect(() => {
@@ -35,8 +35,8 @@ const SearchJob = () => {
     // Prepare search parameters
     const params = new URLSearchParams({
       keySearch: searchInput.trim(),
-      industry: selectedMajor.trim(),
       location: selectedProvince.trim(),
+      industry: selectedMajor.trim(),
     }).toString();
 
     // Navigate to the search-job page with query parameters
@@ -69,25 +69,28 @@ const SearchJob = () => {
         )}
       </div>
       <div className="flex items-center border-x px-2 ml-2">
-        <IconLocation className="absolute m-2 w-5 h-5 text-gray-400" />
+        <IconLocation
+          color={"#b3b8bd"}
+          className="absolute m-2 w-5 h-5 #b3b8bd"
+        />
         <ComboboxLocation
           valueProvinces={selectedProvince}
           onSelectProvince={handleProvinceSelect}
         />
       </div>
       <div className="flex items-center border-r px-2 mr-4">
-        <IconBag className="absolute m-2 w-5 h-5 text-gray-400" />
+        <IconBag color={"#b3b8bd"} className="absolute m-2 w-5 h-5 #b3b8bd" />
         <ComboboxMajor
           valueMajor={selectedMajor}
           onSelectMajor={handleMajorSelect}
         />
       </div>
-      <Button
-        className="bg-button text-white rounded-full px-5 max-h-10"
+      <button
+        className="flex items-center justify-center bg-button text-white rounded-full px-5 max-h-10 text-base font-semibold h-[48px] hover:opacity-90"
         onClick={handleSearch}
       >
         Tìm kiếm
-      </Button>
+      </button>
     </div>
   );
 };

@@ -70,7 +70,7 @@ const FormSignInCandidate = () => {
         onClick={handleGithubLogin}
         disabled={loading}
       >
-        <IconGithub />
+        <IconGithub className={"w-6 h-6"} color={"#fff"} />
         <span className="text-white">Đăng nhập với Github</span>
       </button>
     </div>

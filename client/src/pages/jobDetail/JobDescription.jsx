@@ -1,8 +1,12 @@
 import Button from "@/components/button/Button";
 import TitleField from "@/components/titleField/TitleField";
-import React from "react";
+import axiosInstance from "@/lib/authorizedAxios";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const JobDescription = ({ jobData, isliked }) => {
+  const [liked, setLiked] = useState(isliked); // Initialize with the jobData's liked status
+
   const dateString = jobData.applicationDeadline;
 
   // Chuyển đổi chuỗi thành đối tượng Date
@@ -15,6 +19,28 @@ const JobDescription = ({ jobData, isliked }) => {
 
   // Tạo chuỗi định dạng DD/MM/YYYY
   const formattedDate = `${day}/${month}/${year}`;
+
+  const handleDeleteSaveJob = async () => {
+    try {
+      await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
+      toast.success("Xóa bài viết thành công");
+      setLiked(false);
+    } catch (error) {
+      toast.error("Xóa bài viết thất bại");
+    }
+  };
+  const handleSaveJob = async () => {
+    try {
+      await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
+      toast.success("Lưu bài viết thành công");
+      setLiked(true); // Update the liked state
+    } catch (error) {
+      toast.error("Lưu bài viết thất bại");
+    }
+  };
+
+  // console.log(jobData);
+  // console.log(liked);
 
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
@@ -136,12 +162,18 @@ const JobDescription = ({ jobData, isliked }) => {
           <Button kind="primary" className="gap-3 px-16">
             <span className="font-semibold">ỨNG TUYỂN NGAY</span>
           </Button>
-          {isliked ? (
-            <Button className="gap-3 px-10 border-2 border-[#48038C]">
+          {liked ? (
+            <Button
+              className="gap-3 px-10 border-2 border-[#48038C]"
+              onClick={handleDeleteSaveJob}
+            >
               <span className="font-semibold text-primary">XÓA TIN</span>
             </Button>
           ) : (
-            <Button className="gap-3 px-10 border-2 border-[#48038C]">
+            <Button
+              className="gap-3 px-10 border-2 border-[#48038C]"
+              onClick={handleSaveJob}
+            >
               <span className="font-semibold text-primary">LƯU TIN</span>
             </Button>
           )}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import IconHeart from "@/components/icons/IconHeart";
 import IconNotification from "@/components/icons/IconNotification";
@@ -7,6 +7,7 @@ import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
 import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
+import { fetchData } from "@/api/fetchData";
 import { useJobSave } from "@/components/context/JobSaveProvider";
 
 const Heading = () => {
@@ -14,13 +15,11 @@ const Heading = () => {
   const [isHovered, setIsHovered] = useState(false);
   const { jobSaveData, loading } = useJobSave();
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
+  const [error, setError] = useState(null);
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+  const handleLogout = () => logout();
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -30,23 +29,29 @@ const Heading = () => {
         </Link>
         <div className="flex justify-between items-center gap-10">
           <ItemMain url={"/"}>Trang chủ</ItemMain>
-          <ItemMain url={"/company"}>Công ty</ItemMain>
+          <ItemMain url={"/company-detail"}>Công ty</ItemMain>
           <ItemMain url={"/profile-cv"}>Hồ sơ & CV</ItemMain>
           <ItemMain url={"/tools"}>Công cụ hỗ trợ</ItemMain>
         </div>
         <div className="flex justify-between items-center gap-5">
           {user ? (
-            <div className="flex justify-between items-center ">
-              <ItemNotification
-                icon={<IconHeart defaultLiked={false} />}
-                children={!loading ? jobSaveData.length : "0"}
-                url={"/job-save"}
-              />
-              <ItemNotification
-                icon={<IconNotification />}
-                children={"99"}
-                className={"mx-5"}
-              />
+            <div className="flex items-center">
+              {jobSaveData ? (
+                <div className="flex items-center">
+                  <ItemNotification
+                    icon={<IconHeart defaultLiked={false} />}
+                    children={jobSaveData ? jobSaveData.length : "0"}
+                    url={"/job-save"}
+                  />
+                  <ItemNotification
+                    icon={<IconNotification />}
+                    children={"99"}
+                    className={"mx-5"}
+                  />
+                </div>
+              ) : (
+                ""
+              )}
               <div
                 className="relative"
                 onMouseEnter={handleMouseEnter}
@@ -68,7 +73,7 @@ const Heading = () => {
                       url={"/account.stacky.vn"}
                       icon={<IconSignUp />}
                       children={"Đăng xuất"}
-                      onClick={logout}
+                      onClick={handleLogout}
                     />
                   </div>
                 )}
@@ -81,11 +86,11 @@ const Heading = () => {
               </button>
             </Link>
           )}
-          <div className="flex items-center justify-center divide-x">
-            <button className="text-gray-400 px-2 uppercase transition-all hover:text-primary">
+          <div className="flex items-center divide-x">
+            <button className="text-gray-400 px-2 uppercase transition hover:text-primary">
               EN
             </button>
-            <button className="font-bold px-2 uppercase transition-all hover:text-primary">
+            <button className="font-bold px-2 uppercase transition hover:text-primary">
               VI
             </button>
           </div>
@@ -110,17 +115,11 @@ const ItemMain = ({ url, children }) => {
   );
 };
 
-const ItemDropdown = ({
-  url,
-  icon,
-  children,
-  onClick = () => {},
-  className,
-}) => {
+const ItemDropdown = ({ url, icon, children, onClick = () => {} }) => {
   return (
     <Link
       to={url}
-      className={`flex items-center p-3 w-full gap-4 h-10 text-[#424242] hover:bg-slate-100 cursor-pointer rounded-md ${className}`}
+      className="flex items-center p-3 w-full gap-4 h-10 text-[#424242] hover:bg-slate-100 cursor-pointer rounded-md"
       onClick={onClick}
     >
       {icon}
@@ -129,13 +128,7 @@ const ItemDropdown = ({
   );
 };
 
-const ItemNotification = ({
-  icon,
-  url,
-  children,
-  className,
-  onClick = () => {},
-}) => {
+const ItemNotification = ({ icon, url, children, className }) => {
   return (
     <li
       className={`relative list-none w-12 h-12 rounded-full bg-secondary ${className}`}
@@ -143,7 +136,6 @@ const ItemNotification = ({
       <Link
         to={url}
         className="w-full h-full flex justify-center items-center rounded-full"
-        onClick={onClick}
       >
         {icon}
       </Link>

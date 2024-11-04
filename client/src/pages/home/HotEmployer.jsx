@@ -42,7 +42,7 @@ const HotEmployer = () => {
         autoplay={{
           delay: 2000,
           disableOnInteraction: false, // Thay đổi thành false để tiếp tục autoplay ngay cả khi tương tác
-          reverseDirection: true
+          reverseDirection: true,
         }}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
@@ -84,7 +84,7 @@ const HotEmployer = () => {
 
 const ItemEmployer = ({ url }) => {
   return (
-    <div className="flex flex-col justify-center items-center p-4 gap-2 bg-secondary w-[180px] h-[184px] rounded-lg cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
+    <div className="flex flex-col items-center p-4 gap-2 bg-secondary rounded-lg w-[180px] h-[180px] cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
       <img src={url} alt="" className="w-24" />
     </div>
   );

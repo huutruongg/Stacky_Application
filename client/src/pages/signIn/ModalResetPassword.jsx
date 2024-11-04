@@ -100,7 +100,7 @@ const ItemModalClose = ({ children, onClick = () => {} }) => {
   return (
     <Link
       to="/account.stacky.vn"
-      className="text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]"
+      className="text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF] hover:decoration-primary hover:underline hover:decoration-1"
       onClick={onClick}
     >
       {children}

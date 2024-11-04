@@ -2,6 +2,7 @@ import React from "react";
 import { Combobox } from "../ui/combobox";
 
 const majors = [
+  { value: "", label: "Tất cả các ngành nghề" },
   { value: "Công nghệ thông tin", label: "Công nghệ thông tin" },
   { value: "Kỹ sư phần mềm", label: "Kỹ sư phần mềm" },
   { value: "Chuyên gia dữ liệu", label: "Chuyên gia dữ liệu" },

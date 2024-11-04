@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import IconHeart from "@/components/icons/IconHeart";
 import imgCompany from "@/components/image/imgCompany.png";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 
 const ItemJobSuggest = ({ jobData }) => {
-  const [changeColorLiked, setChangeColorLiked] = useState(false);
-  const navigate = useNavigate();
-
+  const [liked, setLiked] = useState(jobData.isLiked); // Initialize with the jobData's liked status
   console.log(jobData);
 
+  const handleHeartClick = () => {
+    if (liked) {
+      handleDeleteSaveJob();
+    } else {
+      handleSaveJob();
+    }
+  };
   const handleSaveJob = async () => {
     try {
       await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
       toast.success("Lưu bài viết thành công");
+      setLiked(true); // Update the liked state
     } catch (error) {
       toast.error("Lưu bài viết thất bại");
     }
@@ -24,6 +29,7 @@ const ItemJobSuggest = ({ jobData }) => {
     try {
       await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
       toast.success("Xóa bài viết thành công");
+      setLiked(false); // Update the liked state
     } catch (error) {
       toast.error("Xóa bài viết thất bại");
     }
@@ -50,7 +56,7 @@ const ItemJobSuggest = ({ jobData }) => {
                 <div
                   className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
                   onClick={() => {
-                    navigate(`/job-detail/${jobData._id}`);
+                    window.open(`/job-detail/${jobData._id}`, "_blank");
                   }}
                 >
                   {jobData.jobTitle}
@@ -59,15 +65,9 @@ const ItemJobSuggest = ({ jobData }) => {
             </div>
             <div
               className="z-10 hover:cursor-pointer"
-              onClick={
-                jobData.isLiked === true ? handleDeleteSaveJob : handleSaveJob
-              }
+              onClick={handleHeartClick}
             >
-              <IconHeart
-                className="w-5 h-5"
-                liked={jobData.isLiked}
-                initialLiked={changeColorLiked}
-              />
+              <IconHeart className="w-5 h-5" liked={liked} />
             </div>
           </div>
           <div>

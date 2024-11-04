@@ -48,7 +48,7 @@ const HotMajor = () => {
       </div>
       <Swiper
         spaceBetween={20}
-        slidesPerView={5} // Hiển thị 2 slide mỗi hàng
+        slidesPerView={5} // Hiển thị 5 slide mỗi hàng
         grabCursor={true}
         autoplay={{
           delay: 2000,
@@ -103,9 +103,18 @@ const HotMajor = () => {
 
 const ItemMajor = ({ children, url }) => {
   return (
-    <div className="flex flex-col items-center p-4 gap-2 bg-secondary w-[180px] h-[184px] rounded-lg cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
-      <img src={url} alt="" className="w-24" />
-      <span className="text-center">{children}</span>
+    <div className="flex flex-col items-center p-4 gap-2 bg-secondary rounded-lg w-[180px] h-auto cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
+      <div className="w-[100px] h-[100px]">
+        <a href="">
+          <img src={url} alt="" className="w-24" />
+        </a>
+      </div>
+      <h3>
+        <a href="" className="text-center text-sm text-primary font-medium">
+          {children}
+        </a>
+      </h3>
+      <p className="text-center text-sm text-primary font-medium">13.900</p>
     </div>
   );
 };

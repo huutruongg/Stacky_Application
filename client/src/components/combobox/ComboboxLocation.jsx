@@ -2,6 +2,7 @@ import React from "react";
 import { Combobox } from "../ui/combobox";
 
 const provinces = [
+  { value: "", label: "Tất cả các tỉnh thành" },
   { value: "Hà Nội", label: "Hà Nội" },
   { value: "Hồ Chí Minh", label: "Hồ Chí Minh" },
   { value: "Đà Nẵng", label: "Đà Nẵng" },

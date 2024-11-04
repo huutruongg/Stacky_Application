@@ -6,6 +6,7 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return (
     <input
       type={type}
+      autoComplete="on"
       className={cn(
         "w-full px-6 h-12 text-sm border border-[#424242] rounded-xl placeholder:text-text3 dark:placeholder:text-text3 dark:text-white bg-transparent outline-none outline-input",
         className

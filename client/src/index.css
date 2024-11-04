@@ -1,0 +1,122 @@
+@charset "UTF-8";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer components {
+  .page-container {
+    max-width: 1170px;
+    @apply mx-auto;
+  }
+  .product-list .swiper-slide {
+    width: 272px;
+    height: auto;
+  }
+  .banner .swiper {
+    height: 100%;
+  }
+}
+body {
+  font-family: "Roboto", sans-serif;
+  color: #171725;
+}
+
+.outline-input:focus {
+  border: 2px solid transparent;
+  background-image: linear-gradient(white, white), linear-gradient(to right, #48038c, #00f0ff);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.ant-form-item-required::after {
+  display: inline-block;
+  content: "(*)" !important;
+  padding-left: 5px;
+  color: #d34127;
+  font-weight: 600;
+}
+
+.back-top {
+  position: fixed;
+  bottom: 100px;
+  right: 15px;
+  z-index: 99;
+  top: auto;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  text-decoration: none;
+  transition: all 0.3s ease-out 0s;
+  transform: translateY(-20px);
+}
+
+.beginning-page {
+  width: 30px;
+  height: 30px;
+  padding: 2px;
+  border: 3px solid #48038c;
+  transform: rotate(-45deg);
+  background-color: #fff;
+}
+
+.beginning-page:hover {
+  border: 2px solid #00f0ff;
+}
+
+/* WebKit-based browsers (Chrome, Safari, Edge) */
+.custom-panel::after {
+  content: "";
+  display: block;
+  position: fixed;
+  width: 100%;
+  height: 60px;
+  top: 50px;
+  left: 0;
+  z-index: 10;
+  background-color: #fff;
+}
+
+#rdw-wrapper-3123 {
+  border: 1px solid #555;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px; /* Chiều rộng của thanh cuộn */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Màu nền của track (khu vực phía sau thanh cuộn) */
+  border-radius: 12px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888; /* Màu của thanh cuộn */
+  border-radius: 12px; /* Tạo bo góc cho thanh cuộn */
+  border: 2px solid #e0e0e0; /* Viền của thanh cuộn */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Màu thanh cuộn khi hover */
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}/*# sourceMappingURL=index.css.map */

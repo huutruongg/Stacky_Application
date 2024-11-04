@@ -49,11 +49,15 @@ export function Combobox({
             buttonClassName
           )}
         >
-          {value ? items.find((item) => item.value === value)?.label : buttonPlaceholder}
+          {value
+            ? items.find((item) => item.value === value)?.label
+            : buttonPlaceholder}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn(listHeight, listWidth, popoverClassName, "bg-white")}>
+      <PopoverContent
+        className={cn(listHeight, listWidth, popoverClassName, "bg-white")}
+      >
         <Command>
           <CommandInput placeholder={searchPlaceholder} className="h-9" />
           <CommandList>

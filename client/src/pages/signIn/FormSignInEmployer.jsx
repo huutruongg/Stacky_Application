@@ -62,7 +62,7 @@ const FormSignInEmployer = () => {
         login(userInfo, accessToken); // Sử dụng hàm login từ context để lưu user và token
 
         // Điều hướng sau khi đăng nhập thành công
-        navigate("/");
+        navigate("/company-profile");
       } catch (error) {
         console.error("Login failed:", error);
         toast.error(
@@ -129,7 +129,6 @@ const FormSignInEmployer = () => {
           <ModalResetPassword modalClose={onCloseUpdate} />
         </Modal>
         <button
-          href=""
           className="text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF] hover:decoration-primary hover:underline hover:decoration-1"
           onClick={() => setOpenUpdate(true)}
         >

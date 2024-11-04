@@ -18,19 +18,28 @@ const JobDetailPage = () => {
   const [error, setError] = useState(null);
   const [isliked, setIsliked] = useState(true);
 
-  // console.log(isliked);
+  console.log(isliked);
+  console.log(data);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/job-posting/job-detail/${user.userId}/${jobId}`
-        ); // API URL
+        if (!user) {
+          const response = await axiosInstance.get(
+            `/job-post/get-job-detail/${jobId}`
+          );
+          setData(response.data.result); // Cập nhật dữ liệu
+          setIsliked(response.data.isLiked);
+          setLoading(false); // Đặt loading thành false
+        } else {
+          const response = await axiosInstance.get(
+            `/job-post/get-job-detail-by-candidate/${jobId}`
+          ); // API URL
+          setData(response.data.result); // Cập nhật dữ liệu
+          setIsliked(response.data.isLiked);
+          setLoading(false); // Đặt loading thành false
+        }
         // console.log(response.data.result);
-
-        setData(response.data.result); // Cập nhật dữ liệu
-        setIsliked(response.data.isLiked);
-        setLoading(false); // Đặt loading thành false
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error); // Cập nhật lỗi

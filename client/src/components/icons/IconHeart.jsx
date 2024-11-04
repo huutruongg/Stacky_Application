@@ -2,12 +2,11 @@ import React, { useState } from "react";
 
 const IconHeart = ({
   defaultLiked = true,
-  initialLiked,
   liked,
   className,
   onClick = () => {},
 }) => {
-  const [newLiked, setNewLiked] = useState(initialLiked);
+  const [newLiked, setNewLiked] = useState(liked);
 
   const handleClick = () => {
     setNewLiked(!newLiked); // Toggle the liked state

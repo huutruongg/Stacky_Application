@@ -1,14 +1,64 @@
 import React, { Fragment } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import FromBeginPageClick from "../scrollToTop/FromBeginPageClick";
-import Heading from "./header/Heading";
+import HeadingEmployer from "./header/HeadingEmployer";
+import NavbarEmployer from "@/components/shared/navbarEmployer/NavbarEmployer";
+import Panel from "../panel/Panel";
 
 const LayoutEmployer = () => {
+  const location = useLocation();
+
+  // Define panel title and content based on current route
+  const panelContent = {
+    "/company-profile": {
+      title: " Tạo hồ sơ của công ty",
+      children: "Điền thông tin đầy đủ của công ty.",
+    },
+    "/job-management": {
+      title: "Việc làm đã đăng tuyển",
+      children: "Xem lại các việc làm đã đăng tuyển dụng",
+    },
+    "/job-post": {
+      title: "Tạo tin tuyển dụng",
+      children:
+        "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
+    },
+    "/job-management/detail": {
+      title: "Danh sách ứng viên ứng tuyển",
+      children: "Xem danh sách các ứng viên đã ứng tuyển vào bài đăng của bạn.",
+    },
+    "/candidate-detail": {
+      title: "Tạo tin tuyển dụng",
+      children:
+        "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
+    },
+    // Add more paths as needed
+  };
+
+  // Set default content if the route is not explicitly defined
+  const { title, children } = panelContent[location.pathname] || {
+    title: "Employer Portal",
+    children: "Manage your activities and settings here.",
+  };
+
   return (
     <Fragment>
-      <Heading></Heading>
-      <Outlet></Outlet>
-      <FromBeginPageClick></FromBeginPageClick>
+      <HeadingEmployer />
+      <div className="page-container relative mt-5">
+        <Panel
+          title={title}
+          children={children}
+          className={"sticky top-[84px] z-40"}
+        />
+        <div className="custom-panel"></div>
+        <div className="grid grid-cols-12 gap-5">
+          <NavbarEmployer />
+          <div className="grid col-start-4 col-end-13 w-full gap-5">
+            <Outlet />
+          </div>
+        </div>
+      </div>
+      <FromBeginPageClick />
     </Fragment>
   );
 };
