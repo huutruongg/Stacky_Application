@@ -62,6 +62,7 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
         const urlImage = uploadResponse.data.urlImages[0];
         setUploadedImage(urlImage);
         onChange(urlImage); // Update form state with the image URL
+        console.log("success");
       } catch (error) {
         toast.error("Failed to upload image. Please try again.");
       }
@@ -110,7 +111,7 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
               )}
             </div>
           ) : (
-            <div className="flex flex-col items-center opacity-60">
+            <div className="flex flex-col w-40 items-center opacity-60">
               <span className="mb-2 font-medium text-primary">Thêm ảnh</span>
               <IconPlus className={"w-6 h-6"} color={"#48038C"} />
             </div>

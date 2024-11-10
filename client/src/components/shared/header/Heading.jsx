@@ -9,6 +9,8 @@ import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
 import { fetchData } from "@/api/fetchData";
 import { useJobSave } from "@/components/context/JobSaveProvider";
+import IconUSerAcount from "@/components/icons/IconUSerAcount";
+import IconUpload from "@/components/icons/IconUpload";
 
 const Heading = () => {
   const { user, logout } = useAuth();
@@ -65,8 +67,13 @@ const Heading = () => {
                 {isHovered && (
                   <div className="absolute flex flex-col items-center bg-white min-w-[200px] right-0 z-50 shadow-md rounded-md top-[54px]">
                     <ItemDropdown
+                      url={"/uploaded-cv"}
+                      icon={<IconUpload />}
+                      children={"CV đã đăng tuyển"}
+                    />
+                    <ItemDropdown
                       url={"/"}
-                      icon={<IconSignUp />}
+                      icon={<IconUSerAcount />}
                       children={"Thông tin cá nhân"}
                     />
                     <ItemDropdown

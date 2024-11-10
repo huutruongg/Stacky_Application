@@ -38,13 +38,13 @@ const ItemJobSuggest = ({ jobData }) => {
   return (
     <div className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border hover:border hover:border-primary hover:bg-white">
       <div className="flex justify-between gap-2">
-        <div className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] overflow-hidden rounded-md">
-          <a href="/company">
-            <img
-              src={jobData.jobImage ? jobData.jobImage : imgCompany}
-              alt=""
-            />
-          </a>
+        <div
+          className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] overflow-hidden rounded-md cursor-pointer"
+          onClick={() => {
+            window.open(`/job-detail/${jobData._id}`, "_blank");
+          }}
+        >
+          <img src={jobData.jobImage ? jobData.jobImage : imgCompany} alt="" />
         </div>
         <div className="flex flex-col justify-around gap-1 w-full">
           <div className="flex gap-1 items-center justify-between">

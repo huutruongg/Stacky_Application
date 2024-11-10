@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FormControl,
   FormField,
@@ -12,6 +12,15 @@ import SelectField from "@/components/fieldForm/SelectField";
 
 const FormCompanyBasicInfo = ({ form }) => {
   const [orgImage, setOrgImage] = useState(null); // Changed to null
+
+  useEffect(() => {
+    const orgImage = form.getValues("orgImage");
+    console.log(orgImage);
+
+    if (orgImage) {
+      setCvImage(orgImage); // Set the image preview if available
+    }
+  }, [form]);
 
   const commonInputProps = {
     className: "flex items-center",
