@@ -11,7 +11,7 @@ const ApplicantSchema = new Schema({
     birthDate: { type: Date },
     phoneNumber: { type: String },
     address: { type: String },
-    programmingSkills: { type: String, required: true },
+    professionalSkills: { type: String, required: true },
     linkedinUrl: { type: String },
     githubUrl: { type: String },
     personalDescription: { type: String },

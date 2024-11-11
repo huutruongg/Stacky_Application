@@ -55,7 +55,7 @@ export default class CandidateService {
             linkedinUrl: data.linkedinUrl,
             githubUrl: data.githubUrl,
             personalDescription: data.personalDescription,
-            programmingSkills: data.programmingSkills
+            professionalSkills: data.professionalSkills
         }
         // log("Data to update:", dataToUpdate);
         const result = await this.candidateRepository.updateCandidate(userId, dataToUpdate);

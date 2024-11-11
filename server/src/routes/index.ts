@@ -115,7 +115,8 @@ class Routes {
     }
     private lazyLoadPaymentRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
-            const paymentController = new PaymentController(this.paymentService);
+            const recruiterService = new RecruiterService(this.recruiterRepository);
+            const paymentController = new PaymentController(this.paymentService, recruiterService);
             const paymentRouter = new PaymentRoutes(paymentController);
             paymentRouter.getRouter()(req, res, next);
         }

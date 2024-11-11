@@ -6,5 +6,4 @@ export interface IUser extends Document {
     role: string;
     phoneNumber?: string;
     createdAt?: Date;
-    refreshToken?: string;
 }

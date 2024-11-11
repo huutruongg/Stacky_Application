@@ -8,3 +8,4 @@ const RevenueSchema = new Schema({
 });
 
 export const MonthlyPayment = model<IRevenue>('MonthlyPayment', RevenueSchema);
+

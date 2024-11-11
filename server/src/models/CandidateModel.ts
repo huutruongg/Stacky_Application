@@ -73,7 +73,7 @@ const CandidateSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     publicEmail: { type: String },
     phoneNumber: { type: String },
-    programmingSkills: { type: String },
+    professionalSkills: { type: String },
     fullName: { type: String },
     gender: { type: Boolean },
     birthDate: { type: Date },

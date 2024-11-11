@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao dịch</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+        .container {
+            display: flex;
+            border: 2px solid #800080;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .left {
+            width: 60%;
+            padding: 20px;
+        }
+        .right {
+            width: 40%;
+            padding: 20px;
+            text-align: center;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        .button {
+            background-color: #800080;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background-color: #663399;
+        }
+        .pay-logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+        .pay-logo img {
+            width: 100%;
+            height: 100%;
+        }
+        .amount-button {
+            background-color: #f2f2f2;
+            color: #333;
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .amount-button:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h2 class="title">Thông tin giao dịch</h2>
+            <p>Tên công ty: FPT IS</p>
+            <p>Số dư hiện tại: 120,000 VND</p>
+            <div class="table-container">
+                <table style="border: 2px solid #800080; border-radius: 10px;">
+                    <thead>
+                        <tr>
+                            <th colspan="2" style="background-color: #800080; color: white; text-align: center;">Lịch sử nộp tiền</th>
+                            <th colspan="2" style="background-color: #800080; color: white; text-align: center;">Lịch sử thanh toán</th>
+                        </tr>
+                        <tr>
+                            <th>STT</th>
+                            <th>Ngày giao dịch</th>
+                            <th>Số tiền</th>
+                            <th>Loại giao dịch</th>
+                            <th>Nội dung</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>29-10-2024<br>18:06:44</td>
+                            <td>100,000 VND</td>
+                            <td>Ví ZaloPay</td>
+                            <td>Nạp tiền Stacky</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>08-10-2024<br>09:11:32</td>
+                            <td>50,000 VND</td>
+                            <td>Ví ZaloPay</td>
+                            <td>Nạp tiền Stacky</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>09-09-2024<br>09:11:32</td>
+                            <td>100,000 VND</td>
+                            <td>Ví ZaloPay</td>
+                            <td>Nạp tiền Stacky</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="right">
+            <button class="amount-button" data-amount="50000">50,000 VND</button>
+            <button class="amount-button" data-amount="100000">100,000 VND</button>
+            <button class="amount-button" data-amount="200000">200,000 VND</button>
+            <button class="amount-button" data-amount="500000">500,000 VND</button>
+            <a href="#" style="color: #800080; text-decoration: none;" id="payButton">Đến Zalopay thanh toán ngay</a>
+        </div>
+    </div>
+    <script>
+        const amountButtons = document.querySelectorAll(".amount-button");
+const payButton = document.getElementById("payButton");
+let selectedAmount = null;
+let transId = null;
+let currentBalance = 0;
+let balanceElement = document.querySelector('.left > p:nth-child(2)');
+
+
+amountButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        amountButtons.forEach(b => b.classList.remove("selected"));
+        button.classList.add("selected");
+        selectedAmount = button.dataset.amount;
+    });
+});
+
+payButton.addEventListener("click", () => {
+    if (selectedAmount) {
+        callCreateTransactionAPI(selectedAmount);
+    } else {
+        alert("Vui lòng chọn mệnh giá!");
+    }
+});
+
+
+function callCreateTransactionAPI(amount) {
+    fetch("http://localhost:5050/payment/create-transaction", { // Replace with your API endpoint
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.return_code === 1) {
+            transId = data.trans_id; 
+            window.location.href = data.order_url;  // Redirect to ZaloPay
+        } else {
+             alert(data.return_message || "Giao dịch thất bại"); // Improved error handling
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Lỗi khi gọi API");
+    });
+}
+
+function checkTransactionStatus(transId) {
+    fetch("http://localhost:5050/payment/check-status-transaction", {  // Replace with your API endpoint
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ transId: transId })
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        if (data.return_code === 1 && !data.is_processing) {
+            // Update balance in JS and UI
+            currentBalance += data.amount;
+            updateBalanceDisplay();
+
+            updateServerBalance(data.amount);
+            clearInterval(checkStatusInterval);
+        } else if (data.return_code === 3 && data.is_processing) {
+           // Still processing - optionally provide user feedback
+            console.log("Transaction pending...");
+        } else {
+            clearInterval(checkStatusInterval); // Stop checking on other errors/failures
+            console.error("Transaction failed or encountered an error:", data);
+            alert("Giao dịch thất bại hoặc gặp lỗi. Vui lòng thử lại sau.");
+        }
+    })
+    .catch(error => {
+        clearInterval(checkStatusInterval); // Stop checking on network errors
+        console.error("Error checking transaction status:", error);
+        alert("Lỗi khi kiểm tra trạng thái giao dịch. Vui lòng thử lại sau.");
+    });
+}
+
+
+
+function updateServerBalance(amount) {
+    const packageName = "Gói nạp tiền"; // Optional - can be passed from the client
+    fetch('http://localhost:5050/payment/deposit-funds', {  // Replace with your server endpoint
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ packageName: packageName, amount: amount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server balance updated:", data);
+    })
+    .catch(error => {
+        console.error("Error updating server balance:", error);
+        // Handle error - maybe inform the user and provide options to retry.
+    });
+}
+
+
+function updateBalanceDisplay() {
+    document.querySelector('.left > p:nth-child(2)').textContent = `Số dư hiện tại: ${currentBalance.toLocaleString('vi-VN')} VND`;
+}
+
+
+// Get transId from URL after redirect (if present) and start checking
+const urlParams = new URLSearchParams(window.location.search);
+transId = urlParams.get('apptransid');
+
+let checkStatusInterval; // Declare interval globally or keep it in a higher scope
+if (transId) {
+    checkStatusInterval = setInterval(() => checkTransactionStatus(transId), 5000);
+}
+    </script>
+</body>
+</html>

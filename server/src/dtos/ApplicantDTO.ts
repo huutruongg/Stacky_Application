@@ -13,7 +13,7 @@ export default class ApplicantDTO {
         this.appliedAt = appliedAt;
     }
 
-    async toJSON() {
+    async toDTO() {
         return {
             fullName: this.fullName,
             publicEmail: this.publicEmail,

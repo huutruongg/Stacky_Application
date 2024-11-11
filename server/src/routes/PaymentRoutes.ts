@@ -1,9 +1,11 @@
 
 import PaymentController from '../../src/controllers/PaymentController';
 import { UserRole } from '../../src/enums/EUserRole';
-import { authenticateJWT } from '../../src/middlewares/AuthenticateMiddleware';
-import { authorizeJWT } from '../../src/middlewares/AuthorizeMiddleware';
+import { authenticateJWT } from '../middlewares/Authenticate';
+import { authorizeJWT } from '../middlewares/Authorize';
 import { BaseRoutes } from './BaseRoutes';
+import { Request, Response } from 'express';
+import path from 'path';
 
 export default class PaymentRoutes extends BaseRoutes {
     private paymentController: PaymentController;
@@ -16,8 +18,21 @@ export default class PaymentRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/create-transaction', authenticateJWT, authorizeJWT(UserRole.RECRUITER), this.paymentController.createTransaction);
+        this.router.get('/deposit', this.serveDepositPage);
+        this.router.get('/pay-for', this.servePaymentPage);
+        this.router.post('/create-transaction', this.paymentController.createTransaction);
         this.router.post('/callback', this.paymentController.handleCallback);
-        this.router.post('/check-status-transaction', authenticateJWT, authorizeJWT(UserRole.RECRUITER), this.paymentController.checkTransactionStatus);
+        this.router.post('/check-status-transaction', this.paymentController.checkTransactionStatus);
+        this.router.patch('/deposit-funds', authenticateJWT, this.paymentController.deposit);
+        this.router.patch('/pay-for-job-post', authenticateJWT, this.paymentController.payForJobPost);
+        this.router.get('/get-payment-info', authenticateJWT, this.paymentController.getPaymentInfo);
+    }
+
+    private serveDepositPage(req: Request, res: Response): void {
+        res.sendFile(path.join(__dirname, '../views/deposit.html'));
+    }
+
+    private servePaymentPage(req: Request, res: Response): void {
+        res.sendFile(path.join(__dirname, '../views/payment.html'));
     }
 }

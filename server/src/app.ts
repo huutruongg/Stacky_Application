@@ -63,7 +63,7 @@ class App {
 
     // Middleware for enabling CORS (Cross-Origin Resource Sharing)
     this.app.use(cors({
-      origin: [process.env.URL_CLIENT as string, 'https://happily-novel-chamois.ngrok-free.app', 'http://localhost:5050'],
+      origin: [process.env.URL_CLIENT as string, 'https://happily-novel-chamois.ngrok-free.app', process.env.URL_SERVER as string],
       credentials: true,
       optionsSuccessStatus: 200,
     }));

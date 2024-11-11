@@ -16,6 +16,7 @@ import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
 
 export default class JobPostService {
+
     private jobPostRepository: JobPostRepository;
     private candidateRepository: CandidateRepository;
     private recruiterRepository: RecruiterRepository;
@@ -200,7 +201,7 @@ export default class JobPostService {
                 console.warn(`No job posts found for applied job IDs: ${jobPostIds}`);
                 return [];
             }
-            return jobsApplied.map((job) => this.toJobAppliedDTO(job));;
+            return jobsApplied.map((job) => this.toJobAppliedDTO(job));
         } catch (error) {
             console.error('Error fetching job posts with orgName:', error);
             throw new Error('Could not fetch job posts');
@@ -210,7 +211,6 @@ export default class JobPostService {
     async findByCondition(queryParams: { [key: string]: string }): Promise<JobPostDTO[]> {
         try {
             const query: any = {};
-    
             if (queryParams.jobTitle) {
                 query.jobTitle = { $regex: queryParams.jobTitle, $options: 'i' };
             }
@@ -223,9 +223,9 @@ export default class JobPostService {
             if (queryParams.yearsOfExperience) {
                 query.yearsOfExperience = { $regex: queryParams.yearsOfExperience, $options: 'i' };
             }
-            
+
             log("Query: ", query);
-    
+
             // Find job posts by condition
             const jobPosts = await this.jobPostRepository.findAllByCondition(query);
             // Convert to DTO
@@ -235,7 +235,7 @@ export default class JobPostService {
             throw new Error('Could not find job posts by condition');
         }
     }
-    
+
 
     async createApplication(userId: string, jobPostId: string): Promise<boolean> {
         try {
@@ -261,11 +261,10 @@ export default class JobPostService {
                 return false;
             }
 
-            // Tạo đối tượng ứng viên mới để thêm vào jobPost
             const newApplicant = {
                 userId: candidate.userId,
                 jobPostId: jobPostId,
-                programmingSkills: candidate.programmingSkills,
+                programmingSkills: candidate.professionalSkills,
                 linkedinUrl: candidate.linkedinUrl,
                 githubUrl: candidate.githubUrl,
                 personalDescription: candidate.personalDescription,
@@ -360,6 +359,17 @@ export default class JobPostService {
         } catch (error) {
             console.error('Error updating applicant status:', error);
             return false;
+        }
+    }
+
+    async getJobPostsByRecruiter(recruiterId: string) {
+        try {
+            const jobPosts = await this.jobPostRepository.getJobPostsByRecruiter(recruiterId);
+            return jobPosts.map((job) => this.toJobPostDTO(job));
+        } catch (error) {
+            console.error('Error fetching job posts by recruiter:', error);
+            throw new Error('Could not fetch job posts by recruiter');
+
         }
     }
 }

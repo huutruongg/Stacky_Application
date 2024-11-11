@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            padding: 20px;
+            border: 2px solid #800080;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .popup .title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .popup .content {
+            margin-bottom: 20px;
+        }
+        .popup .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .popup button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .pay-button {
+            background-color: #800080;
+            color: white;
+        }
+        .pay-button:hover {
+            background-color: #663399;
+        }
+        .top-up-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .top-up-button:hover {
+            background-color: #d32f2f;
+        }
+        .close-button {
+            background-color: #ccc;
+            color: black;
+        }
+        .close-button:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <button id="openPopupButton">Thanh toán</button>
+
+    <div id="popup" class="popup">
+        <div class="title">Chi tiết thanh toán</div>
+        <div class="content">
+            <p>Giá tiền của bài viết: <strong id="articlePrice">1,000 VND</strong></p>
+            <p>Số dư hiện tại: <strong id="currentBalance">Đang tải...</strong></p>
+        </div>
+        <div class="buttons" id="buttonContainer">
+            <!-- Nút sẽ được tạo động dựa trên điều kiện -->
+        </div>
+        <button class="close-button" id="closeButton">Đóng</button>
+    </div>
+
+    <script>
+        const openPopupButton = document.getElementById('openPopupButton');
+        const popup = document.getElementById('popup');
+        const buttonContainer = document.getElementById('buttonContainer');
+        document.getElementById('closeButton').addEventListener('click', closePopup);
+
+        const articlePrice = 1000; // Giá tiền của bài viết
+        let currentBalance = 0; // Khởi tạo số dư hiện tại
+
+        // Gọi API để lấy thông tin số dư ngay khi trang tải
+        async function fetchBalance() {
+            try {
+                const response = await fetch('http://localhost:5050/payment/get-payment-info');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch balance');
+                }
+                const data = await response.json();
+                currentBalance = data.balance || 0; // Gán giá trị số dư hiện tại
+                document.getElementById('currentBalance').textContent = `${currentBalance.toLocaleString('vi-VN')} VND`;
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+                document.getElementById('currentBalance').textContent = 'Lỗi khi tải số dư';
+            }
+        }
+
+        fetchBalance(); // Gọi hàm ngay khi trang tải
+
+        openPopupButton.addEventListener('click', () => {
+            document.getElementById('articlePrice').textContent = `${articlePrice.toLocaleString('vi-VN')} VND`;
+
+            buttonContainer.innerHTML = ''; // Xóa các nút cũ
+
+            if (currentBalance >= articlePrice) {
+                const payButton = document.createElement('button');
+                payButton.textContent = 'Thanh toán ngay';
+                payButton.className = 'pay-button';
+                payButton.onclick = async () => {
+                    try {
+                        alert('Đang thực hiện thanh toán...');
+                        const response = await fetch('http://localhost:5050/payment/pay-for-job-post', {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ balance: currentBalance, jobPostPrice: articlePrice })
+                        });
+                        const result = await response.json();
+                        if (response.ok) {
+                            alert('Thanh toán thành công');
+                            currentBalance -= articlePrice; // Cập nhật số dư mới sau khi thanh toán
+                            document.getElementById('currentBalance').textContent = `${currentBalance.toLocaleString('vi-VN')} VND`;
+                            closePopup();
+                        } else {
+                            alert(`Thanh toán thất bại: ${result.message || 'Có lỗi xảy ra'}`);
+                        }
+                    } catch (error) {
+                        console.error('Error during payment:', error);
+                        alert('Có lỗi xảy ra khi thanh toán');
+                    }
+                };
+                buttonContainer.appendChild(payButton);
+            } else {
+                const topUpButton = document.createElement('button');
+                topUpButton.textContent = 'Nạp thêm tiền';
+                topUpButton.className = 'top-up-button';
+                topUpButton.onclick = () => {
+                    window.location.href = '/payment/deposit'; // Đường dẫn đến trang nạp tiền
+                };
+                buttonContainer.appendChild(topUpButton);
+            }
+
+            popup.style.display = 'block';
+        });
+
+        function closePopup() {
+            popup.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

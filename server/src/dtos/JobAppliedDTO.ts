@@ -33,7 +33,7 @@ export class JobAppliedDTO {
         this.userId = userId;
     }
 
-    toJSON() {
+    async toDTO() {
         return {
             _id: String(this._id),
             jobTitle: this.jobTitle,

@@ -55,7 +55,7 @@ export class RecruiterDTO {
         this.orgImages = orgImages;
     }
 
-    toJSON() {
+    async toDTO() {
         return {
             _id: this._id,
             orgEmail: this.orgEmail,

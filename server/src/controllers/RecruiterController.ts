@@ -117,4 +117,41 @@ export default class RecruiterController extends BaseController {
             return this.sendError(res, 500, "An error occurred while updating the company account.");
         }
     }
+
+    async getListCompany(req: Request, res: Response) {
+        try {
+            const { search, page, pageSize } = req.query;
+            const {  } = req.query;
+            let companies;
+            if(page && pageSize && search) {
+                companies = await this.recruiterService.getListCompanyByPage(String(search), Number(page), Number(pageSize));
+            } else {
+                companies = await this.recruiterService.getListCompany();
+            }
+            if (!companies) {
+                return this.sendError(res, 404, new Error("No companies found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, result: companies });
+        } catch (error) {
+            log("Error fetching companies:", error);
+            return this.sendError(res, 500, "An error occurred while fetching the companies.");
+        }
+    }
+
+    // async findCompany(req: Request, res: Response) {
+    //     try {
+    //         const { search } = req.query;
+    //         if (!search) {
+    //             return this.sendError(res, 400, new Error("Search query is required.").message);
+    //         }
+    //         const companies = await this.recruiterService.findCompany(search as string);
+    //         if (!companies) {
+    //             return this.sendError(res, 404, new Error("No companies found.").message);
+    //         }
+    //         return this.sendResponse(res, 200, { success: true, result: companies });
+    //     } catch (error) {
+    //         log("Error fetching companies:", error);
+    //         return this.sendError(res, 500, "An error occurred while fetching the companies.");
+    //     }
+    // }
 }

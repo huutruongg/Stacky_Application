@@ -32,8 +32,7 @@ export class JobPostDTO {
         this.userId = userId;
     }
 
-    // Optional: Add transformation or formatting methods if needed
-    toJSON() {
+    async toDTO() {
         return {
             _id: String(this._id),
             jobTitle: this.jobTitle,

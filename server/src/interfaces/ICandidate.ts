@@ -13,7 +13,7 @@ export interface ICandidate extends Document {
     userId: IUser['_id'];
     publicEmail?: string;
     phoneNumber?: string;
-    programmingSkills?: string;
+    professionalSkills?: string;
     fullName?: string;
     gender?: boolean;
     birthDate?: Date;

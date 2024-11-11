@@ -10,6 +10,7 @@ import { ApplyStatus } from "../enums/EApplySatus";
 import { IApplicant } from "../interfaces/ICandidate";
 
 export default class JobPostRepository extends BaseRepository<IJobPost> {
+
     constructor() {
         super(JobPostModel);
     }
@@ -77,6 +78,9 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
                     "jobTitle orgName jobImage jobSalary location typeOfWork applicationDeadline postStatus postedAt userId"
                 ).lean().exec();
             // log('data', data);
+            if (!data) {
+                return [];
+            }
             return data;
         } catch (error) {
             console.error('Error fetching job posts:', error);
@@ -100,5 +104,9 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
     async isJobOwner(userId: string, jobPostId: string): Promise<boolean> {
         const jobPost = await this.model.findOne({ _id: jobPostId, userId: userId }).lean();
         return !!jobPost;
+    }
+
+    async getJobPostsByRecruiter(recruiterId: string) {
+        return await this.model.find({ userId: new Types.ObjectId(recruiterId) }).lean().exec();
     }
 }

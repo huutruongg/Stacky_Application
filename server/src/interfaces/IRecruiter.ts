@@ -21,7 +21,7 @@ export interface IRecruiter extends Document {
     orgCoverImage: string;
     orgImages: IImage[];
     payments: IPayment[],
-    balance: number;
+    balance: string;
 }
 
 export interface IOrganizationName {

@@ -15,13 +15,12 @@ export default class UserRepository extends BaseRepository<IUser> {
     }
 
     async findByEmail(privateEmail: string): Promise<IUser | null> {
-        return await this.model.findOne({ privateEmail }).exec();
+        log("privateEmail", privateEmail);
+        const data = await this.model.findOne({ privateEmail }).lean().exec();
+        log("data", data);
+        return data;
     }
-
-    async findByRefreshToken(refreshToken: string): Promise<IUser | null> {
-        return await this.model.findOne({ refreshToken }).exec();
-    }
-
+    
     async changePassword(id: string, password: string): Promise<IUser | null> {
         const hashedPassword = await bcrypt.hash(password, 10);
         return this.model.findByIdAndUpdate(id, { password: hashedPassword }, { new: true }).exec();

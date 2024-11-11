@@ -10,7 +10,8 @@ import { log } from "console";
 import axios from "axios";
 import { BaseController } from "./BaseController";
 import dotenv from "dotenv";
-import { setAuthCookies } from "../middlewares/AuthenticateMiddleware";
+import { setAuthCookies } from "../middlewares/Authenticate";
+import { RecruiterLoginSchema, RecruiterSignUpSchema } from "../utils/validations/AuthValidation";
 dotenv.config();
 
 export default class AuthController extends BaseController {
@@ -147,13 +148,11 @@ export default class AuthController extends BaseController {
 
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
+      const { error } = RecruiterSignUpSchema.validate(req.body, { abortEarly: false });
+      if (error) return this.sendError(res, 400, error.message);
+      // Continue if validation is successful
       const user = await this.authService.recruiterSignUp(req.body);
-      if (!user)
-        return this.sendError(
-          res,
-          401,
-          new Error("Failed to register").message
-        );
+      if (!user) return this.sendError(res, 401, new Error("Failed to register").message);
 
       await setAuthCookies(req, res, user);
       const userInfo = await (req as any).userData;
@@ -175,6 +174,9 @@ export default class AuthController extends BaseController {
 
   public async login(req: Request, res: Response, next: NextFunction) {
     try {
+      const { error } = RecruiterLoginSchema.validate(req.body, { abortEarly: false });
+      if (error) return this.sendError(res, 400, error.message);
+      // Continue if validation is successful
       const { privateEmail, password } = req.body;
       const user = await this.authService.login(privateEmail, password);
       log("user", user);

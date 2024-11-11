@@ -3,9 +3,13 @@ import { Document } from "mongoose";
 export interface IPayment extends Document {
   payAmount: number;
   transactionDate: Date;
+  isDeposit: boolean;
 }
 
-
+export interface PaymentInfo {
+  balance: number;
+  payments: IPayment[];   
+}
 
 export interface Config {
   app_id: string;

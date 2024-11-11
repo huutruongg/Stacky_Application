@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import AuthController from "../controllers/AuthController";
 import path from "path";
 import { BaseRoutes } from "./BaseRoutes";
@@ -14,7 +14,7 @@ export default class AuthRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/login', this.serveLoginPage);
+        this.router.get('/f-login', this.serveLoginPage);
         this.router.get('/logout', this.serveLogoutPage);
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authController.login);

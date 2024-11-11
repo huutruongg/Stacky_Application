@@ -1,9 +1,11 @@
-import { authorizeJWT } from '../../src/middlewares/AuthorizeMiddleware';
-import { authenticateJWT } from '../../src/middlewares/AuthenticateMiddleware';
+import { get } from 'http';
+import { authorizeJWT } from '../middlewares/Authorize';
+import { authenticateJWT } from '../middlewares/Authenticate';
 import { Router } from "express";
 import RecruiterController from "../../src/controllers/RecruiterController";
 import { BaseRoutes } from "./BaseRoutes";
 import { UserRole } from '../../src/enums/EUserRole';
+import { cacheMiddleware } from '../middlewares/CacheRedis';
 
 export default class RecruiterRoutes extends BaseRoutes {
     private recruiterController: RecruiterController;
@@ -15,12 +17,14 @@ export default class RecruiterRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/forgot-password', this.recruiterController.forgotPassword); 
+        this.router.post('/forgot-password', this.recruiterController.forgotPassword);
         this.router.post('/reset-password/:userId', this.recruiterController.resetPassword);
         this.router.post('/change-password/:userId', authenticateJWT, authorizeJWT(UserRole.RECRUITER), this.recruiterController.resetPassword);
-        this.router.get('/get-candidates-applied/:jobPostId', this.recruiterController.getApplicants);
-        this.router.put('/update-company-account',  authenticateJWT, this.recruiterController.updateComapanyAccount);
+        this.router.get('/get-candidates-applied/:jobPostId', authenticateJWT, authorizeJWT(UserRole.RECRUITER), cacheMiddleware, this.recruiterController.getApplicants);
+        this.router.put('/update-company-account', authenticateJWT, this.recruiterController.updateComapanyAccount);
         this.router.put('/update-company-info', authenticateJWT, this.recruiterController.updateComapanyInfo);
-        this.router.get('/get-company-info/:userId', this.recruiterController.getCompanyInfo);
+        this.router.get('/get-company-info/:userId', cacheMiddleware, this.recruiterController.getCompanyInfo);
+        this.router.get('/get-list-company', cacheMiddleware, this.recruiterController.getListCompany);
+        // this.router.get('/find-company', this.recruiterController.findCompany);
     }
 }

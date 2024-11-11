@@ -5,6 +5,7 @@ import UserService from "../services/UserService";
 import { log } from "console";
 import { IUserDataType } from "../interfaces/IUserData";
 import { IProfile } from "../interfaces/ICandidate";
+import { DeleteCandidateSchema, UpdateCandidateInfoSchema, UpdateCandidateProfileSchema } from "../utils/validations/CandidateValidation";
 
 export default class CandidateController extends BaseController {
     private candidateService: CandidateService;
@@ -38,6 +39,10 @@ export default class CandidateController extends BaseController {
         try {
             const data = req.body;
             const userInfo = await (req as any).userData;
+            // const { error } = UpdateCandidateInfoSchema.validate(req.body, { abortEarly: false });
+            // if (error) {
+            //     return this.sendError(res, 400, error.message);
+            // }
             const isProfileUpdated = await this.candidateService.updateProfile(userInfo.userId, data);
             const isProfessionalInfoUpdated = await this.candidateService.updateProfessionalInfo(userInfo.userId, data);
             // log("isProfileUpdated", isProfileUpdated);
@@ -53,6 +58,10 @@ export default class CandidateController extends BaseController {
 
     async deleteCandidate(req: Request, res: Response) {
         try {
+            const { error } = DeleteCandidateSchema.validate(req.params.userId, { abortEarly: false });
+            if (error) {
+                return this.sendError(res, 400, error.message);
+            }
             const { userId } = req.params;
             log("Deleting candidate with userId: ", userId);
 
@@ -92,6 +101,10 @@ export default class CandidateController extends BaseController {
 
     async updateCandidateProfile(req: Request, res: Response) {
         try {
+            const { error } = UpdateCandidateProfileSchema.validate(req.body, { abortEarly: false });
+            if (error) {
+                return this.sendError(res, 400, error.message);
+            }
             const data = req.body;
             const userInfo = await (req as any).userData;
             const isProfileUpdated = await this.candidateService.updateCandidateProfile(userInfo.userId, data);

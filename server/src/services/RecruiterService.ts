@@ -4,34 +4,14 @@ import { IRecruiter } from "../interfaces/IRecruiter";
 import RecruiterRepository from "../repositories/RecruiterRepository";
 import { IImage } from "../interfaces/IImage";
 import { log } from "console";
+import { IPayment } from "../interfaces/IPayment";
+import RecruiterListDTO from "../dtos/RecruiterListDTO";
 
 export default class RecruiterService {
   private recruiterRepository: RecruiterRepository;
 
   constructor(recruiterRepository: RecruiterRepository) {
     this.recruiterRepository = recruiterRepository;
-  }
-
-  async toRecruiterDTO(recruiter: IRecruiter): Promise<RecruiterDTO> {
-    const { _id, orgEmail, orgName, orgField, orgWebsiteUrl, orgFacebookLink, orgLinkedinLink, orgYoutubeLink, orgIntroduction, orgBenefits, orgScale, orgTaxNumber, orgAddress, orgImage, orgCoverImage, orgImages } = recruiter;
-    return new RecruiterDTO(
-      _id as ObjectId,
-      orgEmail,
-      orgName,
-      orgField,
-      orgScale,
-      orgTaxNumber,
-      orgAddress,
-      orgWebsiteUrl,
-      orgFacebookLink,
-      orgLinkedinLink,
-      orgYoutubeLink,
-      orgIntroduction,
-      orgBenefits,
-      orgImage,
-      orgCoverImage,
-      orgImages as IImage[]
-    );
   }
 
   async getRecruiterById(id: string) {
@@ -43,7 +23,26 @@ export default class RecruiterService {
     if (!data) {
       return null;
     }
-    return this.toRecruiterDTO(data);
+    
+    const recruiterDTO = new RecruiterDTO(
+      data._id as ObjectId,
+      data.orgEmail,
+      data.orgName,
+      data.orgField,
+      data.orgScale,
+      data.orgTaxNumber,
+      data.orgAddress,
+      data.orgWebsiteUrl,
+      data.orgFacebookLink,
+      data.orgLinkedinLink,
+      data.orgYoutubeLink,
+      data.orgIntroduction,
+      data.orgBenefits,
+      data.orgImage,
+      data.orgCoverImage,
+      data.orgImages as IImage[]
+    );
+    return recruiterDTO;
   }
 
   async getRecruiterByEmail(email: string) {
@@ -72,4 +71,90 @@ export default class RecruiterService {
     const updatedRecruiter = await this.recruiterRepository.updateCompanyAccount(userId, dataToUpdate);
     return !!updatedRecruiter;
   }
+
+  async deposit(userId: string, amount: number) {
+    const data = await this.recruiterRepository.findOne({ userId });
+    if (!data) {
+      return null;
+    }
+    const updatedRecruiter = await this.recruiterRepository.updateBalance(userId, amount);
+    return !!updatedRecruiter;
+  }
+
+  async payFor(userId: string, amount: number) {
+    const data = await this.recruiterRepository.findOne({ userId });
+    if (!data) {
+      return null;
+    }
+    const updatedRecruiter = await this.recruiterRepository.updateBalance(userId, amount);
+    return !!updatedRecruiter;
+  }
+
+  async addPayment(userId: string, payment: IPayment) {
+    const data = await this.recruiterRepository.findOne({ userId });
+    if (!data) {
+      return null;
+    }
+    const updatedRecruiter = await this.recruiterRepository.addPayment(userId, payment);
+    return !!updatedRecruiter;
+
+  }
+
+  async getPaymentInfo(userId: string) {
+    const data = await this.recruiterRepository.getPaymentInfo(userId);
+    if (!data) {
+      return null;
+    }
+    log("data", data);
+    const historyPayments = data.payments.filter((payment) => !payment.isDeposit);
+    const historyDeposit = data.payments.filter((payment) => payment.isDeposit);
+    const resData = {
+      balance: data.balance,
+      historyPayments,
+      historyDeposit
+    }
+    return resData;
+  }
+
+  async getListCompany() {
+    const companies = await this.recruiterRepository.getAllRecruiters();
+    if (!companies) {
+      return null;
+    }
+    return companies.map((company : IRecruiter) => new RecruiterListDTO(
+      company._id as ObjectId,
+      company.orgName,
+      company.orgImage,
+      company.orgCoverImage,
+      company.orgIntroduction,
+    ));
+  }
+
+  async getListCompanyByPage(search: string, page: number, pageSize: number) {
+    const companies = await this.recruiterRepository.getAllRecruitersByPage(search, page, pageSize);
+    if (!companies) {
+      return null;
+    }
+    return companies.map((company : IRecruiter) => new RecruiterListDTO(
+      company._id as ObjectId,
+      company.orgName,
+      company.orgImage,
+      company.orgCoverImage,
+      company.orgIntroduction,
+    ));
+  }
+
+  // async findCompany(search: string) {
+  //   const companies = await this.recruiterRepository.findCompany(search);
+  //   if (!companies) {
+  //     return null;
+  //   }
+  //   return companies.map((company : IRecruiter) => new RecruiterListDTO(
+  //     company._id as ObjectId,
+  //     company.orgName,
+  //     company.orgImage,
+  //     company.orgCoverImage,
+  //     company.orgIntroduction,
+  //   ));
+  // }
 }

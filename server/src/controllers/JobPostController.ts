@@ -115,9 +115,6 @@ export default class JobPostController extends BaseController {
                 return this.sendError(res, 401, new Error("Authentication required!").message);
             }
             const result = await this.jobPostService.getJobApplied(userInfo.userId);
-            if (!result || result.length === 0) {
-                return this.sendError(res, 404, new Error("Jobs not found!").message);
-            }
 
             return this.sendResponse(res, 200, { success: true, result });
         } catch (error) {
@@ -251,10 +248,8 @@ export default class JobPostController extends BaseController {
                 if (typeof value !== 'string') {
                     return this.sendError(res, 400, `Invalid query parameter: ${key}`);
                 }
-                queryParams[key] = value.replace(/-/g, ' ').trim();
+                queryParams[key] = value.replace(/_/g, ' ').trim();
             }
-    
-            log("LOGGGGGGGGGG: ", queryParams);
     
             const result = await this.jobPostService.findByCondition(queryParams);
             if (!result || result.length === 0) {
@@ -269,7 +264,7 @@ export default class JobPostController extends BaseController {
     
     public async findByCondition(req: Request, res: Response) {
         return this.processJobPostRequest(req, res, [
-            { key: 'keySearch', fallback: '' },
+            { key: 'jobTitle', fallback: '' },
             { key: 'location', fallback: '' },
             { key: 'industry', fallback: '' },
         ]);
@@ -283,4 +278,16 @@ export default class JobPostController extends BaseController {
         ]);
     }
     
+    public async getJobPostsByRecruiter(req: Request, res: Response) {
+        try {
+            const { recruiterId } = req.params;
+            const result = await this.jobPostService.getJobPostsByRecruiter(recruiterId);
+            if (!result || result.length === 0) {
+                return this.sendError(res, 404, 'Jobs not found!');
+            }
+            return this.sendResponse(res, 200, { success: true, result });
+        } catch (error) {
+            return this.sendError(res, 500, 'Internal Server Error!');
+        }
+    }
 }

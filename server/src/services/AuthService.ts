@@ -26,6 +26,7 @@ export default class AuthService {
 
     async login(privateEmail: string, password: string): Promise<IUser | null> {
         const user = await this.userRepository.findByEmail(privateEmail);
+        log("USER: ", user);
         if (!user) {
             return null;
         }
@@ -192,18 +193,6 @@ export default class AuthService {
         const result = await this.userRepository.updateUser(userId, { password: hashedPassword });
         log("RESULT: ", result);
         return result !== null;
-    }
-
-    async getUserByRefreshToken(refreshToken: string): Promise<IUser | null> {
-        return await this.userRepository.findByRefreshToken(refreshToken);
-    }
-
-    async verifyAccessToken(accessToken: string): Promise<any> {
-        try {
-            return jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_SECRET as string);
-        } catch (error) {
-            return null;
-        }
     }
 
     async isRefreshTokenValid(refreshToken: string): Promise<boolean> {

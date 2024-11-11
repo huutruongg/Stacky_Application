@@ -30,7 +30,6 @@ const JobPostSchema: Schema = new Schema({
   jobSchedule: { type: String, required: true },
   staffLevel: { type: String, required: true },
   genderRequired: { type: String, required: true },
-  postStatus: { type: String, enum: Object.values(PostStatus), default: PostStatus.PENDING },
   postedAt: { type: Date, default: Date.now }
 });
 

@@ -13,13 +13,13 @@ export default class PaymentService {
     this.config = config;
   }
 
-  async createTransaction() {
+  async createTransaction(urlRedirect: string, packageName: string, amount: number) {
     const embedData = {
-      redirectUrl: process.env.URL_SERVER,
+      redirectUrl: urlRedirect,
     };
 
     const items: Item[] = [
-      { name: 'Product 1', price: 100000, quantity: 1 },
+      { name: packageName, price: amount, quantity: 1 },
     ];
 
     const transactionId = Math.floor(Math.random() * 1000000);
@@ -31,9 +31,10 @@ export default class PaymentService {
       app_time: Date.now(),
       item: JSON.stringify(items),
       embed_data: JSON.stringify(embedData),
-      amount: items.reduce((total, item) => total + item.price * item.quantity, 0),
-      callback_url: 'http://4080/home/callback',
-      description: `Payment for order #${transactionId}`,
+      // amount: items.reduce((total, item) => total + item.price * item.quantity, 0),
+      amount: items[0].price,
+      callback_url: 'http://5050/home/callback',
+      description: `Nạp ${packageName} vào Stacky.`,
       bank_code: '',
     };
 

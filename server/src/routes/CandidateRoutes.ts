@@ -5,9 +5,10 @@ import CandidateRepository from "../../src/repositories/CandidateRepository";
 import UserService from "../../src/services/UserService";
 import GithubController from "../../src/controllers/GitHubController";
 import { BaseRoutes } from "./BaseRoutes";
-import { authenticateJWT } from "../../src/middlewares/AuthenticateMiddleware";
-import { authorizeJWT } from "../../src/middlewares/AuthorizeMiddleware";
+import { authenticateJWT } from "../middlewares/Authenticate";
+import { authorizeJWT } from "../middlewares/Authorize";
 import { UserRole } from "../../src/enums/EUserRole";
+import { cacheMiddleware } from "../middlewares/CacheRedis";
 
 export default class CandidateRoutes extends BaseRoutes {
     private candidateController: CandidateController;
