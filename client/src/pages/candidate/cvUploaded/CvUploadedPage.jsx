@@ -24,10 +24,9 @@ const CvUploadedPage = () => {
     const getData = async () => {
       try {
         // Gọi API với type là 'job-postings' và phân trang
-        const result = await fetchData(`job-posting/job-applied`, {
-          userId: user.userId,
-        });
+        const result = await fetchData(`job-post/get-job-applied`);
         setJobData(result); // Giả sử API trả về dữ liệu trong result.data
+        console.log(result);
 
         setLoading(false);
       } catch (error) {

@@ -63,7 +63,7 @@ const CvInformationPage = () => {
               : null,
             certificateDetail: cert.certificateDetail || "",
           })),
-          programmingSkills: result.programmingSkills || "",
+          professionalSkills: result.professionalSkills || "",
           educations: (result.educations || []).map((edu) => ({
             schoolName: edu.schoolName || "",
             startDate: edu.startDate ? new Date(edu.startDate) : null,

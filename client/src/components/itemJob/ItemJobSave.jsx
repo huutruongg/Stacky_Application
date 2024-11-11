@@ -34,7 +34,7 @@ const ItemJobSave = ({ jobData }) => {
               <div className="bg-[#D9BCFF] text-[#6112C9] px-2 rounded-full items-center justify-center">
                 <span className="text-xs font-semibold">HOT</span>
               </div>
-              <h3 className="line-clamp-1 overflow-hidden text-ellipsis max-w-[330px]">
+              <h3 className="line-clamp-1 overflow-hidden font-medium text-ellipsis max-w-[330px] hover:text-primary">
                 <a href="" title={jobData.jobTitle}>
                   {jobData.jobTitle}
                 </a>
@@ -56,7 +56,7 @@ const ItemJobSave = ({ jobData }) => {
             <span>{dayjs(jobData.postedAt).format("DD/MM/YYYY")}</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
+            <div className="text-sm line-clamp-1 overflow-hidden max-w-72 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
               <span>{jobData.location}</span>
             </div>
             <div className="flex items-center gap-5">

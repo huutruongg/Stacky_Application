@@ -73,7 +73,7 @@ export const profileCVSchema = (hasExperience) =>
       .optional(),
 
     // Programming Skills
-    programmingSkills: z.string().optional(),
+    professionalSkills: z.string().optional(),
 
     // Education
     educations: z

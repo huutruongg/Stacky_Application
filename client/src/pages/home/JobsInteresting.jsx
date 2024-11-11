@@ -42,7 +42,7 @@ const JobsInteresting = () => {
     };
     getData();
   }, [currentPage]); // Thêm currentPage vào mảng phụ thuộc
-  console.log(jobData);
+  // console.log(jobData);
 
   const handlePageChange = (page) => {
     setCurrentPage(page); // Cập nhật trang hiện tại

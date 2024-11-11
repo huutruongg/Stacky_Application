@@ -32,6 +32,10 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/search-job" element={<SearchJobPage />} />
             <Route path="/job-detail/:jobId" element={<JobDetailPage />} />
+            <Route
+              path="/recruiter/reset-password/:userId"
+              element={<ResetPasswordPage />}
+            />
             <Route element={<RequireAuth allowedRoles={["CANDIDATE"]} />}>
               <Route path="/company-detail" element={<CompanyDetailPage />} />
               <Route path="/job-save" element={<JobSavePage />} />
@@ -42,10 +46,6 @@ function App() {
           <Route element={<LayoutEmployer />}>
             <Route element={<RequireAuth allowedRoles={["RECRUITER"]} />}>
               <Route path="/company-profile" element={<CompanyInfoPage />} />
-              <Route
-                path="/recruiter/reset-password/:userId"
-                element={<ResetPasswordPage />}
-              />
               <Route path="/job-post" element={<JobPostPage />} />
               <Route path="/job-management" element={<JobPostManagerPage />} />
               <Route
