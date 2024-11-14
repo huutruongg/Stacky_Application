@@ -32,16 +32,18 @@ export class JobPostDTO {
         this.userId = userId;
     }
 
-    async toDTO() {
-        return {
-            _id: String(this._id),
-            jobTitle: this.jobTitle,
-            jobImage: this.jobImage,
-            orgName: this.orgName,
-            jobSalary: this.jobSalary,
-            location: this.location,
-            applicationDeadline: this.applicationDeadline,
-            userId: this.userId
-        };
+    static from(dto: JobPostDTO) {
+        return new JobPostDTO(
+            dto._id,
+            dto.jobTitle,
+            dto.jobImage,
+            dto.orgName,
+            dto.jobSalary,
+            dto.location,
+            dto.applicationDeadline,
+            dto.userId
+        );
     }
+
+    
 }

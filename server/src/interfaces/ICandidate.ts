@@ -36,7 +36,7 @@ export interface ICandidate extends Document {
 export interface IApplicant extends Document {
     jobPostId: IJobPost['_id'];
     userId: IUser['_id'];
-    programmingSkills: string;
+    professionalSkills: string;
     fullName: string;
     publicEmail: string;
     phoneNumber: string;

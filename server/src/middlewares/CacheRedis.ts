@@ -1,14 +1,7 @@
 import { redisClient } from '../config/Redis';
 import { Request, Response, NextFunction } from 'express';
 
-// Đảm bảo Redis được kết nối
-redisClient.connect()
-    .then(() => {
-        console.log("Redis client connected");
-    })
-    .catch((error) => {
-        console.error("Error connecting to Redis:", error);
-    });
+
 
 export const cacheMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log("Cache middleware");

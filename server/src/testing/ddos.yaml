@@ -1,0 +1,9 @@
+config:
+  target: "http://localhost:5050"
+  phases:
+    - duration: 60 # Thời gian chạy thử nghiệm (60 giây)
+      arrivalRate: 20 # Số lượng yêu cầu mỗi giây
+scenarios:
+  - flow:
+      - get:
+          url: "/job-post/get-all"

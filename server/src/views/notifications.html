@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <style>
+    #notification-container {
+      position: relative;
+    }
+
+    .notification-bell {
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    #unread-count {
+      font-weight: bold;
+      color: red;
+      font-size: 18px;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .notifications-list {
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 0;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 10px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      width: 200px;
+    }
+
+    .notifications-list div {
+      padding: 5px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .notifications-list div:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="notification-container">
+    <!-- Icon bell with unread count -->
+    <div class="notification-bell" id="bell-icon">
+      🔔 <span id="unread-count"></span>
+    </div>
+
+    <!-- Notifications list (hidden by default) -->
+    <div class="notifications-list" id="notifications-list">
+      <!-- Notifications will appear here -->
+    </div>
+  </div>
+
+  <!-- Include Socket.IO -->
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+    const userId = 'user-id'; // Replace with dynamic userId
+    const bellIcon = document.getElementById('bell-icon');
+    const unreadCountElement = document.getElementById('unread-count');
+    const notificationsList = document.getElementById('notifications-list');
+
+    let unreadCount = 0;
+    let notifications = [];
+    let showNotifications = false;
+
+    // Establish socket connection to the server
+    const socket = io('http://localhost:5050');
+
+    // Register the user with the socket
+    socket.on('connect', () => {
+      socket.emit('register', userId);
+      console.log('Connected to socket server');
+    });
+
+    // Listen for new notification events
+    socket.on('new-notification', (data) => {
+      unreadCount = data.unreadCount;
+      updateUnreadCount();
+      renderNotifications();
+    });
+
+    // Fetch unread count from the server
+    const fetchUnreadCount = async () => {
+      try {
+        const response = await fetch(`http://localhost:5050/notification/unread`);
+        const data = await response.json();
+        unreadCount = data.unreadCount;
+        updateUnreadCount();
+      } catch (error) {
+        console.error('Error fetching unread count', error);
+      }
+    };
+
+    // Fetch notifications from the server
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch(`http://localhost:5050/notification/get-all-notifications`);
+        notifications = await response.json();
+        
+        // Mark all notifications as read
+        await fetch(`http://localhost:5050/notification/mark-all-as-read`, { method: 'PUT' });
+        
+        unreadCount = 0;
+        updateUnreadCount();
+        renderNotifications(); // Render after fetching
+      } catch (error) {
+        console.error('Error fetching notifications', error);
+      }
+    };
+
+    // Update the unread count display
+    const updateUnreadCount = () => {
+      unreadCountElement.textContent = unreadCount > 0 ? `+${unreadCount}` : '';
+    };
+
+    // Handle bell icon click
+    bellIcon.addEventListener('click', () => {
+      showNotifications = !showNotifications;
+      notificationsList.style.display = showNotifications ? 'block' : 'none';
+
+      if (showNotifications) {
+        fetchNotifications();  // Fetch notifications when bell is clicked
+      }
+    });
+
+    // Render notifications
+    const renderNotifications = () => {
+      notificationsList.innerHTML = '';  // Clear existing notifications
+      notifications.forEach((notification) => {
+        const notificationElement = document.createElement('div');
+        notificationElement.textContent = notification.message;
+        notificationsList.appendChild(notificationElement);
+      });
+    };
+
+    // Initial fetch of unread count when the page loads
+    fetchUnreadCount();
+  </script>
+</body>
+</html>
+
+
+
+
+<!-- React UI -->
+<!-- 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { io } from 'socket.io-client';
+
+const Notifications = ({ userId }) => {
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  useEffect(() => {
+    // Kết nối với server qua Socket.IO
+    const socket = io('http://localhost:5000');
+    socket.emit('register', userId);
+
+    // Lắng nghe sự kiện 'new-notification' từ server
+    socket.on('new-notification', async (data) => {
+      setUnreadCount(data.unreadCount);  // Cập nhật số thông báo chưa đọc
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userId]);
+
+  // Lấy số lượng thông báo chưa đọc
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/notifications/unread/${userId}`);
+      setUnreadCount(response.data.unreadCount);
+    } catch (error) {
+      console.error('Error fetching unread count', error);
+    }
+  };
+
+  // Lấy tất cả thông báo khi click vào bell icon
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/notifications/${userId}`);
+      setNotifications(response.data);
+
+      // Đánh dấu tất cả thông báo là đã đọc
+      await axios.put(`http://localhost:5000/notifications/read/${userId}`);
+      setUnreadCount(0);  // Cập nhật lại số lượng thông báo chưa đọc
+    } catch (error) {
+      console.error('Error fetching notifications', error);
+    }
+  };
+
+  // Khi click vào icon bell
+  const handleBellClick = () => {
+    setShowNotifications(!showNotifications);
+    if (!showNotifications) {
+      fetchNotifications();  // Lấy danh sách thông báo khi mở modal
+    }
+  };
+
+  return (
+    <div>
+      {/* Icon bell với số lượng thông báo chưa đọc */}
+      <div className="notification-bell" onClick={handleBellClick}>
+        🔔 <span>{unreadCount > 0 ? `+${unreadCount}` : ''}</span>
+      </div>
+
+      {/* Hiển thị danh sách thông báo khi nhấn vào bell icon */}
+      {showNotifications && (
+        <div className="notifications-list">
+          {notifications.map((notification, index) => (
+            <div key={index}>{notification.message}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Notifications; -->

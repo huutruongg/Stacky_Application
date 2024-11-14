@@ -23,7 +23,7 @@ class App {
 
   private initializeMiddleware(): void {
     // Enable trust proxy
-    // this.app.set('trust proxy', 1);
+    this.app.set('trust proxy', 1);
 
     // Middleware for logging
     this.app.use(morgan('dev'));

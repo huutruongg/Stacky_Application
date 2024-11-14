@@ -23,7 +23,7 @@ export class EmailService {
         } as SMTPTransport.Options); // Use type assertion
     }
 
-    async sendEmail(to: string, subject: string, text: string, html: string = ""): Promise<boolean> {
+    async sendEmail(to: string | string[], subject: string, text: string, html: string = ""): Promise<boolean> {
         try {
             await this.transporter.sendMail({
                 from: process.env.EMAIL_ADDRESS,

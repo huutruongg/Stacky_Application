@@ -34,6 +34,10 @@ import PaymentRoutes from "./PaymentRoutes";
 import EmailController from "../controllers/EmailController";
 import EmailRoutes from "./EmailRoutes";
 import ApplicantService from "../services/ApplicantService";
+import NotificationController from "../controllers/NotificationController";
+import NotificationRoutes from "./NotificationRoutes";
+import NotificationRepository from "../repositories/NotificationRepository";
+import NotificationService from "../services/NotificationService";
 
 class Routes {
     public router: Router;
@@ -44,6 +48,7 @@ class Routes {
     private recruiterRepository: RecruiterRepository;
     private jobPostRepository: JobPostRepository;
     private applicantRepository: ApplicantRepository;
+    private notificationRepository: NotificationRepository;
     private uploadService: UploadService;
     private paymentService: PaymentService;
     private githubService: GithubService;
@@ -59,6 +64,7 @@ class Routes {
         this.uploadService = new UploadService();
         this.paymentService = new PaymentService(config);
         this.githubService = new GithubService();
+        this.notificationRepository = new NotificationRepository();
         this.initializeRoutes();
     }
     // Lazy load objects to avoid circular dependencies
@@ -70,6 +76,7 @@ class Routes {
         this.router.use('/email', this.lazyLoadEmailRoutes());
         this.router.use('/upload', this.lazyLoadUploadRoutes());
         this.router.use('/payment', this.lazyLoadPaymentRoutes());
+        this.router.use('/notification', this.lazyLoadNotificationRoutes());
     }
     private lazyLoadAuthRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
@@ -127,6 +134,15 @@ class Routes {
             const emailController = new EmailController();
             const emailRoutes = new EmailRoutes(emailController);
             emailRoutes.getRouter()(req, res, next);
+        }
+    }
+
+    private lazyLoadNotificationRoutes() {
+        return (req: Request, res: Response, next: NextFunction) => {
+            const notificationService = new NotificationService(this.notificationRepository);
+            const notificationController = new NotificationController(notificationService);
+            const notificationRoutes = new NotificationRoutes(notificationController);
+            notificationRoutes.getRouter()(req, res, next);
         }
     }
 }

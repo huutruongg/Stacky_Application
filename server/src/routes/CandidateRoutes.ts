@@ -8,7 +8,7 @@ import { BaseRoutes } from "./BaseRoutes";
 import { authenticateJWT } from "../middlewares/Authenticate";
 import { authorizeJWT } from "../middlewares/Authorize";
 import { UserRole } from "../../src/enums/EUserRole";
-import { cacheMiddleware } from "../middlewares/CacheRedis";
+
 
 export default class CandidateRoutes extends BaseRoutes {
     private candidateController: CandidateController;
@@ -29,6 +29,6 @@ export default class CandidateRoutes extends BaseRoutes {
         this.router.put('/update-profile', authenticateJWT, this.candidateController.updateCandidateProfile); // Done
         this.router.put('/update-info', authenticateJWT, this.candidateController.updateCandidate); // Done
         this.router.delete('/delete-candidate/:userId', authenticateJWT, this.candidateController.deleteCandidate); // Done
-        this.router.post('/get-github-score', authenticateJWT, this.githubController.getGithubScore)
+        this.router.post('/get-github-score', authenticateJWT, this.githubController.getGithubScore);
     }
 }

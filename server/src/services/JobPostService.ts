@@ -262,9 +262,15 @@ export default class JobPostService {
             }
 
             const newApplicant = {
-                userId: candidate.userId,
                 jobPostId: jobPostId,
-                programmingSkills: candidate.professionalSkills,
+                userId: candidate.userId,
+                professionalSkills: candidate.professionalSkills,
+                fullName: candidate.fullName,
+                publicEmail: candidate.publicEmail,
+                avatarUrl: candidate.avatarUrl,
+                phoneNumber: candidate.phoneNumber,
+                address: candidate.address,
+                birthDate: candidate.birthDate,
                 linkedinUrl: candidate.linkedinUrl,
                 githubUrl: candidate.githubUrl,
                 personalDescription: candidate.personalDescription,
