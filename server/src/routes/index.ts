@@ -38,6 +38,9 @@ import NotificationController from "../controllers/NotificationController";
 import NotificationRoutes from "./NotificationRoutes";
 import NotificationRepository from "../repositories/NotificationRepository";
 import NotificationService from "../services/NotificationService";
+import AIController from "../controllers/AIController";
+import AIRouter from "./AIRouter";
+import GithubRoutes from "./GithubRoutes";
 
 class Routes {
     public router: Router;
@@ -51,7 +54,6 @@ class Routes {
     private notificationRepository: NotificationRepository;
     private uploadService: UploadService;
     private paymentService: PaymentService;
-    private githubService: GithubService;
     constructor() {
         this.router = Router();
         // Initialize shared services and repositories
@@ -63,7 +65,6 @@ class Routes {
         this.applicantRepository = new ApplicantRepository();
         this.uploadService = new UploadService();
         this.paymentService = new PaymentService(config);
-        this.githubService = new GithubService();
         this.notificationRepository = new NotificationRepository();
         this.initializeRoutes();
     }
@@ -77,6 +78,8 @@ class Routes {
         this.router.use('/upload', this.lazyLoadUploadRoutes());
         this.router.use('/payment', this.lazyLoadPaymentRoutes());
         this.router.use('/notification', this.lazyLoadNotificationRoutes());
+        this.router.use('/github', this.lazyLoadGithubRoutes());
+        this.router.use('/ai', this.lazyLoadAIRoutes());
     }
     private lazyLoadAuthRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
@@ -90,7 +93,7 @@ class Routes {
             const candidateService = new CandidateService(this.candidateRepository);
             const userService = new UserService(this.userRepository);
             const candidateController = new CandidateController(candidateService, userService);
-            const githubController = new GithubController(this.githubService);
+            const githubController = new GithubController();
             const candidateRoutes = new CandidateRoutes(candidateController, githubController);
             candidateRoutes.getRouter()(req, res, next);
         };
@@ -143,6 +146,22 @@ class Routes {
             const notificationController = new NotificationController(notificationService);
             const notificationRoutes = new NotificationRoutes(notificationController);
             notificationRoutes.getRouter()(req, res, next);
+        }
+    }
+
+    private lazyLoadAIRoutes() {
+        return (req: Request, res: Response, next: NextFunction) => {
+            const aiController = new AIController();
+            const aiRouter = new AIRouter(aiController);
+            aiRouter.getRouter()(req, res, next);
+        }
+    }
+
+    private lazyLoadGithubRoutes() {
+        return (req: Request, res: Response, next: NextFunction) => {
+            const githubController = new GithubController();
+            const githubRoutes = new GithubRoutes(githubController);
+            githubRoutes.getRouter()(req, res, next);
         }
     }
 }

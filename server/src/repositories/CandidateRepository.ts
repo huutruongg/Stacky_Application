@@ -5,6 +5,7 @@ import { BaseRepository } from "./BaseRepository";
 import { FlattenMaps, Types } from "mongoose";
 import { ApplyStatus } from "../enums/EApplySatus";
 import { IJobSaved } from "../interfaces/IJobPost";
+import { IOAuthToken } from "../interfaces/IOauthToken";
 
 export default class CandidateRepository extends BaseRepository<ICandidate> {
     constructor() {
@@ -179,5 +180,11 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             data
         );
         return result.modifiedCount > 0;
+    }
+
+    async getGithubToken(userId: string): Promise<IOAuthToken | null> {
+        const candidate = await this.model.findOne({ userId: new Types.ObjectId(userId) }).select("oauthTokens").lean();
+        if(!candidate) return null;
+        return candidate.oauthTokens?.find((token: IOAuthToken) => token.provider === "GITHUB") || null;
     }
 }

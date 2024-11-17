@@ -20,6 +20,12 @@ const ApplicantSchema = new Schema({
     educations: [EducationSchema],
     experiences: [ExperienceSchema],
     certifications: [CertificationSchema],
+    aiAnalysistScore: {
+        professionalSkills: { type: Number, default: 0 },
+        educations: { type: Number, default: 0 },
+        languages: { type: Number, default: 0 },
+        certifications: { type: Number, default: 0 },
+    },
     githubScore: { type: Number, default: 0 },
     appliedAt: { type: Date, default: Date.now },
 });

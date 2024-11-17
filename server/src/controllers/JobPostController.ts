@@ -5,6 +5,14 @@ import { log } from "console";
 import { UserRole } from "../enums/EUserRole";
 import { get } from "http";
 import { IUserDataType } from "../interfaces/IUserData";
+import axios from "axios";
+import { IEducation } from "../interfaces/IEducation";
+import { ILanguage } from "../interfaces/ILanguage";
+import { ICertification } from "../interfaces/ICertification";
+import { scaleScore, transformCV } from "../utils/CVHandler";
+import CandidateModel from "../models/CandidateModel";
+import JobPostModel from "../models/JobPostModel";
+import { IAIResult } from "../interfaces/ICandidate";
 // import { getUserInfo } from "../middlewares/authenticate.m";
 
 export default class JobPostController extends BaseController {
@@ -122,7 +130,7 @@ export default class JobPostController extends BaseController {
         }
     }
 
-    
+
 
     async createJobPost(req: Request, res: Response) {
         try {
@@ -169,8 +177,68 @@ export default class JobPostController extends BaseController {
             if (!userInfo) {
                 return this.sendError(res, 401, new Error('Authentication required!').message);
             }
-            const result = await this.jobPostService.createApplication(userInfo.userId, jobPostId);
-            if (!result) {
+            // 1. create application in db
+            const isCreated = await this.jobPostService.createApplication(userInfo.userId, jobPostId);
+            // 2. Send data to AI model
+            async function getCV(userId: string) {
+                return await CandidateModel.findOne({ userId: userId }).lean().exec();
+            }
+            async function getJobPost(jobPostId: string) {
+                return await JobPostModel.findById(jobPostId).lean().exec();
+            }
+            const cv = await getCV(userInfo.userId);
+            const jd = await getJobPost(jobPostId);
+
+            if (!cv || !jd) {
+                return this.sendError(res, 404, "CV or Job Post not found");
+            }
+            const cvData = {
+                educations: cv.educations,
+                languages: cv.languages,
+                certifications: cv.certifications,
+            } as { educations: IEducation[], languages: ILanguage[], certifications: ICertification[] };
+            const jdData = {
+                languages: jd.languagesRequired,
+            } as { languages: ILanguage[] };
+
+            const transformedCV = transformCV(cvData);
+            const transformedJD = transformCV(jdData);
+            const input = {
+                professionalSkillsCV: cv.professionalSkills,
+                educationsCV: JSON.stringify(transformedCV.educations),
+                languagesCV: JSON.stringify(transformedCV.languages),
+                certificationsCV: JSON.stringify(transformedCV.certifications),
+                professionalSkillsJob: jd.professionalSkills,
+                educationsJob: jd.educationRequired,
+                languagesJob: JSON.stringify(transformedJD.languages),
+                certificationsJob: jd.certificateRequired,
+            };
+
+            const response = await axios.post(`http://localhost:8000/get_percents`, input, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            // 3. Save AI result to db
+            const aiResult = {
+                professionalSkills: response.data.score_skill,
+                educations: response.data.score_edu,
+                languages: response.data.score_lang,
+                certifications: response.data.score_cer,
+            } as IAIResult;
+            // Map raw scores to the new scales
+            const scaledResult = {
+                professionalSkills: scaleScore(aiResult.professionalSkills, 50),
+                educations: scaleScore(aiResult.educations, 15),
+                languages: scaleScore(aiResult.languages, 15),
+                certifications: scaleScore(aiResult.certifications, 20),
+            };
+            log('aiResult', aiResult);
+            log('scaledResult', scaledResult);
+            const isUpdated = this.jobPostService.saveAIResult(userInfo.userId, jobPostId, scaledResult);
+            // 4. Return response
+            if (!isCreated || !isUpdated) {
                 return this.sendError(res, 400, 'Failed to create application!');
             }
             return this.sendResponse(res, 201, { success: true, message: 'Application created successfully!' });
@@ -242,7 +310,7 @@ export default class JobPostController extends BaseController {
     ) {
         try {
             const queryParams: Record<string, string> = {};
-    
+
             for (const { key, fallback } of fields) {
                 const value = req.query[key];
                 if (typeof value !== 'string') {
@@ -250,18 +318,18 @@ export default class JobPostController extends BaseController {
                 }
                 queryParams[key] = value.replace(/_/g, ' ').trim();
             }
-    
+
             const result = await this.jobPostService.findByCondition(queryParams);
             if (!result || result.length === 0) {
                 return this.sendResponse(res, 200, { success: true, result: [] });
             }
-    
+
             return this.sendResponse(res, 200, { success: true, result });
         } catch (error) {
             return this.sendError(res, 500, 'Internal Server Error!');
         }
     }
-    
+
     public async findByCondition(req: Request, res: Response) {
         return this.processJobPostRequest(req, res, [
             { key: 'jobTitle', fallback: '' },
@@ -269,7 +337,7 @@ export default class JobPostController extends BaseController {
             { key: 'industry', fallback: '' },
         ]);
     }
-    
+
     public async getRelatedJobPosts(req: Request, res: Response) {
         return this.processJobPostRequest(req, res, [
             { key: 'jobTitle', fallback: '' },
@@ -277,7 +345,7 @@ export default class JobPostController extends BaseController {
             { key: 'yearsOfExperience', fallback: '' },
         ]);
     }
-    
+
     public async getJobPostsByRecruiter(req: Request, res: Response) {
         try {
             const { recruiterId } = req.params;

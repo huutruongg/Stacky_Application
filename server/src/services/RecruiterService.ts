@@ -144,17 +144,5 @@ export default class RecruiterService {
     ));
   }
 
-  // async findCompany(search: string) {
-  //   const companies = await this.recruiterRepository.findCompany(search);
-  //   if (!companies) {
-  //     return null;
-  //   }
-  //   return companies.map((company : IRecruiter) => new RecruiterListDTO(
-  //     company._id as ObjectId,
-  //     company.orgName,
-  //     company.orgImage,
-  //     company.orgCoverImage,
-  //     company.orgIntroduction,
-  //   ));
-  // }
+  
 }

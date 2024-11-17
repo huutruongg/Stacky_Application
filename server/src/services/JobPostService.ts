@@ -8,7 +8,7 @@ import { ApplyStatus } from "../enums/EApplySatus";
 import { UserRole } from "../enums/EUserRole";
 import { PostStatus } from "../enums/EPostStatus";
 import { JobPostDTO } from "../dtos/JobPostDTO";
-import { IApplicant } from "../interfaces/ICandidate";
+import { IAIResult, IApplicant } from "../interfaces/ICandidate";
 import { log } from "console";
 import { IUserDataType } from "../interfaces/IUserData";
 import { JobAppliedDTO } from "../dtos/JobAppliedDTO";
@@ -16,6 +16,7 @@ import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
 
 export default class JobPostService {
+    
 
     private jobPostRepository: JobPostRepository;
     private candidateRepository: CandidateRepository;
@@ -376,6 +377,24 @@ export default class JobPostService {
             console.error('Error fetching job posts by recruiter:', error);
             throw new Error('Could not fetch job posts by recruiter');
 
+        }
+    }
+
+    saveAIResult(userId: string, jobPostId: string, aiResult: IAIResult) {
+        try {
+            const isExisting = this.applicantRepository.isExistingApplicant(userId, jobPostId);
+            if (!isExisting) {
+                console.warn(`Applicant with ID ${userId} not found.`);
+                return;
+            }
+            const updated = this.applicantRepository.updateAIResult(userId, jobPostId, aiResult);
+            if (!updated) {
+                console.warn(`Failed to update AI result for applicant ${userId}.`);
+                return;
+            }
+            return updated !== null;
+        } catch (error) {
+            console.error('Error saving AI result:', error);
         }
     }
 }

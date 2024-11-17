@@ -68,9 +68,9 @@ export default class RecruiterController extends BaseController {
                 return this.sendError(res, 400, new Error("Job Post ID is required.").message);
             }
             const applicants = await this.applicantService.getCandidatesApplied(jobPostId);
-            if (!applicants) {
-                return this.sendError(res, 404, new Error("No applicants found.").message);
-            }
+            // if (!applicants) {
+            //     return this.sendError(res, 404, new Error("No applicants found.").message);
+            // }
             return this.sendResponse(res, 200, { success: true, result: applicants });
         } catch (error) {
             log("Error fetching applicants:", error);
@@ -138,20 +138,20 @@ export default class RecruiterController extends BaseController {
         }
     }
 
-    // async findCompany(req: Request, res: Response) {
-    //     try {
-    //         const { search } = req.query;
-    //         if (!search) {
-    //             return this.sendError(res, 400, new Error("Search query is required.").message);
-    //         }
-    //         const companies = await this.recruiterService.findCompany(search as string);
-    //         if (!companies) {
-    //             return this.sendError(res, 404, new Error("No companies found.").message);
-    //         }
-    //         return this.sendResponse(res, 200, { success: true, result: companies });
-    //     } catch (error) {
-    //         log("Error fetching companies:", error);
-    //         return this.sendError(res, 500, "An error occurred while fetching the companies.");
-    //     }
-    // }
+    async getPotentialCandidate(req: Request, res: Response) {
+        try {
+            const { jobPostId, candidateId } = req.params;
+            if (!jobPostId || !candidateId) {
+                return this.sendError(res, 400, new Error("Job Post ID and Candidate ID are required.").message);
+            }
+            const candidates = await this.applicantService.getPotentialCandidate(jobPostId, candidateId);
+            if (!candidates) {
+                return this.sendError(res, 404, new Error("No potential candidates found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, result: candidates });
+        } catch (error) {
+            log("Error fetching potential candidates:", error);
+            return this.sendError(res, 500, "An error occurred while fetching the potential candidates.");
+        }
+    }
 }

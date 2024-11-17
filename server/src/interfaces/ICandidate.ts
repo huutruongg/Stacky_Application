@@ -33,6 +33,13 @@ export interface ICandidate extends Document {
     jobApplied?: IJobApplied[];
 }
 
+export interface IAIResult {
+    professionalSkills: number;
+    educations: number;
+    languages: number;
+    certifications: number;
+}
+
 export interface IApplicant extends Document {
     jobPostId: IJobPost['_id'];
     userId: IUser['_id'];
@@ -53,6 +60,7 @@ export interface IApplicant extends Document {
     certifications: ICertification[];
     status: ApplyStatus;
     githubScore: number;
+    aiAnalysistScore: IAIResult;
     appliedAt: Date;
 }
 

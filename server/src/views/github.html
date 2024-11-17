@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Authorization and Scoring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .description {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #24292e;
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #0366d6;
+        }
+
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #24292e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title">Connect with GitHub</div>
+        <div class="description" id="description">
+            Authorize the app to access your GitHub repositories.
+        </div>
+        <a id="github-auth-button" class="button" href="#" style="display: none;">Authorize with GitHub</a>
+        <button id="calculate-score-button" class="button" style="display: none;">Calculate Score</button>
+        <div id="spinner" class="spinner"></div>
+        <div id="result" class="description"></div>
+    </div>
+
+    <script>
+        // GitHub OAuth credentials
+        const CLIENT_ID = "Ov23liViTUs1MR9hMkVx";
+        const REDIRECT_URI = "http://localhost:5050/auth/github/callback"; // Change to your actual callback URL
+        const SCOPE = "repo,user";
+        let token = "";
+
+        const githubAuthButton = document.getElementById("github-auth-button");
+        const calculateScoreButton = document.getElementById("calculate-score-button");
+
+        // Check login status
+        async function checkLoginStatus() {
+            // const response = await fetch("http://localhost:5050/github/is-github-logged-in");
+            const response = await fetch('http://localhost:5050/github/is-github-logged-in', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            var isLoggedInGithub = false;
+            if (response.ok) {
+                const data = await response.json();
+                console.log("data", data.isLoggedInGithub);
+                isLoggedInGithub = data.result.isLoggedInGithub;
+            }
+            console.log("isLoggedInGithub", isLoggedInGithub);
+            if (isLoggedInGithub) {
+                // Show "Calculate Score" button if logged in
+                githubAuthButton.style.display = "none";
+                calculateScoreButton.style.display = "inline-block";
+                document.getElementById("description").textContent =
+                    "You are logged in. Click 'Calculate Score' to calculate your GitHub contribution score.";
+            } else {
+                // Show "Authorize with GitHub" button if not logged in
+                githubAuthButton.style.display = "inline-block";
+                calculateScoreButton.style.display = "none";
+            }
+        }
+
+        // Redirect to GitHub Authorization Page
+        githubAuthButton.addEventListener("click", () => {
+            const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPE)}`;
+            window.location.href = githubAuthUrl;
+        });
+
+        // Calculate GitHub Score
+        calculateScoreButton.addEventListener("click", async () => {
+            const spinner = document.getElementById("spinner");
+            const result = document.getElementById("result");
+
+            // Show the spinner and clear previous results
+            spinner.style.display = "block";
+            result.textContent = "";
+
+            try {
+                // Simulate an API call with a timeout (Replace with actual API logic)
+                const score = await calculateGitHubScore();
+                spinner.style.display = "none"; // Hide the spinner after calculation
+
+                // // Display the scores
+                result.innerHTML = `<strong>GitHub Scores:</strong> <br/> ${JSON.stringify(score, null, 2)}`;
+            } catch (error) {
+                spinner.style.display = "none"; // Hide the spinner in case of error
+                result.textContent = "Error calculating scores: " + error.message;
+            }
+        });
+
+        // Simulate GitHub Score Calculation API (Replace this with real API logic)
+        async function calculateGitHubScore() {
+            const jobPostId = "8e4317a34e764ac3b141fd8d";
+
+            try {
+                const response = await fetch(`http://localhost:5050/github/get-github-score/${jobPostId}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch score. HTTP status: ${response.status}`);
+                }
+
+                const data = await response.json(); // Parse the response
+                console.log("Parsed API response:", data);
+
+                if (!data.result) {
+                    throw new Error("API response does not contain 'result'");
+                }
+
+                return data.result; // Return the 'result' field
+            } catch (error) {
+                console.error("Error calculating GitHub score:", error.message);
+                throw error; // Let the caller handle the error
+            }
+        }
+
+        // Initialize UI based on login status
+        checkLoginStatus();
+    </script>
+</body>
+
+</html>

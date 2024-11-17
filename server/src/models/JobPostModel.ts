@@ -1,10 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { IJobPost } from '../interfaces/IJobPost';
-import { PostStatus } from '../enums/EPostStatus';
-import { CertificationSchema, EducationSchema, ExperienceSchema, LanguageSchema, ProjectSchema } from './CandidateModel';
-import { ApplyStatus } from '../enums/EApplySatus';
-import ApplicantSchema from './ApplicantModel';
-
+import { LanguageSchema } from './CandidateModel';
 
 // Define the schema for the JobPostModel
 const JobPostSchema: Schema = new Schema({
@@ -33,9 +29,8 @@ const JobPostSchema: Schema = new Schema({
   postedAt: { type: Date, default: Date.now }
 });
 
+JobPostSchema.index({ jobTitle: 1, location: 1, typeOfIndustry: 1 });
+
 // Create and export the JobPostModel
 const JobPostModel = mongoose.model<IJobPost>('JobPost', JobPostSchema);
 export default JobPostModel;
-
-//  Get ra danh sách của các ứng viên trong 1 bài đăng tuyển dụng:
-// Need: userId + jobPostId => 
