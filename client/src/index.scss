@@ -92,7 +92,7 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 10px; /* Chiều rộng của thanh cuộn */
+  width: 9px; /* Chiều rộng của thanh cuộn */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -131,4 +131,17 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

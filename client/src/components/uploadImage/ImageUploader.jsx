@@ -12,16 +12,13 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
   const [uploadedImage, setUploadedImage] = useState(value || null);
   const [isHovered, setIsHovered] = useState(false);
   const [tempImage, setTempImage] = useState(null);
-
-  console.log(uploadedImage);
-
-  // console.log(value);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     setUploadedImage(value);
   }, [value]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -37,48 +34,46 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("files", file); // Append the file to form data
-
+    // Hiển thị ảnh ngay lập tức
     const reader = new FileReader();
-    reader.onload = async () => {
-      const imageData = {
-        file,
-        preview: reader.result,
-      };
-      setTempImage(imageData.preview);
-      console.log(tempImage);
-
-      if (imageData?.file) {
-        formData.append("files", imageData.file);
-      }
-
-      try {
-        const uploadResponse = await axiosInstance.post(
-          "/upload/recruiter-images",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-        const urlImage = uploadResponse.data.urlImages[0];
-        setUploadedImage(urlImage);
-        onChange(urlImage); // Update form state with the image URL
-        console.log("success");
-      } catch (error) {
-        toast.error("Failed to upload image. Please try again.");
-      }
+    reader.onload = (e) => {
+      setTempImage(e.target.result);
     };
-
     reader.readAsDataURL(file);
+
+    // Bắt đầu upload
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("files", file);
+
+    try {
+      const uploadResponse = await axiosInstance.post(
+        "/upload/recruiter-images",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      const urlImage = uploadResponse.data.urlImages[0];
+      setUploadedImage(urlImage);
+      onChange(urlImage);
+      toast.success("Tải ảnh lên thành công!");
+    } catch (error) {
+      toast.error("Không thể tải ảnh lên. Vui lòng thử lại.");
+      setTempImage(null);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDeleteImage = () => {
     setUploadedImage(null);
-    onChange(null); // Update form state
+    setTempImage(null);
+    onChange(null);
   };
 
   useImperativeHandle(ref, () => ({
     reset: () => {
       setUploadedImage(null);
+      setTempImage(null);
       onChange(null);
     },
   }));
@@ -90,7 +85,7 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
           htmlFor={id}
           className="relative h-48 border border-primary rounded-md cursor-pointer flex flex-col justify-center items-center bg-gray-100 hover:bg-gray-200 w-full"
         >
-          {uploadedImage ? (
+          {uploadedImage || tempImage ? (
             <div
               className="relative w-full h-full"
               onMouseEnter={() => setIsHovered(true)}
@@ -101,7 +96,12 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
                 alt="Uploaded"
                 className="w-full h-full min-w-48 object-contain rounded-md"
               />
-              {isHovered && (
+              {isUploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
+                  <div className="loading-spinner text-white">Đang tải...</div>
+                </div>
+              )}
+              {isHovered && !isUploading && (
                 <button
                   onClick={handleDeleteImage}
                   className="absolute top-2 right-2 bg-white p-1 rounded-full shadow hover:bg-gray-100"

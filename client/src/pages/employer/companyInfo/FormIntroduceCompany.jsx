@@ -25,19 +25,12 @@ const FormIntroduceCompany = ({ form }) => {
             id="introduction"
             htmlFor="introduction"
           />
-          <SelectField
+          <InputField
             control={form.control}
             name="orgField"
             labelName="Ngành nghề"
             placeholder="Chọn ngành nghề"
             {...commonInputProps}
-            options={[
-              { value: "fullTime", label: "Full-time" },
-              { value: "partTime", label: "Part-time" },
-              { value: "contract", label: "Hợp đồng" },
-              { value: "internship", label: "Thực tập sinh" },
-              { value: "freelance", label: "Freelance" },
-            ]}
           />
           <InputField
             control={form.control}

@@ -57,19 +57,20 @@ const CandidateLists = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-5 mt-5 w-full"
       >
-        <div className="bg-secondary rounded-xl p-5 text-sm">
-          <TitleField>Danh sách ứng viên</TitleField>
-          <div className="flex flex-col gap-5 px-10">
-            <div className="flex items-center justify-center gap-10">
-              <button
-                className="px-4 h-10 bg-primary font-medium text-white rounded-xl hover:bg-[#00F0FF]"
+        <div className="bg-secondary rounded-xl text-sm">
+          <div className="flex justify-between items-center py-2 rounded-tl-xl rounded-tr-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
+            <h3 className="text-xl ml-5 text-white">Thông tin giao dịch</h3>
+            <div className="flex items-center justify-center gap-10 mr-10">
+              <Buttonchild
+                className="px-4 py-1"
                 type="button"
+                kind="primary"
                 onClick={() => setOpenReview(true)}
               >
                 Gửi gmail
-              </button>
+              </Buttonchild>
               <Select>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-[185px] h-8 border-primary text-white rounded-md">
                   <SelectValue placeholder="Trạng thái" />
                 </SelectTrigger>
                 <SelectContent>
@@ -89,14 +90,33 @@ const CandidateLists = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center w-32 gap-2">
                 <Checkbox id="terms" className="w-5 h-5" />
-                <span className="text-primary font-medium">Chọn tất cả</span>
+                <span className="text-white font-medium">Chọn tất cả</span>
               </div>
             </div>
-            <div className="flex flex-col gap-5 text-sm bg-white p-3 rounded-lg border hover:border-primary">
+          </div>
+          <div className="flex flex-col gap-5 px-10">
+            <div className="flex justify-end gap-10 w-full mt-5">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-orange-300 rounded-full"></div>
+                <span>Điểm AI phân tích</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                <span>Điểm Gitub</span>
+              </div>
+            </div>
+            <div className="relative flex flex-col gap-5 text-sm bg-white rounded-lg border hover:border-primary">
               {/* Candidate Info Card */}
-              <div className="flex justify-between gap-5">
+              <div className="absolute">
+                <div className="relative w-10 h-10 border-l-[20px] border-l-primary border-t-[20px] border-t-primary border-r-[20px] border-r-transparent border-b-[20px] border-b-transparent rounded-tl-lg">
+                  <div className="absolute w-7 h-5 z-10 text-center text-white top-[-19px] left-[-22px] rounded-sm">
+                    1
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between gap-3 pl-9 pr-3 py-3">
                 <div className="min-w-[80px] max-w-[80px] rounded-md">
                   <a href="#">
                     <img src={imgAvatar} alt="" className="rounded-md" />
@@ -114,10 +134,15 @@ const CandidateLists = () => {
                       <IconAccept className="w-6 h-6" color="#22C55E" />
                       <IconClose className="w-6 h-6" color="#EB5757" />
                     </div>
-                    <div className="flex items-center gap-5">
-                      <span className="flex items-center justify-center w-6 h-6 bg-primary text-white rounded-full">
-                        #1
-                      </span>
+                    <div className="flex items-center gap-10">
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 bg-orange-300 rounded-full"></div>
+                        <span>99/100</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                        <span>99/100</span>
+                      </div>
                       <Checkbox
                         id="candidate-select"
                         className="w-5 h-5 mr-5"

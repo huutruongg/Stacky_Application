@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import IconEmail from "@/components/icons/IconEmail";
 import IconPassword from "@/components/icons/IconPassword";
+import IconEye from "@/components/icons/IconEye";
+import IconEyeHiden from "@/components/icons/IconEyeHiden";
 import Button from "@/components/button/Button";
 import { Form } from "@/components/ui/form";
 import { useNavigate } from "react-router-dom";
@@ -24,8 +26,10 @@ const FormSignInEmployer = () => {
   const [open, setOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const onClose = () => setIsOpen(false);
   const onCloseUpdate = () => setOpenUpdate(false);
+  const handleShowPassword = () => setShowPassword(!showPassword);
 
   // Sử dụng hook form với zod validation
   const form = useForm({
@@ -97,7 +101,18 @@ const FormSignInEmployer = () => {
             icon={<IconPassword />}
             classNameInput="w-full relative"
             labelName={"Mật khẩu"}
-            type="password"
+            type={showPassword ? "text" : "password"}
+            onClick={handleShowPassword}
+            iconPassword={
+              !showPassword ? (
+                <IconEye className="cursor-pointer w-6 h-6" color={"#686B6E"} />
+              ) : (
+                <IconEyeHiden
+                  className="cursor-pointer w-6 h-6"
+                  color={"#686B6E"}
+                />
+              )
+            }
           />
           <div className="w-full">
             <Button

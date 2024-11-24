@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
@@ -10,8 +10,17 @@ import toast from "react-hot-toast";
 import InputField from "@/components/fieldForm/InputField";
 import SelectField from "@/components/fieldForm/SelectField";
 import { registerEmployerSchema } from "@/constants/validationFormRegisterEmployer";
+import IconEye from "@/components/icons/IconEye";
+import IconEyeHiden from "@/components/icons/IconEyeHiden";
 
 const FormRegisterEmployer = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleShowPassword = () => setShowPassword(!showPassword);
+  const handleShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
   const form = useForm({
     resolver: zodResolver(registerEmployerSchema),
     defaultValues: {
@@ -74,26 +83,53 @@ const FormRegisterEmployer = () => {
             name="privateEmail"
             placeholder="Email"
             labelName={"Email"}
+            classNameLabel={"ant-form-item-required"}
           />
           <InputField
             control={form.control}
             name="phoneNumber"
             placeholder="Số điện thoại"
             labelName={"Số điện thoại"}
+            classNameLabel={"ant-form-item-required"}
           />
           <InputField
             control={form.control}
             name="password"
             placeholder="Mật khẩu"
-            type="password"
+            classNameInput="w-full relative"
             labelName={"Mật khẩu"}
+            type={showPassword ? "text" : "password"}
+            onClick={handleShowPassword}
+            iconPassword={
+              !showPassword ? (
+                <IconEye className="cursor-pointer w-6 h-6" color={"#686B6E"} />
+              ) : (
+                <IconEyeHiden
+                  className="cursor-pointer w-6 h-6"
+                  color={"#686B6E"}
+                />
+              )
+            }
           />
           <InputField
             control={form.control}
             name="confirmPassword"
             placeholder="Xác nhận mật khẩu"
-            type="password"
             labelName={"Xác nhận mật khẩu"}
+            classNameInput="w-full relative"
+            classNameLabel={"ant-form-item-required"}
+            type={showConfirmPassword ? "text" : "password"}
+            onClick={handleShowConfirmPassword}
+            iconPassword={
+              !showConfirmPassword ? (
+                <IconEye className="cursor-pointer w-6 h-6" color={"#686B6E"} />
+              ) : (
+                <IconEyeHiden
+                  className="cursor-pointer w-6 h-6"
+                  color={"#686B6E"}
+                />
+              )
+            }
           />
 
           <p className="text-primary font-semibold mt-5 mb-2">
@@ -104,12 +140,14 @@ const FormRegisterEmployer = () => {
             name="orgTaxNumber"
             placeholder="Mã số thuế"
             labelName={"Mã số thuế"}
+            classNameLabel={"ant-form-item-required"}
           />
           <InputField
             control={form.control}
             name="orgName"
             placeholder="Tên công ty hiển thị"
             labelName={"Tên công ty "}
+            classNameLabel={"ant-form-item-required"}
           />
 
           <SelectField
@@ -117,6 +155,7 @@ const FormRegisterEmployer = () => {
             name="orgField"
             labelName={"Lĩnh vực"}
             placeholder="Lĩnh vực"
+            classNameLabel={"ant-form-item-required"}
             options={[
               { value: "technology", label: "Công nghệ" },
               { value: "finance", label: "Tài chính" },
@@ -126,24 +165,26 @@ const FormRegisterEmployer = () => {
           <SelectField
             control={form.control}
             name="orgScale"
-            labelName={"Kỹ năng công ty"}
-            placeholder="Kỹ năng công ty"
+            labelName={"Quy mô công ty"}
+            placeholder="Quy mô công ty"
+            classNameLabel={"ant-form-item-required"}
             options={[
-              { value: "Quản lý", label: "Quản lý" },
-              { value: "Phần mềm", label: "Phần mềm" },
-              { value: "marketing", label: "Marketing" },
+              { value: "10-24", label: "10-24" },
+              { value: "25-99", label: "25-99" },
+              { value: "100-499", label: "100-499" },
+              { value: "Hơn 1000", label: "Hơn 1000" },
+              { value: "1000-4999", label: "1000-4999" },
+              { value: "5000-9999", label: "5000-9999" },
+              { value: "10000-19999", label: "10000-19999" },
+              { value: "Hơn 20000", label: "Hơn 20000" },
             ]}
           />
-          <SelectField
+          <InputField
             control={form.control}
             name="orgAddress"
             labelName={"Trụ sở công ty"}
             placeholder="Trụ sở công ty"
-            options={[
-              { value: "Hà Nội", label: "Hà Nội" },
-              { value: "TP. Hồ Chí Minh", label: "TP. Hồ Chí Minh" },
-              { value: "Đà Nẵng", label: "Đà Nẵng" },
-            ]}
+            classNameLabel={"ant-form-item-required"}
           />
 
           <FormField
