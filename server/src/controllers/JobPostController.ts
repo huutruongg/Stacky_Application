@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import JobPostService from "../services/JobPostService";
 import { BaseController } from "./BaseController";
 import { log } from "console";
-import { UserRole } from "../enums/EUserRole";
+import { UserRoles } from "../utils/roles";
 import { get } from "http";
 import { IUserDataType } from "../interfaces/IUserData";
 import axios from "axios";
@@ -214,12 +214,14 @@ export default class JobPostController extends BaseController {
                 certificationsJob: jd.certificateRequired,
             };
 
+            log('input', input);
+
             const response = await axios.post(`http://localhost:8000/get_percents`, input, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            
+
             // 3. Save AI result to db
             const aiResult = {
                 professionalSkills: response.data.score_skill,

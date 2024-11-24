@@ -19,7 +19,7 @@ export interface IRecruiter extends Document {
     orgAddress: string;
     orgImage: string;
     orgCoverImage: string;
-    orgImages: IImage[];
+    orgImages: String[];
     payments: IPayment[],
     balance: string;
 }

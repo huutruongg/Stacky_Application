@@ -1,24 +1,20 @@
-// middleware/authorize.ts
-import { Request, Response, NextFunction } from "express";
-import { UserRole } from "../enums/EUserRole";
-import { log } from "console";
+import { Request, Response, NextFunction } from 'express';
+import { RolePermissions, UserRoles } from '../utils/roles';
+import { log } from 'console';
 
-export const authorizeJWT = (...allowedRoles: UserRole[]) => {
-    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const userInfo = await (req as any).userData;
-        log('userInfo', userInfo);
-        // Check if user data exists
-        if (!userInfo) {
-            res.status(401).json({ message: "Authentication required!" });
+export const authorize = (requiredPermissions: string[]) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
+        const userRole = (req as any).userData.role;
+        log("userRole", userRole);
+        const userPermissions = RolePermissions[userRole as UserRoles] || [];
+        log("userPermissions", userPermissions);
+        // Kiểm tra quyền cần thiết có trong danh sách quyền của vai trò không
+        const hasPermission = requiredPermissions.every(permission => userPermissions.includes(permission));
+        if (!hasPermission) {
+            res.status(403).json({ message: 'Forbidden' });
             return;
         }
-        const userRole: UserRole | undefined = userInfo.role;
-        // Check if the user's role is allowed
-        if (userRole && allowedRoles.includes(userRole)) {
-            return next(); // Proceed to the next middleware
-        }
-        // If the role is not allowed, return a 403 error
-        res.status(403).json({ message: "You are not allowed to access this resource!" });
+        log("hasPermission", hasPermission);
+        next();
     };
 };
-

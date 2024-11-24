@@ -31,7 +31,7 @@ const RecruiterSchema = new Schema({
     orgAddress: { type: String },
     orgImage: { type: String },
     orgCoverImage: { type: String },
-    orgImages: [ImageSchema],
+    orgImages: [String],
     payments: [PaymentSchema],
     balance: {
         type: String,

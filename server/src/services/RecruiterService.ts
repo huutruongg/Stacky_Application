@@ -40,7 +40,7 @@ export default class RecruiterService {
       data.orgBenefits,
       data.orgImage,
       data.orgCoverImage,
-      data.orgImages as IImage[]
+      data.orgImages as String[]
     );
     return recruiterDTO;
   }
@@ -54,10 +54,6 @@ export default class RecruiterService {
     if (!data) {
       return null;
     }
-    recruiter.orgImages = recruiter.orgImages.map((url) => ({
-      imageUrl: url,
-      uploadedAt: new Date()
-    } as unknown as IImage));
 
     const updatedRecruiter = await this.recruiterRepository.updateOne(userId, recruiter);
     return !!updatedRecruiter;

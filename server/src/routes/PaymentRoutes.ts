@@ -1,8 +1,7 @@
 
 import PaymentController from '../../src/controllers/PaymentController';
-import { UserRole } from '../../src/enums/EUserRole';
+import { UserRoles } from '../utils/roles';
 import { authenticateJWT } from '../middlewares/Authenticate';
-import { authorizeJWT } from '../middlewares/Authorize';
 import { BaseRoutes } from './BaseRoutes';
 import { Request, Response } from 'express';
 import path from 'path';

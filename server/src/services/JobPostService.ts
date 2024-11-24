@@ -5,7 +5,7 @@ import { Types } from "mongoose";
 import CandidateRepository from "../repositories/CandidateRepository";
 import RecruiterRepository from "../repositories/RecruiterRepository";
 import { ApplyStatus } from "../enums/EApplySatus";
-import { UserRole } from "../enums/EUserRole";
+import { UserRoles } from "../utils/roles";
 import { PostStatus } from "../enums/EPostStatus";
 import { JobPostDTO } from "../dtos/JobPostDTO";
 import { IAIResult, IApplicant } from "../interfaces/ICandidate";
@@ -16,7 +16,7 @@ import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
 
 export default class JobPostService {
-    
+
 
     private jobPostRepository: JobPostRepository;
     private candidateRepository: CandidateRepository;
@@ -101,7 +101,7 @@ export default class JobPostService {
 
         const isOwner = await this.jobPostRepository.isJobOwner(user.userId, jobPostId);
         let deletedJobPost: boolean | null = null;
-        if (isOwner || user.role === UserRole.ADMIN) {
+        if (isOwner || user.role === UserRoles.ADMIN) {
             deletedJobPost = await this.jobPostRepository.deleteJobPost(jobPostId);
         }
         if (!deletedJobPost) {

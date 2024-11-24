@@ -1,5 +1,4 @@
 import { ObjectId } from "mongoose";
-import { IImage } from "../interfaces/IImage";
 
 export class RecruiterDTO {
     _id: ObjectId;
@@ -17,7 +16,7 @@ export class RecruiterDTO {
     orgAddress: string;
     orgImage: string;
     orgCoverImage: string;
-    orgImages: IImage[];
+    orgImages: String[];
 
     constructor(
         _id: ObjectId,
@@ -35,7 +34,7 @@ export class RecruiterDTO {
         orgBenefits: string,
         orgImage: string,
         orgCoverImage: string,
-        orgImages: IImage[]
+        orgImages: String[]
     ) {
         this._id = _id;
         this.orgEmail = orgEmail;

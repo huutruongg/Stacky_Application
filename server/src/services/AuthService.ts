@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import UserRepository from "../repositories/UserRepository";
 import jwt from 'jsonwebtoken';
 import CandidateRepository from '../repositories/CandidateRepository';
-import { UserRole } from '../enums/EUserRole';
+import { UserRoles } from '../utils/roles';
 import RecruiterRepository from '../repositories/RecruiterRepository';
 import dotenv from 'dotenv';
 import { IUser } from '../interfaces/IUser';
@@ -43,7 +43,7 @@ export default class AuthService {
         const userData = {
             privateEmail: data.privateEmail,
             password: hashedPassword,
-            role: UserRole.ADMIN
+            role: UserRoles.ADMIN
         }
         return await this.userRepository.create(userData);
     }
@@ -54,7 +54,7 @@ export default class AuthService {
             privateEmail: data.privateEmail,
             password: hashedPassword,
             phoneNumber: data.phoneNumber,
-            role: UserRole.RECRUITER
+            role: UserRoles.RECRUITER
         }
         const user = await this.userRepository.create(userData);
         const recruiterData = {
@@ -80,7 +80,7 @@ export default class AuthService {
 
         // If the user already exists, check their role
         if (existingUser) {
-            if (existingUser.role !== UserRole.CANDIDATE) {
+            if (existingUser.role !== UserRoles.CANDIDATE) {
                 // If the user has a different role, reject the login and request a different account
                 throw new Error('Email already exists with a different role. Please use a different account.');
             }
@@ -94,7 +94,7 @@ export default class AuthService {
         console.log('Creating new user...');
         const newUser = await this.userRepository.createUser({
             privateEmail,
-            role: UserRole.CANDIDATE // Set the role to CANDIDATE
+            role: UserRoles.CANDIDATE // Set the role to CANDIDATE
         });
 
         log("newUser: ", newUser);

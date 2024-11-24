@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { UserRole } from '../enums/EUserRole';
+import { UserRoles } from '../utils/roles';
 import { Session, SessionData } from 'express-session';
 
 // export interface CustomRequest extends Request {

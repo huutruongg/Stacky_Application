@@ -1,6 +1,6 @@
-import { UserRole } from "../enums/EUserRole";
+import { UserRoles } from "../utils/roles";
 
 export interface IUserDataType {
     userId: string;
-    role: UserRole;
+    role: UserRoles;
 }
