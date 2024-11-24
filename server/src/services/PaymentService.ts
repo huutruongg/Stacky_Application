@@ -34,7 +34,7 @@ export default class PaymentService {
       // amount: items.reduce((total, item) => total + item.price * item.quantity, 0),
       amount: items[0].price,
       callback_url: 'http://5050/home/callback',
-      description: `Nạp ${packageName} vào Stacky.`,
+      description: packageName,
       bank_code: '',
     };
 

@@ -55,6 +55,7 @@ export function decrypt(text: string): string {
 // const testNumber = 0; // Số cần mã hóa
 // const encrypted = encrypt(testNumber);
 // log('Encrypted:', encrypted);
+// 0 = 1d7f4172c5ee1b62c8e13ddc2cd66b86:65e7ab3615158b0e015fc951d2f77575
 
 // const decrypted = decrypt(encrypted);
 // log("Decrypted:", decrypted); // Đảm bảo đầu ra là chuỗi, chuyển thành số nếu cần bằng `parseFloat(decrypted)`

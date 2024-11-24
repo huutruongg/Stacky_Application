@@ -7,6 +7,7 @@ export interface IPayment extends Document {
 }
 
 export interface PaymentInfo {
+  orgName: string;
   balance: number;
   payments: IPayment[];   
 }

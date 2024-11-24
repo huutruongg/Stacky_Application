@@ -105,6 +105,7 @@ export default class RecruiterService {
     const historyPayments = data.payments.filter((payment) => !payment.isDeposit);
     const historyDeposit = data.payments.filter((payment) => payment.isDeposit);
     const resData = {
+      orgName: data.orgName,
       balance: data.balance,
       historyPayments,
       historyDeposit

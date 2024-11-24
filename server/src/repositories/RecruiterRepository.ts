@@ -96,7 +96,7 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
                 console.error('User not found');
                 return false;
             }
-    
+
             log("Recruiter balance", recruiter.balance);
             // Giải mã và chuyển đổi số dư hiện tại thành kiểu number
             let currentBalance = parseFloat(recruiter.balance);
@@ -106,28 +106,28 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
                 console.error('Invalid current balance value:', recruiter.balance);
                 return false;
             }
-    
+
             // Cộng thêm số tiền mới
             const newBalance = currentBalance + amount;
             log("newBalance", newBalance);
-    
+
             // Mã hóa lại giá trị mới
             recruiter.balance = newBalance as unknown as string;
-    
+
             // Lưu lại tài liệu đã cập nhật
             const updatedRecruiter = await recruiter.save();
             if (!updatedRecruiter) {
                 console.error('Failed to save updated recruiter');
                 return false;
             }
-    
+
             return true;
         } catch (error) {
             console.error('Error updating balance:', error);
             return false;
         }
     }
-    
+
     async addPayment(userId: string, payment: any): Promise<boolean> {
         try {
             // Tìm và cập nhật số dư, đồng thời thêm mục thanh toán mới
@@ -147,18 +147,19 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
     }
 
     async getPaymentInfo(userId: string): Promise<PaymentInfo | null> {
-        const data = await this.model.findOne({ userId }).select('balance payments').exec();
+        const data = await this.model.findOne({ userId }).select('orgName balance payments').exec();
         if (!data) {
             return null;
         }
         log("Balance data", data.balance);
         return {
+            orgName: data.orgName,
             balance: Number(data.balance),
             payments: data.payments
         };
     }
 
-//     async findCompany(search: string): Promise<IRecruiter[] | null> {
-//         return await this.model.find({ orgName: { $regex: search, $options: 'i' } }).lean().exec() as IRecruiter[];
-//     }
+    //     async findCompany(search: string): Promise<IRecruiter[] | null> {
+    //         return await this.model.find({ orgName: { $regex: search, $options: 'i' } }).lean().exec() as IRecruiter[];
+    //     }
 }
