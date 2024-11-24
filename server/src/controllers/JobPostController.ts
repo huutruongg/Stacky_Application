@@ -350,11 +350,9 @@ export default class JobPostController extends BaseController {
 
     public async getJobPostsByRecruiter(req: Request, res: Response) {
         try {
-            const { recruiterId } = req.params;
-            const result = await this.jobPostService.getJobPostsByRecruiter(recruiterId);
-            if (!result || result.length === 0) {
-                return this.sendError(res, 404, 'Jobs not found!');
-            }
+            const userInfo = (req as any).userData;
+            log('userInfo', userInfo);
+            const result = await this.jobPostService.getJobPostsByRecruiter(userInfo.userId);
             return this.sendResponse(res, 200, { success: true, result });
         } catch (error) {
             return this.sendError(res, 500, 'Internal Server Error!');

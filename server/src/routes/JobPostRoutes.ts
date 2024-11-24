@@ -86,7 +86,7 @@ export default class JobPostRoutes extends BaseRoutes {
             this.jobPostController.setApplyStatus
         );
         this.router.get(
-            '/get-job-posts-by-recruiter/:recruiterId',
+            '/get-job-posts-by-recruiter',
             authenticateJWT,
             authorize(['job-post:owner-read']),
             cacheMiddleware,

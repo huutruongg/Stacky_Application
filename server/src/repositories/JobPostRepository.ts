@@ -106,7 +106,10 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         return !!jobPost;
     }
 
-    async getJobPostsByRecruiter(recruiterId: string) {
-        return await this.model.find({ userId: new Types.ObjectId(recruiterId) }).lean().exec();
+    async getJobPostsByRecruiter(userId: string) {
+        log("recruiterId", userId);
+        const data = await this.model.find({ userId: new Types.ObjectId(userId) }).lean().exec();
+        log("data", data);
+        return data;
     }
 }

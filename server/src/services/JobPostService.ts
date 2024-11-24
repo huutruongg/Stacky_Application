@@ -372,7 +372,13 @@ export default class JobPostService {
     async getJobPostsByRecruiter(recruiterId: string) {
         try {
             const jobPosts = await this.jobPostRepository.getJobPostsByRecruiter(recruiterId);
-            return jobPosts.map((job) => this.toJobPostDTO(job));
+            log("jobPosts", jobPosts);
+            const result = jobPosts.map((job) => this.toJobPostDTO(job));
+            if(!result) {
+                console.warn(`No job posts found for recruiter ${recruiterId}`);
+                return [];
+            }
+            return result;
         } catch (error) {
             console.error('Error fetching job posts by recruiter:', error);
             throw new Error('Could not fetch job posts by recruiter');
