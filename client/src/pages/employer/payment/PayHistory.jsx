@@ -55,7 +55,7 @@ const PayHistory = ({ data }) => {
                 <TableRow key={index}>
                   <TableCell className="text-center">{index + 1}</TableCell>
                   <TableCell className="text-center">
-                    {FormatDate(item.transactionDate)}
+                    {FormatDate.formatDateTime(item.transactionDate)}
                   </TableCell>
                   <TableCell className="text-center">
                     {FormatCurrency(item.payAmount)}
@@ -82,7 +82,7 @@ const PayHistory = ({ data }) => {
                 <TableRow key={index}>
                   <TableCell className="text-center">{index + 1}</TableCell>
                   <TableCell className="text-center">
-                    {FormatDate(item.transactionDate)}
+                    {FormatDate.formatDateTime(item.transactionDate)}
                   </TableCell>
                   <TableCell className="text-center">
                     {FormatCurrency(item.payAmount)}

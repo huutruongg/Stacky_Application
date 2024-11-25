@@ -86,14 +86,16 @@ const TopCompanyListsPage = () => {
           <ItemCompany />
           <ItemCompany />
         </div>
-        <div className="mt-5">
-          <PaginationDemo
-            PerPage={"newsPerPage"}
-            dataBase={"jobData"}
-            currentPage={"currentPage"}
-            onPageChange={"handlePageChange"}
-          />
-        </div>
+        {data.length > 0 ? (
+          <div className="mt-5">
+            <PaginationDemo
+              PerPage="newsPerPage"
+              dataBase="jobData"
+              currentPage="currentPage"
+              onPageChange="handlePageChange"
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

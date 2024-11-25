@@ -6,10 +6,10 @@ const ModalSendEmail = ({ form }) => {
     <div className="px-5">
       <TextareaField
         control={form.control}
-        name={`contentEmail`}
-        placeholder="Phúc lợi dành cho nhân viên"
-        id={`contentEmail`}
-        htmlFor={`contentEmail`}
+        name={`text`}
+        placeholder="Nội dung email"
+        id={`text`}
+        htmlFor={`text`}
       />
     </div>
   );

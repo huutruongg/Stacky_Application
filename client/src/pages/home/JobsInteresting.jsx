@@ -72,14 +72,16 @@ const JobsInteresting = () => {
             <ItemJobSuggest jobData={item} key={index}></ItemJobSuggest>
           ))}
       </div>
-      <div className="mt-5">
-        <PaginationDemo
-          PerPage={newsPerPage}
-          dataBase={jobData}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      {jobData.length > newsPerPage ? (
+        <div className="mt-5">
+          <PaginationDemo
+            PerPage={newsPerPage}
+            dataBase={jobData}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      ) : null}
     </div>
   );
 };

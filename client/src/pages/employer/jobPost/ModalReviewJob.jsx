@@ -4,6 +4,7 @@ import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
 const ModalReviewJob = ({ jobData }) => {
+  console.log(jobData);
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <TitleField children={"Chi tiết tuyển dụng"}></TitleField>
@@ -137,7 +138,9 @@ const ModalReviewJob = ({ jobData }) => {
           </div>
         </div>
         <div className="">
-          <span>Hạn nộp hồ sơ: {FormatDate(jobData?.applicationDeadline)}</span>
+          <span>
+            Hạn nộp hồ sơ: {FormatDate.formatDate(jobData?.applicationDeadline)}
+          </span>
         </div>
       </div>
     </div>

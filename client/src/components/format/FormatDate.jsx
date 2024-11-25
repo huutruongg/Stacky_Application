@@ -1,4 +1,5 @@
-const FormatDate = (dateString) => {
+const FormatDate = {
+  formatDateTime: (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("vi-VN", {
       day: "2-digit",
@@ -7,6 +8,16 @@ const FormatDate = (dateString) => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-  
-  export default FormatDate;
+  },
+
+  formatDate: (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  },
+};
+
+export default FormatDate;
