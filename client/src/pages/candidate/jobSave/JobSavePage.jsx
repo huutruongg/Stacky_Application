@@ -7,10 +7,10 @@ import { useJobSave } from "@/components/context/JobSaveProvider";
 const JobSavePage = () => {
   const { jobSaveData = [], loading, error: jobSaveError } = useJobSave(); // Set default value to avoid undefined
   const [currentPage, setCurrentPage] = useState(1);
-  const [jobsPerPage, setJobsPerPage] = useState(5);
+  const [newsPerPage, setNewsPerPage] = useState(5);
 
-  const indexOfLastItem = currentPage * jobsPerPage;
-  const indexOfFirstItem = indexOfLastItem - jobsPerPage;
+  const indexOfLastItem = currentPage * newsPerPage;
+  const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentSaveJobData = jobSaveData.slice(
     indexOfFirstItem,
     indexOfLastItem
@@ -47,14 +47,16 @@ const JobSavePage = () => {
               <p>Không có việc làm nào trong danh sách lưu.</p>
             )}
           </div>
-          <div className="mt-5">
-            <PaginationDemo
-              PerPage={jobsPerPage}
-              dataBase={jobSaveData}
-              currentPage={currentPage}
-              onPageChange={handlePageChange}
-            />
-          </div>
+          {jobSaveData.length > newsPerPage ? (
+            <div className="mt-5">
+              <PaginationDemo
+                PerPage={newsPerPage}
+                dataBase={jobSaveData}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="grid col-start-9 col-end-13 gap-7 h-fit">

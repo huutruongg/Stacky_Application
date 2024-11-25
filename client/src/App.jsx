@@ -67,7 +67,7 @@ function App() {
                 element={<JobPostManagerDetailPage />}
               />
               <Route
-                path="/candidate-detail"
+                path="/candidate-detail/:jobId/:userId"
                 element={<ViewCandidateDetailPage />}
               />
             </Route>

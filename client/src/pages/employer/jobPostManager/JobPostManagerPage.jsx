@@ -134,14 +134,16 @@ const JobPostManagerPage = () => {
           </div>
         ))}
       </div>
-      <div className="mt-5">
-        <PaginationDemo
-          PerPage={newsPerPage}
-          dataBase={data}
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      {data.length > newsPerPage ? (
+        <div className="mt-5">
+          <PaginationDemo
+            PerPage={newsPerPage}
+            dataBase={data}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -88,14 +88,16 @@ const SearchJobPage = () => {
                 )}
               </div>
             )}
-            <div className="mt-5">
-              <PaginationDemo
-                PerPage={newsPerPage}
-                dataBase={jobData}
-                currentPage={currentPage}
-                onPageChange={handlePageChange}
-              />
-            </div>
+            {jobData.length > newsPerPage ? (
+              <div className="mt-5">
+                <PaginationDemo
+                  PerPage={newsPerPage}
+                  dataBase={jobData}
+                  currentPage={currentPage}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
         <div className="grid col-start-9 col-end-13 gap-7 h-fit">
