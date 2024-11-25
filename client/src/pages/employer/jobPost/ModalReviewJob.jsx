@@ -1,21 +1,9 @@
 import Button from "@/components/button/Button";
+import FormatDate from "@/components/format/FormatDate";
 import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
 const ModalReviewJob = ({ jobData }) => {
-  const dateString = jobData.applicationDeadline;
-
-  // Chuyển đổi chuỗi thành đối tượng Date
-  const dateObject = new Date(dateString);
-
-  // Lấy ngày, tháng, và năm
-  const day = String(dateObject.getDate()).padStart(2, "0"); // Đảm bảo có 2 chữ số
-  const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
-  const year = dateObject.getFullYear();
-
-  // Tạo chuỗi định dạng DD/MM/YYYY
-  const formattedDate = `${day}/${month}/${year}`;
-
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <TitleField children={"Chi tiết tuyển dụng"}></TitleField>
@@ -36,12 +24,16 @@ const ModalReviewJob = ({ jobData }) => {
             Mô tả công việc
           </h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobDescription.split("\n").map((line, index) => (
-              <li key={index}>
-                {line.replace(/^-/, "").trim()}{" "}
-                {/* Loại bỏ ký tự '-' và khoảng trắng */}
-              </li>
-            ))}
+            {jobData?.jobDescription
+              ? !jobData.jobDescription.includes("\n")
+                ? jobData.jobDescription
+                : jobData.jobDescription.split("\n").map((line, index) => (
+                    <li key={index}>
+                      {line.replace(/^-/, "").trim()}{" "}
+                      {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                    </li>
+                  ))
+              : null}
           </div>
         </div>
         <div className="">
@@ -70,13 +62,13 @@ const ModalReviewJob = ({ jobData }) => {
             )}
           </div>
         </div>
-        {jobData.languagesRequired.length > 0 ? (
+        {jobData?.languagesRequired?.length > 0 ? (
           <div className="">
             <h3 className="text-text1 font-medium text-base mb-1">
               Yêu cầu ngoại ngữ
             </h3>
             <div className="text-text1 text-sm px-5">
-              {jobData.languagesRequired.map((item, index) => (
+              {jobData?.languagesRequired?.map((item, index) => (
                 <li key={index}>
                   <span>
                     {item.language}: {item.level}
@@ -91,20 +83,24 @@ const ModalReviewJob = ({ jobData }) => {
         <div className="">
           <h3 className="text-text1 font-medium text-base mb-1">Quyền lợi</h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobBenefit !== "" ? (
+            {jobData?.jobBenefit !== "" ? (
               <div>
-                {jobData.jobBenefit.split("\n").map((line, index) => (
-                  <li key={index}>
-                    {line.replace(/^-/, "").trim()}{" "}
-                    {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                  </li>
-                ))}
+                {jobData?.jobBenefit
+                  ? !jobData.jobBenefit.includes("\n")
+                    ? jobData.jobBenefit
+                    : jobData.jobBenefit.split("\n").map((line, index) => (
+                        <li key={index}>
+                          {line.replace(/^-/, "").trim()}{" "}
+                          {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                        </li>
+                      ))
+                  : ""}
               </div>
             ) : (
               ""
             )}
             <li>
-              <span>Chế độ nghĩ phép: {jobData.leavePolicy}</span>
+              <span>Chế độ nghĩ phép: {jobData?.leavePolicy}</span>
             </li>
           </div>
         </div>
@@ -141,7 +137,7 @@ const ModalReviewJob = ({ jobData }) => {
           </div>
         </div>
         <div className="">
-          <span>Hạn nộp hồ sơ: {formattedDate}</span>
+          <span>Hạn nộp hồ sơ: {FormatDate(jobData?.applicationDeadline)}</span>
         </div>
       </div>
     </div>

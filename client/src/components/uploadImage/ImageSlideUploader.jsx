@@ -1,4 +1,4 @@
-import { useState, forwardRef, useImperativeHandle } from "react";
+import { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import IconPlus from "@/components/icons/IconPlus";
 import IconDelete from "@/components/icons/IconDelete";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,79 +12,120 @@ const MAX_IMAGES = 5; // Max number of images allowed
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // Max file size in bytes (2MB)
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/gif"]; // Allowed file types
 
-const ImageSlideUploader = forwardRef(({ value = [], onChange, id }, ref) => {
-  const [uploadedImages, setUploadedImages] = useState(value || []);
-  const [isHovered, setIsHovered] = useState(Array(value.length).fill(false));
-  const [tempImage, setTempImage] = useState(null);
-  console.log(uploadedImages);
+const ImageSlideUploader = forwardRef(({ value, onChange, id }, ref) => {
+  const initialImages = Array.isArray(value) ? value.map(url => ({
+    url,
+    preview: url,
+    isUploading: false
+  })) : [];
 
-  const handleImageChange = (e) => {
+  const [uploadedImages, setUploadedImages] = useState(initialImages);
+  const [isHovered, setIsHovered] = useState(
+    Array(initialImages.length).fill(false)
+  );
+
+  useEffect(() => {
+    if (Array.isArray(value)) {
+      const formattedImages = value.map(url => ({
+        url,
+        preview: url,
+        isUploading: false
+      }));
+      setUploadedImages(formattedImages);
+      setIsHovered(Array(value.length).fill(false));
+    }
+  }, [value]);
+
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
-    let newImages = [];
 
     // Validation
-    files.forEach((file) => {
+    for (const file of files) {
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         toast.error(
           "Định dạng tệp không hợp lệ. Chỉ cho phép các tệp JPEG, PNG và GIF."
         );
-        return;
+        continue;
       }
       if (file.size > MAX_FILE_SIZE) {
         toast.error("Kích thước tệp vượt quá giới hạn 5MB.");
-        return;
+        continue;
       }
-      if (uploadedImages.length + newImages.length >= MAX_IMAGES) {
+      if (uploadedImages.length >= MAX_IMAGES) {
         toast.error(`Bạn chỉ có thể tải lên tối đa ${MAX_IMAGES} ảnh.`);
-        return;
+        break;
       }
 
-      // If file passes all validations
-      newImages.push(
-        new Promise((resolve) => {
-          const reader = new FileReader();
+      try {
+        // Hiển thị preview trước
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const preview = e.target.result;
+
+          // Thêm ảnh preview vào state
+          setUploadedImages((prev) => [
+            ...prev,
+            {
+              preview,
+              isUploading: true,
+            },
+          ]);
+
+          // Upload file
           const formData = new FormData();
+          formData.append("files", file);
 
-          reader.onload = async () => {
-            const imageData = {
-              file,
-              preview: reader.result,
-            };
-            setTempImage(imageData.preview);
+          try {
+            const uploadResponse = await axiosInstance.post(
+              "/upload/recruiter-images",
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
 
-            formData.append("files", file);
-            try {
-              const uploadResponse = await axiosInstance.post(
-                "/upload/recruiter-images",
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
-              );
-              const urlImage = uploadResponse.data.urlImages[0];
-              resolve({ ...imageData, url: urlImage });
-            } catch (error) {
-              console.error("Failed to upload image:", error);
-              resolve(null);
-            }
-          };
+            const urlImage = uploadResponse.data.urlImages[0];
 
-          reader.readAsDataURL(file);
-        })
-      );
-    });
+            // Cập nhật state với URL thật từ server
+            setUploadedImages((prev) =>
+              prev.map((img, idx) => {
+                if (idx === prev.length - 1) {
+                  return {
+                    ...img,
+                    url: urlImage,
+                    isUploading: false,
+                  };
+                }
+                return img;
+              })
+            );
 
-    Promise.all(newImages).then((imageDataArray) => {
-      const successfulUploads = imageDataArray.filter((img) => img !== null);
-      const updatedImages = [...uploadedImages, ...successfulUploads];
+            // Cập nhật URLs cho parent component
+            const newUrls = [...uploadedImages.map(img => img.url), urlImage];
+            onChange(newUrls);
+            toast.success("Tải ảnh lên thành công!");
+          } catch (error) {
+            console.error("Failed to upload image:", error);
+            toast.error("Không thể tải ảnh lên. Vui lòng thử lại.");
 
-      setUploadedImages(updatedImages);
-      onChange(updatedImages.map((img) => img.url)); // Pass only URLs to parent
-    });
+            // Xóa ảnh preview nếu upload thất bại
+            setUploadedImages((prev) => prev.slice(0, -1));
+          }
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Error reading file:", error);
+        toast.error("Có lỗi xảy ra khi đọc file. Vui lòng thử lại.");
+      }
+    }
   };
 
   const handleDeleteImage = (index) => {
     const updatedImages = uploadedImages.filter((_, i) => i !== index);
     setUploadedImages(updatedImages);
-    onChange(updatedImages.map((img) => img.url));
+    onChange(updatedImages.map(img => img.url));
   };
 
   useImperativeHandle(ref, () => ({
@@ -160,10 +201,17 @@ const ImageSlideUploader = forwardRef(({ value = [], onChange, id }, ref) => {
                     }}
                   >
                     <img
-                      src={tempImage || image.preview}
+                      src={image.url || image.preview}
                       alt={`Uploaded ${index + 1}`}
                       className="w-full object-cover rounded-md"
                     />
+                    {image.isUploading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
+                        <div className="loading-spinner text-white">
+                          Đang tải...
+                        </div>
+                      </div>
+                    )}
                     {isHovered[index] && (
                       <button
                         onClick={() => handleDeleteImage(index)}

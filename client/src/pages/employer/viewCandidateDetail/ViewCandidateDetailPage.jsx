@@ -7,9 +7,20 @@ import React from "react";
 import imgAvatar from "@/components/image/avatarImg.png";
 import Button from "@/components/button/Button";
 import { useNavigate } from "react-router-dom";
+import ModalViewResult from "./ModalViewResult";
+import { AlertModal } from "@/components/shared/AlertModal";
+import { Modal } from "@/components/ui/modal";
 
 const ViewCandidateDetailPage = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [openReview, setOpenReview] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const form = {};
+
+  const onCloseReview = () => {
+    setOpenReview(false);
+  };
 
   return (
     <>
@@ -199,9 +210,36 @@ const ViewCandidateDetailPage = () => {
           kind="primary"
           className="text-center px-10 disabled:opacity-50"
           type="submit"
+          onClick={() => setOpenReview(true)}
         >
-          Gửi Mail
+          Xem kết quả AI phân tích
         </Button>
+      </div>
+      <div className="flex items-center justify-end w-full">
+        <AlertModal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          loading={loading}
+        />
+        <Modal
+          isOpen={openReview}
+          onClose={onCloseReview}
+          className="bg-white max-w-[600px]"
+          title="Kết quả phân tích"
+          description={"Kết quả phân tích của AI"}
+        >
+          <ModalViewResult form={form} modalClose={onCloseReview} />
+          <div className="flex justify-center gap-5 py-5">
+            <Button
+              kind="secondary"
+              className="text-center px-10 disabled:opacity-50"
+              type="button"
+              onClick={() => setOpenReview(false)}
+            >
+              Đóng
+            </Button>
+          </div>
+        </Modal>
       </div>
     </>
   );

@@ -8,6 +8,7 @@ const Buttonchild = ({
   children,
   className = "",
   isLoading = false,
+  onClick = () => {},
   ...rest
 }) => {
   const child = !!isLoading ? (
@@ -49,6 +50,7 @@ const Buttonchild = ({
         className
       )}
       type={type}
+      onClick={onClick}
       {...rest}
     >
       {child}
@@ -62,6 +64,7 @@ Buttonchild.propTypes = {
   isLoading: PropTypes.bool,
   href: PropTypes.string,
   kind: PropTypes.oneOf(["primary", "secondary", "ghost"]),
+  onClick: PropTypes.func,
 };
 
 export default Buttonchild;

@@ -20,6 +20,12 @@ import CompanyInfoPage from "./pages/employer/companyInfo/CompanyInfoPage";
 import JobPostManagerDetailPage from "./pages/employer/jobPostManagerDetail/JobPostManagerDetailPage";
 import ViewCandidateDetailPage from "./pages/employer/viewCandidateDetail/ViewCandidateDetailPage";
 import CompanyDetailPage from "./pages/candidate/companyDetail/CompanyDetailPage";
+import CompanyListsPage from "./pages/candidate/companyLists/CompanyListsPage";
+import TopCompanyListsPage from "./pages/candidate/companyLists/TopCompanyListsPage";
+import PaymentPage from "./pages/employer/payment/PaymentPage";
+import Profile from "./pages/employer/profile/Profile";
+import ForgotPassword from "./pages/signIn/ForgotPassword";
+import NotificationPage from "./pages/candidate/notification/NotificationPage";
 
 function App() {
   return (
@@ -33,23 +39,31 @@ function App() {
             <Route path="/search-job" element={<SearchJobPage />} />
             <Route path="/job-detail/:jobId" element={<JobDetailPage />} />
             <Route
-              path="/recruiter/reset-password/:userId"
-              element={<ResetPasswordPage />}
+              path="/recruiter/forgot-password/:userId"
+              element={<ForgotPassword />}
             />
             <Route element={<RequireAuth allowedRoles={["CANDIDATE"]} />}>
-              <Route path="/company-detail" element={<CompanyDetailPage />} />
+              <Route path="/company" element={<CompanyListsPage />} />
+              <Route path="/company-top" element={<TopCompanyListsPage />} />
               <Route path="/job-save" element={<JobSavePage />} />
               <Route path="/profile-cv" element={<CvInformationPage />} />
               <Route path="/uploaded-cv" element={<CvUploadedPage />} />
+              <Route path="/notification" element={<NotificationPage />} />
             </Route>
           </Route>
           <Route element={<LayoutEmployer />}>
             <Route element={<RequireAuth allowedRoles={["RECRUITER"]} />}>
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route
+                path="/recruiter/reset-password/:userId"
+                element={<ResetPasswordPage />}
+              />
+              <Route path="/recruiter/profile/:userId" element={<Profile />} />
               <Route path="/company-profile" element={<CompanyInfoPage />} />
               <Route path="/job-post" element={<JobPostPage />} />
               <Route path="/job-management" element={<JobPostManagerPage />} />
               <Route
-                path="/job-management/detail"
+                path="/job-management/detail/:jobId"
                 element={<JobPostManagerDetailPage />}
               />
               <Route

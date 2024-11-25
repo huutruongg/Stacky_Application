@@ -12,19 +12,18 @@ import ImageUploader from "@/components/uploadImage/ImageUploader";
 import React, { useEffect, useState } from "react";
 
 const FormCompanyDescription = ({ form }) => {
-  const [coverImage, setCoverImage] = useState(null); // Changed to null
-  const [slideImages, setSlideImages] = useState(null || []); // Changed to null
+  const [coverImage, setCoverImage] = useState(null);
+  const [slideImages, setSlideImages] = useState([]);
 
   useEffect(() => {
     const orgCoverImage = form.getValues("orgCoverImage");
     const orgImages = form.getValues("orgImages");
-    console.log(orgCoverImage);
-
+    console.log(orgImages);
     if (orgCoverImage) {
-      setCoverImage(orgCoverImage); // Set the image preview if available
+      setCoverImage(orgCoverImage);
     }
-    if (orgImages) {
-      setSlideImages(orgImages); // Set the image preview if available
+    if (orgImages && Array.isArray(orgImages)) {
+      setSlideImages(orgImages);
     }
   }, [form]);
 
@@ -36,13 +35,13 @@ const FormCompanyDescription = ({ form }) => {
           {/* Company Benefit Field */}
           <TextareaField
             control={form.control}
-            name="orgBenefit"
+            name="orgBenefits"
             labelName="Lợi ích công ty"
             placeholder="Giới thiệu về Lợi ích công ty"
             className="flex items-center"
             classNameLabel="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5 ant-form-item-required"
-            id="orgBenefit"
-            htmlFor="orgBenefit"
+            id="orgBenefits"
+            htmlFor="orgBenefits"
           />
 
           <FormField
@@ -84,8 +83,9 @@ const FormCompanyDescription = ({ form }) => {
                       id="orgImages"
                       value={slideImages}
                       onChange={(images) => {
-                        setSlideImages(images);
-                        field.onChange(images);
+                        const imageArray = Array.isArray(images) ? images : [];
+                        setSlideImages(imageArray);
+                        field.onChange(imageArray);
                       }}
                     />
                   </div>

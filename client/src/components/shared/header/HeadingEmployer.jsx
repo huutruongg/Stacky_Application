@@ -8,6 +8,8 @@ import IconSignUp from "@/components/icons/IconSignUp";
 import IconVietNamese from "@/components/icons/IconVietNamese";
 import Button from "@/components/button/Button";
 import IconEnglish from "@/components/icons/IconEnglish";
+import IconUSerAcount from "@/components/icons/IconUSerAcount";
+import IconProfile from "@/components/icons/IconProfile";
 
 const HeadingEmployer = () => {
   const { user, logout } = useAuth();
@@ -47,7 +49,7 @@ const HeadingEmployer = () => {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="flex justify-between items-center gap-10 px-5 rounded-md hover:bg-secondary z-10">
+                <button className="flex justify-between items-center gap-10 px-5 py-1 rounded-md hover:bg-secondary z-10">
                   <IconAvatar />
                   <IconDropdown />
                 </button>
@@ -55,13 +57,17 @@ const HeadingEmployer = () => {
                 {isHovered && (
                   <div className="absolute flex flex-col items-center bg-white min-w-[200px] right-0 z-50 shadow-md rounded-md top-[54px]">
                     <ItemDropdown
-                      url={"/"}
-                      icon={<IconSignUp />}
+                      url={`/recruiter/reset-password/${user.userId}`}
+                      icon={
+                        <IconProfile className={"w-6 h-6"} color={"#424242"} />
+                      }
                       children={"Thông tin cá nhân"}
                     />
                     <ItemDropdown
                       url={"/account.stacky.vn"}
-                      icon={<IconSignUp />}
+                      icon={
+                        <IconSignUp className={"w-6 h-6"} color={"#424242"} />
+                      }
                       children={"Đăng xuất"}
                       onClick={handleLogout}
                     />

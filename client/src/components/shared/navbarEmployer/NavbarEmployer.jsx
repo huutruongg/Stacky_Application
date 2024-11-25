@@ -22,7 +22,7 @@ const NavbarEmployer = () => {
       label: "Tìm kiếm ứng viên",
       path: "/search-candidates",
     },
-    { icon: IconManager, label: "Quản lý công việc", path: "/job-manager" },
+    { icon: IconManager, label: "Ví điện tử", path: "/payment" },
   ];
 
   return (

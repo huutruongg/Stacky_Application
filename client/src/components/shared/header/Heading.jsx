@@ -7,10 +7,9 @@ import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
 import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
-import { fetchData } from "@/api/fetchData";
 import { useJobSave } from "@/components/context/JobSaveProvider";
-import IconUSerAcount from "@/components/icons/IconUSerAcount";
 import IconUpload from "@/components/icons/IconUpload";
+import IconProfile from "@/components/icons/IconProfile";
 
 const Heading = () => {
   const { user, logout } = useAuth();
@@ -31,7 +30,7 @@ const Heading = () => {
         </Link>
         <div className="flex justify-between items-center gap-10">
           <ItemMain url={"/"}>Trang chủ</ItemMain>
-          <ItemMain url={"/company-detail"}>Công ty</ItemMain>
+          <ItemMain url={"/company"}>Công ty</ItemMain>
           <ItemMain url={"/profile-cv"}>Hồ sơ & CV</ItemMain>
           <ItemMain url={"/tools"}>Công cụ hỗ trợ</ItemMain>
         </div>
@@ -49,6 +48,7 @@ const Heading = () => {
                     icon={<IconNotification />}
                     children={"99"}
                     className={"mx-5"}
+                    url={"/notification"}
                   />
                 </div>
               ) : (
@@ -59,7 +59,7 @@ const Heading = () => {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="flex justify-between items-center gap-10 px-5 rounded-md hover:bg-secondary z-10">
+                <button className="flex justify-between items-center gap-10 px-5 py-1 rounded-md hover:bg-secondary z-10">
                   <IconAvatar />
                   <IconDropdown />
                 </button>
@@ -68,17 +68,23 @@ const Heading = () => {
                   <div className="absolute flex flex-col items-center bg-white min-w-[200px] right-0 z-50 shadow-md rounded-md top-[54px]">
                     <ItemDropdown
                       url={"/uploaded-cv"}
-                      icon={<IconUpload />}
+                      icon={
+                        <IconUpload className={"w-6 h-6"} color={"#424242"} />
+                      }
                       children={"CV đã đăng tuyển"}
                     />
                     <ItemDropdown
-                      url={"/"}
-                      icon={<IconUSerAcount />}
+                      url={`/recruiter/reset-password/${user.userId}`}
+                      icon={
+                        <IconProfile className={"w-6 h-6"} color={"#424242"} />
+                      }
                       children={"Thông tin cá nhân"}
                     />
                     <ItemDropdown
                       url={"/account.stacky.vn"}
-                      icon={<IconSignUp />}
+                      icon={
+                        <IconSignUp className={"w-6 h-6"} color={"#424242"} />
+                      }
                       children={"Đăng xuất"}
                       onClick={handleLogout}
                     />

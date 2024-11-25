@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import InputField from "@/components/fieldForm/InputField";
 import IconPassword from "@/components/icons/IconPassword";
-import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import IconEyeHiden from "@/components/icons/IconEyeHiden";
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
-const ResetPasswordPage = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -74,48 +74,25 @@ const ResetPasswordPage = () => {
       toast.error("Đã xảy ra lỗi, vui lòng thử lại!");
     }
   };
-
   return (
-    <div className="flex justify-center items-center my-5">
+    <div className="w-screen h-screen flex justify-center items-center my-5">
       <div className="min-w-[600px] max-w-[650px] rounded-xl flex flex-col justify-center items-center">
         <div className="flex flex-col items-center gap-5 bg-secondary w-full pt-5 px-5 rounded-t-xl">
           <div className="flex flex-col items-center gap-2">
             <h1 className="w-fit text-3xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]">
-              Cài đặt
+              Cài đặt lại mật khẩu
             </h1>
             <span>Liên kết tài khoản của bạn để tiếp tục sử dụng dịch vụ</span>
           </div>
-          <div className="flex gap-5 justify-start w-full">
-            <NavLink
-              to={`/recruiter/profile/${userId}`}
-              className={({ isActive }) =>
-                isActive
-                  ? "font-semibold text-primary border-b-2 border-primary"
-                  : "text-text5 hover:text-primary"
-              }
-            >
-              Tài khoản
-            </NavLink>
-            <NavLink
-              to={`/recruiter/reset-password/${userId}`}
-              className={({ isActive }) =>
-                isActive
-                  ? "font-semibold text-primary border-b-2 border-primary"
-                  : "text-text5 hover:text-primary"
-              }
-            >
-              Thay đổi mật khẩu
-            </NavLink>
-          </div>
+          {isSuccess && (
+            <div className="text-green-600 mt-3">
+              Mật khẩu đã được đặt lại thành công!
+            </div>
+          )}
+          {errorMessage && (
+            <div className="text-red-600 mt-3">{errorMessage}</div>
+          )}
         </div>
-        {isSuccess && (
-          <div className="text-green-600 mt-3">
-            Mật khẩu đã được đặt lại thành công!
-          </div>
-        )}
-        {errorMessage && (
-          <div className="text-red-600 mt-3">{errorMessage}</div>
-        )}
         <div className="w-full p-5 bg-secondary rounded-b-xl">
           <Form {...form}>
             <form
@@ -157,7 +134,7 @@ const ResetPasswordPage = () => {
                 type={showConfirmPassword ? "text" : "password"}
                 onClick={handleShowConfirmPassword}
                 iconPassword={
-                  showConfirmPassword ? (
+                  !showConfirmPassword ? (
                     <IconEye
                       className="cursor-pointer w-6 h-6"
                       color={"#686B6E"}
@@ -188,4 +165,4 @@ const ResetPasswordPage = () => {
   );
 };
 
-export default ResetPasswordPage;
+export default ForgotPassword;

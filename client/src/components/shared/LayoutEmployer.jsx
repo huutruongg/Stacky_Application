@@ -32,6 +32,10 @@ const LayoutEmployer = () => {
       children:
         "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
     },
+    "/payment": {
+      title: "Ví thanh toán",
+      children: "Xem chi tiết và lịch sử nạp tiền của bạn.",
+    },
     // Add more paths as needed
   };
 

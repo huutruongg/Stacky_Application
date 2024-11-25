@@ -15,10 +15,9 @@ const FormCompanyBasicInfo = ({ form }) => {
 
   useEffect(() => {
     const orgImage = form.getValues("orgImage");
-    console.log(orgImage);
 
     if (orgImage) {
-      setCvImage(orgImage); // Set the image preview if available
+      setOrgImage(orgImage); // Set the image preview if available
     }
   }, [form]);
 

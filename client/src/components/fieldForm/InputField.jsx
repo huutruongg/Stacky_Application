@@ -21,6 +21,8 @@ const InputField = ({
   classNameInput,
   labelName,
   htmlFor,
+  iconPassword,
+  onClick = () => {},
 }) => (
   <FormField
     control={control}
@@ -38,10 +40,17 @@ const InputField = ({
                 placeholder={`Nhập ${placeholder.toLowerCase()}`}
                 {...field}
                 value={field.value ?? ""}
-                className={icon ? "pl-10 pr-4" : ""}
+                className={icon || (icon && iconPassword) ? "pl-10 pr-14" : ""}
                 id={id}
               />
               {icon && <div className="absolute left-2">{icon}</div>}
+              {(name === "password" || name === "confirmPassword") &&
+                field.value &&
+                iconPassword && (
+                  <div className="absolute right-5" onClick={onClick}>
+                    {iconPassword}
+                  </div>
+                )}
             </div>
           </div>
         </FormControl>
