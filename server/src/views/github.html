@@ -172,11 +172,11 @@
                 const data = await response.json(); // Parse the response
                 console.log("Parsed API response:", data);
 
-                if (!data.result) {
-                    throw new Error("API response does not contain 'result'");
-                }
-
-                return data.result; // Return the 'result' field
+                // if (!data.result) {
+                //     throw new Error("API response does not contain 'result'");
+                // }
+                alert(data.score);
+                return data.score; 
             } catch (error) {
                 console.error("Error calculating GitHub score:", error.message);
                 throw error; // Let the caller handle the error

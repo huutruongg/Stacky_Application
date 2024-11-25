@@ -26,10 +26,11 @@ export default class GithubController extends BaseController {
                 return this.sendError(res, 404, 'No data found');
             }
             const roundedScore = Math.round(score);
+            log("roundedScore", roundedScore);
             const isUpdated = await this.applicantRepository.updateGithubScore(String(userInfo.userId), jobPostId, roundedScore);
-            if (!isUpdated) {
-                return this.sendError(res, 500, 'Failed to update score');
-            }
+            // if (!isUpdated) {
+            //     return this.sendError(res, 500, 'Failed to update score');
+            // }
             return this.sendResponse(res, 200, { success: true, score: roundedScore });
         } catch (error) {
             log(error);

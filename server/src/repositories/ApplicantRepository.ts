@@ -3,6 +3,7 @@ import { IAIResult, IApplicant } from "../interfaces/ICandidate";
 import ApplicantModel from "../models/ApplicantModel";
 import { BaseRepository } from "./BaseRepository";
 import ApplicantDTO from "../dtos/ApplicantDTO";
+import { log } from "console";
 
 export default class ApplicantRepository extends BaseRepository<IApplicant> {
     constructor() {
@@ -73,7 +74,8 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
                         personalDescription: 1,
                         githubScore: 1,
                         totalScore: 1,
-                        appliedAt: 1
+                        appliedAt: 1,
+                        isSent: 1
                     }
                 }
             ]);
@@ -87,9 +89,10 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
 
     async updateGithubScore(userId: string, jobPostId: string, score: number): Promise<boolean> {
         const result = await this.model.updateOne(
-            { userId, jobPostId },
+            { userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId) },
             { githubScore: score }
         )
+        log("result", result);
         return result.modifiedCount > 0;
     }
 }
