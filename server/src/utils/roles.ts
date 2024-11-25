@@ -32,6 +32,7 @@ export const RolePermissions: Record<UserRoles, string[]> = {
         "job-post:read",
         "candidate:read",
         "candidate:update",
-        "candidate:delete"
+        "candidate:delete",
+        "job-post:apply",
     ]
 };

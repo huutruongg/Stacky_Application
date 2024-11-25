@@ -7,6 +7,7 @@ const ApplicantSchema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     fullName: { type: String, required: true },
     publicEmail: { type: String, required: true },
+    jobPotition: { type: String, required: true },
     avatarUrl: { type: String, required: true },
     birthDate: { type: Date },
     phoneNumber: { type: String },

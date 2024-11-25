@@ -45,6 +45,7 @@ export interface IApplicant extends Document {
     userId: IUser['_id'];
     professionalSkills: string;
     fullName: string;
+    jobPotition: string;
     publicEmail: string;
     phoneNumber: string;
     birthDate: Date;

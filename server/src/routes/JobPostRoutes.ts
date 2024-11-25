@@ -89,7 +89,6 @@ export default class JobPostRoutes extends BaseRoutes {
             '/get-job-posts-by-recruiter',
             authenticateJWT,
             authorize(['job-post:owner-read']),
-            cacheMiddleware,
             this.jobPostController.getJobPostsByRecruiter
         );
     }

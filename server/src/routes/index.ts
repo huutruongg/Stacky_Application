@@ -54,6 +54,7 @@ class Routes {
     private notificationRepository: NotificationRepository;
     private uploadService: UploadService;
     private paymentService: PaymentService;
+    private githubService: GithubService;
     constructor() {
         this.router = Router();
         // Initialize shared services and repositories
@@ -66,6 +67,7 @@ class Routes {
         this.uploadService = new UploadService();
         this.paymentService = new PaymentService(config);
         this.notificationRepository = new NotificationRepository();
+        this.githubService = new GithubService();
         this.initializeRoutes();
     }
     // Lazy load objects to avoid circular dependencies
@@ -93,7 +95,7 @@ class Routes {
             const candidateService = new CandidateService(this.candidateRepository);
             const userService = new UserService(this.userRepository);
             const candidateController = new CandidateController(candidateService, userService);
-            const githubController = new GithubController();
+            const githubController = new GithubController(this.githubService, this.applicantRepository);
             const candidateRoutes = new CandidateRoutes(candidateController, githubController);
             candidateRoutes.getRouter()(req, res, next);
         };
@@ -159,7 +161,7 @@ class Routes {
 
     private lazyLoadGithubRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
-            const githubController = new GithubController();
+            const githubController = new GithubController(this.githubService, this.applicantRepository);
             const githubRoutes = new GithubRoutes(githubController);
             githubRoutes.getRouter()(req, res, next);
         }

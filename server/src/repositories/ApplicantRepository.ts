@@ -84,4 +84,12 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
             throw error;
         }
     }
+
+    async updateGithubScore(userId: string, jobPostId: string, score: number): Promise<boolean> {
+        const result = await this.model.updateOne(
+            { userId, jobPostId },
+            { githubScore: score }
+        )
+        return result.modifiedCount > 0;
+    }
 }

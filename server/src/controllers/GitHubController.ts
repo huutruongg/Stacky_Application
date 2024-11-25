@@ -4,25 +4,33 @@ import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
 import CandidateRepository from "../repositories/CandidateRepository";
 import GithubService from "../services/GitHubService";
+import { App } from "firebase-admin/app";
+import ApplicantRepository from "../repositories/ApplicantRepository";
 
 
 export default class GithubController extends BaseController {
     private githubService: GithubService;
-    // private candidateRepo: CandidateRepository;
-    constructor() {
+    private applicantRepository: ApplicantRepository;
+    constructor(githubService: GithubService, applicantRepository: ApplicantRepository) {
         super();
-        this.githubService = new GithubService();
+        this.githubService = githubService;
+        this.applicantRepository = applicantRepository;
     }
 
     public async getGithubScore(req: Request, res: Response): Promise<void> {
         try {
             const userInfo = (req as any).userData;
             const jobPostId = req.params.jobPostId;
-            const result = await this.githubService.getGitHubScore(String(userInfo.userId), jobPostId);
-            if (!result) {
+            const score = await this.githubService.getGitHubScore(String(userInfo.userId), jobPostId);
+            if (!score) {
                 return this.sendError(res, 404, 'No data found');
             }
-            return this.sendResponse(res, 200, {success: true, result});
+            const roundedScore = Math.round(score);
+            const isUpdated = await this.applicantRepository.updateGithubScore(String(userInfo.userId), jobPostId, roundedScore);
+            if (!isUpdated) {
+                return this.sendError(res, 500, 'Failed to update score');
+            }
+            return this.sendResponse(res, 200, { success: true, score: roundedScore });
         } catch (error) {
             log(error);
             return this.sendError(res, 500, 'Internal server error');
