@@ -13,5 +13,6 @@ export default class EmailRoutes extends BaseRoutes {
 
     private initializeRoutes(): void {
         this.router.post('/send-email', this.emailController.sendEmail);
+        this.router.post('/send-email-to-candidates', this.emailController.sendEmailToCandidates);
     }
 }

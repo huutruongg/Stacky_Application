@@ -31,4 +31,21 @@ export default class EmailController extends BaseController {
             return this.sendError(res, 500, "An error occurred while sending the email.");
         }
     }
+
+    public async sendEmailToCandidates(req: Request, res: Response): Promise<void> {
+        const { emails, jobPostId, subject, text } = req.body;
+
+        if (!emails || !jobPostId || !subject || !text) {
+            return this.sendError(res, 400, "Missing required fields: 'emails', 'jobPostId', 'subject', and 'text'.");
+        }
+
+        try {
+            await this.emailService.filterAndSendEmails(emails, jobPostId, subject, text);
+
+            return this.sendResponse(res, 200, { success: true, message: "Emails sent successfully!" });
+        } catch (error) {
+            log("Error sending emails:", error);
+            return this.sendError(res, 500, "An error occurred while sending the emails.");
+        }
+    }
 }

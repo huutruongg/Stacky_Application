@@ -63,7 +63,7 @@ const JobSavedSchema = new Schema({
 const JobAppliedSchema = new Schema({
     jobPostId: { type: Schema.Types.ObjectId, ref: 'JobPost', required: true },
     status: { type: String, default: ApplyStatus.PENDING },
-    githubScore: { type: Number, default: 0 },
+    // githubScore: { type: Number, default: 0 },
     appliedAt: { type: Date, default: Date.now() }
 });
 

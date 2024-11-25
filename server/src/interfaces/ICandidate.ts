@@ -63,6 +63,7 @@ export interface IApplicant extends Document {
     githubScore: number;
     aiAnalysistScore: IAIResult;
     appliedAt: Date;
+    isSent: boolean;
 }
 
 export interface IProfile {
