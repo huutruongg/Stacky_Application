@@ -267,7 +267,7 @@ export default class JobPostService {
                 userId: candidate.userId,
                 professionalSkills: candidate.professionalSkills,
                 fullName: candidate.fullName,
-                jobPotition: candidate.jobPosition,
+                jobPosition: candidate.jobPosition,
                 publicEmail: candidate.publicEmail,
                 avatarUrl: candidate.avatarUrl,
                 phoneNumber: candidate.phoneNumber,
