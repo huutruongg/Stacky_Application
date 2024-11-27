@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 
 const ItemJobSuggest = ({ jobData }) => {
   const [liked, setLiked] = useState(jobData.isLiked); // Initialize with the jobData's liked status
-  console.log(jobData);
+  // console.log(jobData);
 
   const handleHeartClick = () => {
     if (liked) {
@@ -44,7 +44,10 @@ const ItemJobSuggest = ({ jobData }) => {
             window.open(`/job-detail/${jobData._id}`, "_blank");
           }}
         >
-          <img src={jobData.jobImage ? jobData.jobImage : imgCompany} alt="" />
+          <img
+            src={jobData?.jobImage ? jobData?.jobImage : imgCompany}
+            alt=""
+          />
         </div>
         <div className="flex flex-col justify-around gap-1 w-full">
           <div className="flex gap-1 items-center justify-between">
@@ -56,10 +59,10 @@ const ItemJobSuggest = ({ jobData }) => {
                 <div
                   className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
                   onClick={() => {
-                    window.open(`/job-detail/${jobData._id}`, "_blank");
+                    window.open(`/job-detail/${jobData?._id}`, "_blank");
                   }}
                 >
-                  {jobData.jobTitle}
+                  {jobData?.jobTitle}
                 </div>
               </h3>
             </div>
@@ -72,7 +75,7 @@ const ItemJobSuggest = ({ jobData }) => {
           </div>
           <div>
             <a
-              href="/company"
+              href={`/company/${jobData?.orgId}`}
               className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
               {/* {jobData.orgName.toUpperCase()} */}
@@ -80,10 +83,10 @@ const ItemJobSuggest = ({ jobData }) => {
           </div>
           <div className="flex items-center gap-2">
             <div className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 overflow-hidden text-xs text-center">
-              <span>{jobData.jobSalary}</span>
+              <span>{jobData?.jobSalary}</span>
             </div>
             <div className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 overflow-hidden text-xs text-center">
-              <span>{jobData.location}</span>
+              <span>{jobData?.location}</span>
             </div>
           </div>
         </div>

@@ -36,7 +36,11 @@ const SelectField = ({
               <Label htmlFor={name} className={classNameLabel}>
                 {labelName}
               </Label>
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                className="pl-5"
+                value={field.value}
+                onValueChange={field.onChange}
+              >
                 <SelectTrigger className="flex items-center w-full h-12 mt-1 border border-border rounded-xl shadow-none hover:bg-secondary">
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>

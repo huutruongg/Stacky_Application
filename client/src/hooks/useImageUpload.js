@@ -7,7 +7,7 @@ const useImageUpload = (options = {}) => {
   } = options;
 
   const [files, setFiles] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const validateFile = useCallback((file) => {
@@ -31,7 +31,7 @@ const useImageUpload = (options = {}) => {
   };
 
   const handleUpload = async (fileList) => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     
     try {
@@ -56,13 +56,13 @@ const useImageUpload = (options = {}) => {
       setError(err.message);
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return {
     files,
-    loading,
+    isLoading,
     error,
     handleUpload,
     reset: () => setFiles([])

@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Buttonchild from "@/components/button/Buttonchild";
 import IconPrice from "@/components/icons/IconPrice";
 import imgCompany from "@/components/image/imgCompany.png";
 import IconHeart from "@/components/icons/IconHeart";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/authorizedAxios";
+import useAuth from "@/hooks/useAuth";
+import { useParams } from "react-router-dom";
+import FormatCurrency from "@/components/format/FormatCurrency";
 const SearchJobPosition = () => {
-  const [liked, setLiked] = useState("jobData.isLiked"); // Initialize with the jobData's liked status
+  const { user } = useAuth();
+  const { id } = useParams();
+  const [liked, setLiked] = useState("jobData.isLiked");
+  const [jobData, setJobData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [newsPerPage, setNewsPerPage] = useState(12);
+  const indexOfLastItem = currentPage * newsPerPage;
+  const indexOfFirstItem = indexOfLastItem - newsPerPage;
+  const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
+  const checkCompany = jobData.filter((job) => {
+    return job._id === id;
+  });
+
+  // console.log(currentJobData);
 
   const handleHeartClick = () => {
     if (liked) {
@@ -36,6 +54,34 @@ const SearchJobPosition = () => {
     }
   };
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        // Gọi API với type là 'job-postings' và phân trang
+        if (user) {
+          if (user.role === "CANDIDATE") {
+            const result = await axiosInstance.get(
+              `job-post/get-all-by-candidate`
+            );
+            setJobData(result.data.result); // Giả sử API trả về dữ liệu trong result.data
+          } else {
+            const result = await axiosInstance.get(`job-post/get-all`);
+            setJobData(result.data.result); // Giả sử API trả về dữ liệu trong result.data
+          }
+        } else {
+          const result = await axiosInstance.get(`job-post/get-all`);
+          setJobData(result.data.result); // Giả sử API trả về dữ liệu trong result.data
+        }
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error while fetching jobs data:", error);
+        setError(error); // Cập nhật lỗi
+        setIsLoading(false);
+      }
+    };
+    getData();
+  }, [currentPage]);
+
   return (
     <div className="">
       <div className="py-2 rounded-tl-xl rounded-tr-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
@@ -47,7 +93,9 @@ const SearchJobPosition = () => {
             <div className="flex justify-between items-center w-[100px] h-[100px]">
               <a href="">
                 <img
-                  src={imgCompany}
+                  src={
+                    checkCompany?.jobImage ? checkCompany?.jobImage : imgCompany
+                  }
                   alt=""
                   className="min-w-[100px] min-h-[100px] rounded-md border"
                 />
@@ -60,8 +108,8 @@ const SearchJobPosition = () => {
                     <span className="text-xs font-semibold">HOT</span>
                   </div>
                   <h3 className="line-clamp-1 overflow-hidden font-medium text-ellipsis max-w-[330px] hover:text-primary">
-                    <a href="" title={"jobData.jobTitle"}>
-                      Business Analyst (Domain Bank)
+                    <a href="" title={checkCompany.jobTitle}>
+                      {checkCompany.jobTitle}
                     </a>
                   </h3>
                 </div>
@@ -69,18 +117,18 @@ const SearchJobPosition = () => {
                   <div className="bg-primary p-1 rounded-full">
                     <IconPrice className={"w-4 h-4"} color={"#fff"}></IconPrice>
                   </div>
-                  <span>Thoả Thuận</span>
+                  <span>{FormatCurrency(checkCompany.jobSalary)}</span>
                 </div>
               </div>
               <div className="line-clamp-1 overflow-hidden text-sm text-ellipsis text-text3 hover:decoration-text3 hover:underline">
-                <a href="" title={"jobData.jobTitle"}>
-                  FPT
+                <a href="" title={checkCompany.orgName}>
+                  {checkCompany.orgName}
                 </a>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-5">
                   <div className="text-sm line-clamp-1 overflow-hidden max-w-40 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
-                    <span>Hà Nội Hà Nội Hà Nội Hà Nội</span>
+                    <span>{checkCompany.location}</span>
                   </div>
                   <div className="text-sm line-clamp-1 overflow-hidden max-w-60 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
                     <span>Còn 68 ngày để ứng tuyển</span>

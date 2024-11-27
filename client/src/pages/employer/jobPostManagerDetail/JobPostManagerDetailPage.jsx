@@ -29,7 +29,7 @@ const JobPostManagerDetailPage = () => {
     getData();
   }, []);
 
-  console.log(dataCandidate);
+  // console.log(dataCandidate);
 
   return (
     <div className="space-y-5 mt-5 w-full">

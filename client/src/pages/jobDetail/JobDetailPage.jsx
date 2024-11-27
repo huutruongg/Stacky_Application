@@ -14,7 +14,7 @@ const JobDetailPage = () => {
   const { jobId } = useParams();
   const { user } = useAuth();
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isliked, setIsliked] = useState(true);
 
@@ -30,27 +30,27 @@ const JobDetailPage = () => {
           );
           setData(response.data.result); // Cập nhật dữ liệu
           setIsliked(response.data.isLiked);
-          setLoading(false); // Đặt loading thành false
+          setIsLoading(false); // Đặt loading thành false
         } else {
           const response = await axiosInstance.get(
             `/job-post/get-job-detail-by-candidate/${jobId}`
           ); // API URL
           setData(response.data.result); // Cập nhật dữ liệu
           setIsliked(response.data.isLiked);
-          setLoading(false); // Đặt loading thành false
+          setIsLoading(false); // Đặt loading thành false
         }
         // console.log(response.data.result);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error); // Cập nhật lỗi
-        setLoading(false); // Đặt loading thành false
+        setIsLoading(false); // Đặt loading thành false
       }
     };
 
     loadData();
   }, [jobId]); // Chạy khi component mount
 
-  if (loading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   return (

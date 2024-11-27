@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import IconHeart from "@/components/icons/IconHeart";
-import IconNotification from "@/components/icons/IconNotification";
+import { Link } from "react-router-dom";
 import IconAvatar from "@/components/icons/IconAvatar";
 import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
@@ -12,13 +10,12 @@ import IconUpload from "@/components/icons/IconUpload";
 import IconProfile from "@/components/icons/IconProfile";
 import axiosInstance from "@/lib/authorizedAxios";
 
-const Heading = () => {
+const HeadingAdmin = () => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   const { jobSaveData, loading } = useJobSave();
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
@@ -38,43 +35,20 @@ const Heading = () => {
   // console.log(data);
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md">
+    <header className="bg-white shadow-md">
       <div className="container flex justify-between items-center text-[#212F3F] border-b border-b-[#E9EAEC] h-[64px] lg:max-w-[1748px]">
         <Link to={"/"}>
           <Logo />
         </Link>
-        <div className="flex justify-between items-center gap-10">
-          <ItemMain url={"/"}>Trang chủ</ItemMain>
-          <ItemMain url={"/company"}>Công ty</ItemMain>
-          <ItemMain url={"/profile-cv"}>Hồ sơ & CV</ItemMain>
-          <ItemMain url={"/tools"}>Công cụ hỗ trợ</ItemMain>
-        </div>
         <div className="flex justify-between items-center gap-5">
           {user ? (
             <div className="flex items-center">
-              {jobSaveData ? (
-                <div className="flex items-center">
-                  <ItemNotification
-                    icon={<IconHeart defaultLiked={false} />}
-                    children={jobSaveData ? jobSaveData.length : "0"}
-                    url={"/job-save"}
-                  />
-                  <ItemNotification
-                    icon={<IconNotification />}
-                    children={"99"}
-                    className={"mx-5"}
-                    url={"/notification"}
-                  />
-                </div>
-              ) : (
-                ""
-              )}
               <div
                 className="relative"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="flex justify-between items-center gap-10 px-5 py-1 rounded-md hover:bg-secondary z-10">
+                <button className="flex justify-between items-center gap-5 px-5 py-1 rounded-md hover:bg-secondary z-10">
                   {data?.avatarUrl ? (
                     <img
                       src={data.avatarUrl}
@@ -84,6 +58,7 @@ const Heading = () => {
                   ) : (
                     <IconAvatar />
                   )}
+                  <span className="text-sm">{data?.fullName}</span>
                   <IconDropdown />
                 </button>
                 <div className="absolute after:contents w-full h-4 top-12"></div>
@@ -136,21 +111,6 @@ const Heading = () => {
   );
 };
 
-const ItemMain = ({ url, children }) => {
-  return (
-    <NavLink
-      to={url}
-      className={({ isActive }) =>
-        isActive
-          ? "font-semibold text-primary"
-          : "font-semibold text-text5 hover:text-primary"
-      }
-    >
-      {children}
-    </NavLink>
-  );
-};
-
 const ItemDropdown = ({ url, icon, children, onClick = () => {} }) => {
   return (
     <Link
@@ -182,4 +142,4 @@ const ItemNotification = ({ icon, url, children, className }) => {
   );
 };
 
-export default Heading;
+export default HeadingAdmin;

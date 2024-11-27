@@ -12,7 +12,7 @@ const SearchJobPage = () => {
   const [jobData, setJobData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage] = useState(10); // Items per page, set to 10
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const location = useLocation(); // Access the current URL
 
   // Extract query parameters from the URL
@@ -24,7 +24,7 @@ const SearchJobPage = () => {
   // Fetch job data when the page loads or when search parameters change
   useEffect(() => {
     const fetchJobs = async () => {
-      setLoading(true);
+      setIsLoading(true);
       try {
         const result = await fetchData(
           `job-post/find-job-posts?keySearch=${encodeURIComponent(
@@ -37,7 +37,7 @@ const SearchJobPage = () => {
       } catch (error) {
         console.error("Error while fetching jobs data:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -75,7 +75,7 @@ const SearchJobPage = () => {
                 việc làm đã tìm thấy:
               </p>
             </div>
-            {loading ? (
+            {isLoading ? (
               <p>Loading...</p>
             ) : (
               <div className="flex flex-col gap-5">

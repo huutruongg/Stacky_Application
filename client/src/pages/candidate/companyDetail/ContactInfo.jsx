@@ -4,7 +4,7 @@ import IconLocation from "@/components/icons/IconLocation";
 import IconYoutube from "@/components/icons/IconYoutube";
 import React from "react";
 
-const ContactInfo = () => {
+const ContactInfo = ({ companyData }) => {
   return (
     <div className="flex flex-col gap-5">
       <div className="bg-secondary border border-primary rounded-xl">
@@ -14,14 +14,11 @@ const ContactInfo = () => {
         <div className="flex flex-col gap-3 p-5">
           <div className="">
             <p className="font-medium text-base">Lĩnh vực</p>
-            <p className="">
-              Information Technology, B2B Services, Technology and Computer
-              Sciences
-            </p>
+            <p className="">{companyData?.orgField}</p>
           </div>
           <div className="">
             <p className="font-medium text-base">Quy mô công ty</p>
-            <p>Hơn 1000</p>
+            <p>{companyData?.orgScale} Nhân viên</p>
           </div>
         </div>
       </div>
@@ -32,22 +29,41 @@ const ContactInfo = () => {
         <div className="flex flex-col gap-3 p-5">
           <div className="">
             <p className="font-medium text-base">Email</p>
-            <p className="">contact@fpt.com</p>
+            <p className="">{companyData?.orgEmail}</p>
           </div>
           <div className="">
             <p className="font-medium text-base">Website</p>
-            <p>https://fpt-is.com/</p>
+            <p>
+              {companyData?.orgLinkedinLink ||
+                companyData?.orgFacebookLink ||
+                companyData?.orgYoutubeLink}
+            </p>
           </div>
           <div className="">
-            <p className="font-medium text-base">Mạng xã hội</p>
+            <p className="font-medium text-base mb-1">Mạng xã hội</p>
             <div className="flex items-center gap-3">
-              <IconFacebook></IconFacebook>
-              <IconInstagram></IconInstagram>
-              <IconYoutube></IconYoutube>
+              <a href={companyData?.orgFacebookLink}>
+                <IconFacebook
+                  className={"w-8 h-8"}
+                  color={"#48038C"}
+                ></IconFacebook>
+              </a>
+              <a href={companyData?.orgLinkedinLink}>
+                <IconInstagram
+                  className={"w-8 h-8"}
+                  color={"#48038C"}
+                ></IconInstagram>
+              </a>
+              <a href={companyData?.orgYoutubeLink}>
+                <IconYoutube
+                  className={"w-8 h-8"}
+                  color={"#48038C"}
+                ></IconYoutube>
+              </a>
             </div>
           </div>
           <div className="">
-            <p className="font-medium text-base">Địa chỉ công ty</p>
+            <p className="font-medium text-base mb-1">Địa chỉ công ty</p>
             <div className="flex items-center gap-2">
               <div className="">
                 <IconLocation
@@ -56,8 +72,7 @@ const ContactInfo = () => {
                 ></IconLocation>
               </div>
               <span className="line-clamp-2 overflow-hidden text-ellipsis">
-                Đường Sáng Tạo, KCX Tân Thuận, Phường Tân Thuận Đông, Quận 7,
-                Thành phố Hồ Chí Minh Thành phố Hồ Chí Minh
+                {companyData?.orgAddress}
               </span>
             </div>
           </div>

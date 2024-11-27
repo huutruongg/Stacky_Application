@@ -8,7 +8,7 @@ import useAuth from "@/hooks/useAuth";
 const CvUploadedPage = () => {
   const { user } = useAuth();
   const [jobData, setJobData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(12);
@@ -26,19 +26,19 @@ const CvUploadedPage = () => {
         // Gọi API với type là 'job-postings' và phân trang
         const result = await fetchData(`job-post/get-job-applied`);
         setJobData(result); // Giả sử API trả về dữ liệu trong result.data
-        console.log(result);
+        // console.log(result);
 
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error while fetching jobs data:", error);
         setError(error); // Cập nhật lỗi
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     getData();
   }, []);
 
-  console.log(jobData);
+  // console.log(jobData);
 
   return (
     <div className="page-container grid grid-cols-12 gap-7 my-10">
@@ -51,8 +51,10 @@ const CvUploadedPage = () => {
           <div className="flex items-center gap-3 mb-5">
             <p className="">
               Danh sách{" "}
-              <span className="font-semibold text-primary">{"6"}</span> việc làm
-              đã ứng tuyển:
+              <span className="font-semibold text-primary">
+                {currentJobData.length}
+              </span>{" "}
+              việc làm đã ứng tuyển:
             </p>
             <span className="text-sm font-semibold text-accepted rounded-md">
               {"3"} Đã đăng bài

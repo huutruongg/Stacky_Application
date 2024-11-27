@@ -1,11 +1,12 @@
 import React from "react";
 import imgCompany from "@/components/image/imgCompany.png";
+import FormatDate from "../format/FormatDate";
 
 const ItemJobUploaded = ({ jobData }) => {
   return (
     <div className="flex flex-col gap-5 text-sm bg-white p-3 rounded-lg border hover:border hover:border-primary hover:bg-white">
       <div className="flex justify-between gap-5">
-        <div className="min-w-[80px] min-h-[80px]">
+        <div className="min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] border rounded-lg">
           <a href="">
             <img
               src={jobData.jobImage ? jobData.jobImage : imgCompany}
@@ -44,7 +45,7 @@ const ItemJobUploaded = ({ jobData }) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-10">
               <div className="px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
-                <span>{jobData.jobSalary}</span>
+                <span>{FormatDate.formatDateTime(jobData.applicationDeadline)}</span>
               </div>
               <div className="px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
                 <span>{jobData.location}</span>

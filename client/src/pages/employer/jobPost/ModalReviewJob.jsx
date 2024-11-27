@@ -4,7 +4,7 @@ import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
 const ModalReviewJob = ({ jobData }) => {
-  console.log(jobData);
+  // console.log(jobData);
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <TitleField children={"Chi tiết tuyển dụng"}></TitleField>

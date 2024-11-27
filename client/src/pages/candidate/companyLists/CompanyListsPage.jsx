@@ -1,18 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import imgCompanySlide from "@/components/image/imgCompanySlide.png";
 import IconSearch from "@/components/icons/IconSearch";
 import IconClose from "@/components/icons/IconClose";
 import { NavLink } from "react-router-dom";
 import PaginationDemo from "@/components/pagination/Pagination";
-
+import CompanyInfoSkeleton from "@/components/skeleton/CompanyInfoSkeleton";
+import axiosInstance from "@/lib/authorizedAxios";
+import imgCompany from "@/components/image/imgCompany.png";
+import imgBackgroundOrg from "@/components/image/imgBackgroundOrg.jpg";
 const CompanyListsPage = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [companyData, setCompanyData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [newsPerPage, setNewsPerPage] = useState(12);
+  const indexOfLastItem = currentPage * newsPerPage;
+  const indexOfFirstItem = indexOfLastItem - newsPerPage;
+  const currentCompanyData = companyData.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
-  const handleSearch = () => {
-    console.log(params);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
+  const handleSearch = async () => {
+    try {
+      setIsLoading(true);
+      const result = await axiosInstance.get(
+        `/recruiter/get-list-company?search=${searchInput}`
+      );
+      setCompanyData(result.data.result);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const result = await axiosInstance.get(`/recruiter/get-list-company`);
+        setCompanyData(result.data.result);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getData();
+  }, []);
+
   const handleClearInput = () => setSearchInput("");
+
   return (
     <div>
       <div className="overflow-hidden">
@@ -54,7 +96,7 @@ const CompanyListsPage = () => {
                   <IconSearch className="absolute m-2 w-5 h-5" />
                   <input
                     type="text"
-                    placeholder="Vị trí tuyển dụng"
+                    placeholder="Tên công ty"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     className="w-full pl-10 pr-5 py-1 outline-none rounded-lg"
@@ -82,16 +124,24 @@ const CompanyListsPage = () => {
           DANH SÁCH CÁC CÔNG TY NỔI BẬT
         </h3>
         <div className="grid w-full grid-cols-3 gap-5">
-          <ItemCompany />
-          <ItemCompany />
-          <ItemCompany />
+          {isLoading ? (
+            <>
+              <CompanyInfoSkeleton />
+              <CompanyInfoSkeleton />
+              <CompanyInfoSkeleton />
+            </>
+          ) : (
+            currentCompanyData.map((item) => (
+              <ItemCompany key={item._id} item={item} />
+            ))
+          )}
         </div>
         <div className="mt-5">
           <PaginationDemo
-            PerPage={"newsPerPage"}
-            dataBase={"jobData"}
-            currentPage={"currentPage"}
-            onPageChange={"handlePageChange"}
+            PerPage={newsPerPage}
+            dataBase={companyData}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
@@ -99,18 +149,21 @@ const CompanyListsPage = () => {
   );
 };
 
-const ItemCompany = () => {
+const ItemCompany = ({ item }) => {
   return (
-    <div className="overflow-hidden bg-secondary rounded-lg h-auto cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
+    <NavLink
+      to={`/company/${item.id}`}
+      className="overflow-hidden bg-secondary rounded-lg h-auto cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border"
+    >
       <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiUHB559_lpuhRggsf2SfA6nuCvsM_7zj8lg&s"
+        src={item.orgCoverImage || imgBackgroundOrg}
         alt=""
-        className="object-fill w-full h-28 rounded-t-lg  border-b"
+        className="object-fill w-full h-28 rounded-t-lg border-b"
       />
       <div className="relative">
         <div className="absolute top-[-35px] left-[20px] flex items-center justify-center w-[70px] h-[70px] overflow-hidden bg-white border rounded-lg">
           <img
-            src="https://img.freepik.com/free-vector/abstract-logo-flame-shape_1043-44.jpg?semt=ais_hybrid"
+            src={item.orgImage || imgCompany}
             alt=""
             className="h-[100%] w-[100%] object-contain rounded-lg"
           />
@@ -118,18 +171,13 @@ const ItemCompany = () => {
       </div>
       <div className="mt-10 flex flex-col p-3 gap-3 text-sm">
         <h3 className="font-medium w-fit line-clamp-2 overflow-hidden text-ellipsis">
-          CÔNG TY CỔ PHẦN CÔNG NGHỆ PREP PHẦN CÔNG NGHỆ PREP PHẦN CÔNG NGHỆ PREP
-          CÔNG NGHỆ PREP PHẦN CÔNG NGHỆ PREP
+          {item.orgName}
         </h3>
-        <p className="w-fit line-clamp-5 overflow-hidden text-ellipsis text-text3 ">
-          " Prep là một startup Edtech (công nghệ giáo dục) hiện đang phát triển
-          nền tảng học tập tương tác trực tuyến để học viên luyện thi chứng chỉ
-          ngoại ngữ hiệu quả trong khi tiết kiệm tối ưu về thời gian và chi phí.
-          Học viên được xây dựng lộ trình cá nhân hoá sao cho phù hợp với khả
-          năng và mục tiêu của mình nhất. Prep với sứ..."
+        <p className="w-fit line-clamp-5 overflow-hidden text-ellipsis text-text3">
+          {item.orgIntroduction}
         </p>
       </div>
-    </div>
+    </NavLink>
   );
 };
 

@@ -9,7 +9,7 @@ import useAuth from "@/hooks/useAuth";
 const JobsInteresting = () => {
   const { user } = useAuth();
   const [jobData, setJobData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(12);
@@ -33,11 +33,11 @@ const JobsInteresting = () => {
           const result = await fetchData(`job-post/get-all`);
           setJobData(result); // Giả sử API trả về dữ liệu trong result.data
         }
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error while fetching jobs data:", error);
         setError(error); // Cập nhật lỗi
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     getData();
@@ -48,29 +48,21 @@ const JobsInteresting = () => {
     setCurrentPage(page); // Cập nhật trang hiện tại
   };
 
-  if (loading) {
-    return (
-      <div className="mb-10">
-        <TitleField>Công việc hấp dẫn</TitleField>
-        <div className="grid grid-cols-3 items-center gap-5">
-          {[...Array(newsPerPage)].map((_, index) => (
-            <JobSkeleton key={index} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   if (error) return <div>Error: {error.message}</div>;
 
   return (
     <div className="mb-10">
       <TitleField>Công việc hấp dẫn</TitleField>
       <div className="grid grid-cols-3 items-center gap-5">
-        {currentJobData.length > 0 &&
+        {isLoading ? (
+          [...Array(newsPerPage)].map((_, index) => <JobSkeleton key={index} />)
+        ) : currentJobData.length > 0 ? (
           currentJobData.map((item, index) => (
             <ItemJobSuggest jobData={item} key={index}></ItemJobSuggest>
-          ))}
+          ))
+        ) : (
+          <div>Không có dữ liệu</div>
+        )}
       </div>
       {jobData.length > newsPerPage ? (
         <div className="mt-5">

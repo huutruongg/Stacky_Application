@@ -14,8 +14,8 @@ import useAuth from "@/hooks/useAuth";
 import { fetchData } from "@/api/fetchData";
 
 const CompanyInfoPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState({ loading: true, error: null });
+  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState({ isLoading: true, error: null });
   const { user } = useAuth();
 
   const form = useForm({
@@ -49,17 +49,17 @@ const CompanyInfoPage = () => {
           orgImages: orgImages || [],
         });
 
-        setStatus({ loading: false, error: null });
+        setStatus({ isLoading: false, error: null });
       } catch (error) {
         console.error("Error while fetching job data:", error);
-        setStatus({ loading: false, error });
+        setStatus({ isLoading: false, error });
       }
     };
     getData();
   }, [form, user.userId]);
 
   const onSubmit = async (data) => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       // Đảm bảo orgImages là mảng trước khi gửi
       const formData = {
@@ -75,11 +75,11 @@ const CompanyInfoPage = () => {
       console.error("Error submitting form:", error);
       toast.error("Đã xảy ra lỗi khi lưu công ty.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  if (status.loading) return <div>Loading...</div>;
+  if (status.isLoading) return <div>Loading...</div>;
   if (status.error)
     return <div>Error fetching data: {status.error.message}</div>;
 
@@ -98,7 +98,7 @@ const CompanyInfoPage = () => {
             kind="primary"
             className="text-center px-10 disabled:opacity-50"
             type="submit"
-            isLoading={loading}
+            isLoading={isLoading}
           >
             Lưu hồ sơ
           </Button>

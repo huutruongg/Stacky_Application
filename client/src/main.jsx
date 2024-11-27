@@ -12,14 +12,17 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { Toaster } from "react-hot-toast";
+import ErrorBoundary from "./components/shared/errorBoundary/ErrorBoundary.jsx";
 
 createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <BrowserRouter>
       <AuthProvider>
         <JobSaveProvider>
-          <App />
-          <Toaster position="top-right" reverseOrder={false}></Toaster>
+          <ErrorBoundary>
+            <App />
+            <Toaster position="top-right" reverseOrder={false}></Toaster>
+          </ErrorBoundary>
         </JobSaveProvider>
       </AuthProvider>
     </BrowserRouter>

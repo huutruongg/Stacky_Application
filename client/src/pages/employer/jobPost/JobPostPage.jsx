@@ -19,7 +19,7 @@ import ModalReviewJob from "./ModalReviewJob";
 const JobPostPage = () => {
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const onCloseReview = () => setOpenReview(false);
 
   const form = useForm({
@@ -55,7 +55,7 @@ const JobPostPage = () => {
   const onSubmit = async (data) => {
     console.log(data);
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await axiosInstance.post("/job-post/create-job-post", {
         data,
       });
@@ -64,7 +64,7 @@ const JobPostPage = () => {
     } catch (error) {
       toast.error("Có lỗi xảy ra. Vui lòng thử lại.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -85,7 +85,7 @@ const JobPostPage = () => {
           <AlertModal
             isOpen={open}
             onClose={() => setOpen(false)}
-            loading={loading}
+            isLoading={isLoading}
           />
           <Modal
             isOpen={openReview}
@@ -107,7 +107,7 @@ const JobPostPage = () => {
                 className="text-center px-10 disabled:opacity-50"
                 type="button" // Changed to 'button' to prevent immediate submission
                 onClick={form.handleSubmit(onSubmit)} // Ensure this calls the onSubmit function
-                isLoading={loading} // Set loading state
+                isLoading={isLoading} // Set loading state
               >
                 Đăng bài viết
               </Button>
@@ -128,7 +128,7 @@ const JobPostPage = () => {
             kind="primary"
             className="text-center px-10 disabled:opacity-50"
             type="submit"
-            isLoading={loading}
+            isLoading={isLoading}
           >
             Đăng bài viết
           </Button>

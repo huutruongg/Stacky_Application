@@ -9,7 +9,7 @@ import { fetchData } from "@/api/fetchData";
 const PaymentPage = () => {
   const [amount, setAmount] = useState(true);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -17,7 +17,7 @@ const PaymentPage = () => {
         const result = await axiosInstance.get(`/payment/get-payment-info`);
         // console.log(result.data.historyDeposit);
         setData(result.data);
-        setLoading(true);
+        setIsLoading(true);
       } catch (error) {
         console.error("Error while fetching job data:", error);
       }
@@ -87,7 +87,7 @@ const PaymentPage = () => {
             <span className="font-medium">Số dư hiện tại:</span>
             <span>{data.balance}</span>
           </div>
-          {!loading ? "" : <PayHistory data={data} />}
+          {!isLoading ? "" : <PayHistory data={data} />}
         </div>
         <div className="grid col-start-9 col-end-13">
           <div className="flex flex-col items-center gap-5">

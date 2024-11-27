@@ -26,6 +26,9 @@ import PaymentPage from "./pages/employer/payment/PaymentPage";
 import Profile from "./pages/employer/profile/Profile";
 import ForgotPassword from "./pages/signIn/ForgotPassword";
 import NotificationPage from "./pages/candidate/notification/NotificationPage";
+import ProfilePage from "./pages/candidate/profile/ProfilePage";
+import LayoutAdmin from "./components/shared/LayoutAdmin";
+import DashboardPage from "./pages/admin/dashboard/dashboardPage";
 
 function App() {
   return (
@@ -42,6 +45,7 @@ function App() {
               path="/recruiter/forgot-password/:userId"
               element={<ForgotPassword />}
             />
+            <Route path="/company/:companyId" element={<CompanyDetailPage />} />
             <Route element={<RequireAuth allowedRoles={["CANDIDATE"]} />}>
               <Route path="/company" element={<CompanyListsPage />} />
               <Route path="/company-top" element={<TopCompanyListsPage />} />
@@ -49,6 +53,7 @@ function App() {
               <Route path="/profile-cv" element={<CvInformationPage />} />
               <Route path="/uploaded-cv" element={<CvUploadedPage />} />
               <Route path="/notification" element={<NotificationPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
           </Route>
           <Route element={<LayoutEmployer />}>
@@ -71,6 +76,9 @@ function App() {
                 element={<ViewCandidateDetailPage />}
               />
             </Route>
+          </Route>
+          <Route element={<LayoutAdmin />}>
+            <Route path="/admin/dashboard" element={<DashboardPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
           {/* Wildcard route for 404 */}

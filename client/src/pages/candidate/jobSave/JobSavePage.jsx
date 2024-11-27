@@ -5,7 +5,7 @@ import PaginationDemo from "@/components/pagination/Pagination";
 import { useJobSave } from "@/components/context/JobSaveProvider";
 
 const JobSavePage = () => {
-  const { jobSaveData = [], loading, error: jobSaveError } = useJobSave(); // Set default value to avoid undefined
+  const { jobSaveData = [], isLoading, error: jobSaveError } = useJobSave(); // Set default value to avoid undefined
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(5);
 
@@ -20,7 +20,7 @@ const JobSavePage = () => {
     setCurrentPage(page);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
   if (jobSaveError) return <div>Error: {jobSaveError.message}</div>;
 
   return (

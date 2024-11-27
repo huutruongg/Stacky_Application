@@ -27,6 +27,8 @@ import { Modal } from "@/components/ui/modal";
 import Buttonchild from "@/components/button/Buttonchild";
 import FormatDate from "@/components/format/FormatDate";
 import axiosInstance from "@/lib/authorizedAxios";
+import toast from "react-hot-toast";
+import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
 
 const emailSchema = z.object({
   text: z.string(),
@@ -37,7 +39,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   const { jobId } = useParams();
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const onCloseReview = () => setOpenReview(false);
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const form = useForm({
@@ -46,7 +48,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
       text: "",
     },
   });
-  console.log(selectedCandidates);
+  // console.log(selectedCandidates);
 
   const handleSelectAll = () => {
     setSelectedCandidates(data.map((candidate) => candidate.publicEmail));
@@ -60,7 +62,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
 
   const onSubmit = async (formData) => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const response = await axiosInstance.post(`/email/send-email`, {
         to: selectedCandidates,
         subject: "Gửi mail",
@@ -69,11 +71,13 @@ const CandidateLists = ({ data, candidatesLimit }) => {
       console.log(response);
       setOpenReview(false);
       setSelectedCandidates([]);
+      toast.success("Gửi mail thành công");
       form.reset();
     } catch (error) {
       console.log(error);
+      toast.error("Gửi mail thất bại");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -134,30 +138,34 @@ const CandidateLists = ({ data, candidatesLimit }) => {
               <span>Điểm Gitub</span>
             </div>
           </div>
-          {data.length > 0 ? (
-            data.map((item, index) => (
-              <ItemCandidate
-                index={index}
-                key={index}
-                avatarUrl={item.avatarUrl}
-                name={item.fullName}
-                aiScore={item.totalScore}
-                githubScore={item.githubScore}
-                description={item.personalDescription}
-                date={FormatDate.formatDateTime(item.appliedAt)}
-                userId={item.userId}
-                candidatesLimit={index < candidatesLimit}
-                onClick={() => {
-                  navigate(`/candidate-detail/${jobId}/${item.userId}`);
-                }}
-                handleSelectCandidate={handleSelectCandidate}
-                publicEmail={item.publicEmail}
-              />
-            ))
+          {!  isLoading ? (
+            data.length > 0 ? (
+              data.map((item, index) => (
+                <ItemCandidate
+                  index={index}
+                  key={index}
+                  avatarUrl={item.avatarUrl}
+                  name={item.fullName}
+                  aiScore={item.totalScore}
+                  githubScore={item.githubScore}
+                  description={item.personalDescription}
+                  date={FormatDate.formatDateTime(item.appliedAt)}
+                  userId={item.userId}
+                  candidatesLimit={index < candidatesLimit}
+                  onClick={() => {
+                    navigate(`/candidate-detail/${jobId}/${item.userId}`);
+                  }}
+                  handleSelectCandidate={handleSelectCandidate}
+                  publicEmail={item.publicEmail}
+                />
+              ))
+            ) : (
+              <div className="text-center text-base pt-5 pb-10 text-primary">
+                Chưa có ứng viên nào ứng tuyển
+              </div>
+            )
           ) : (
-            <div className="text-center text-base pt-5 pb-10 text-primary">
-              Chưa có ứng viên nào ứng tuyển
-            </div>
+            <CandidateListSkeleton />
           )}
           {data.length > 0 ? (
             <div className="mt-5">
@@ -185,7 +193,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
         <AlertModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          loading={loading}
+          isLoading={isLoading}
         />
         <Modal
           isOpen={openReview}
@@ -209,7 +217,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
                 kind="primary"
                 className="text-center px-10 disabled:opacity-50"
                 type="submit"
-                isLoading={loading}
+                isLoading={isLoading}
               >
                 Gửi Mail
               </Button>
@@ -247,22 +255,17 @@ const ItemCandidate = ({
         </div>
       </div>
       <div className="flex justify-between gap-3 pl-9 pr-3 py-3">
-        <div className="min-w-[80px] max-w-[80px] flex items-center justify-center rounded-md">
-          <a href="#" className="cursor-pointer">
-            <img
-              src={avatarUrl ? avatarUrl : imgAvatar}
-              alt=""
-              className="rounded-md object-cover border"
-            />
-          </a>
+        <div className="min-w-[80px] max-w-[80px] flex items-center justify-center rounded-md border">
+          <img
+            src={avatarUrl ? avatarUrl : imgAvatar}
+            alt=""
+            className="rounded-md object-cover"
+          />
         </div>
         <div className="flex flex-col justify-around gap-1 w-full">
           <div className="flex gap-10 items-center justify-between">
             <div className="flex gap-10 items-center">
-              <div
-                className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:text-primary hover:underline"
-                onClick={() => navigate(`/job-detail/`)}
-              >
+              <div className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium">
                 {name}
               </div>
               {candidatesLimit ? (
@@ -287,12 +290,9 @@ const ItemCandidate = ({
               />
             </div>
           </div>
-          <a
-            href="/company"
-            className="w-fit line-clamp-1 overflow-hidden text-xs text-text3 hover:underline max-w-[400px]"
-          >
+          <span className="w-fit line-clamp-1 overflow-hidden text-xs text-text3 max-w-[400px]">
             {description}
-          </a>
+          </span>
           <div className="flex items-center justify-between">
             <span className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px]">
               Ngày nộp đơn: {date}

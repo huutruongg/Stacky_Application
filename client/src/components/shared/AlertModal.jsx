@@ -5,9 +5,9 @@ export const AlertModal = ({
   isOpen,
   onClose,
   onConfirm,
-  loading,
+  isLoading,
   title = "Bạn có chắc không?",
-  description = "Bạn có chắc chắn muốn tiếp tục không?",
+  description = "Bạn có chắn chắn muốn tiếp tục không?",
 }) => {
   return (
     <Modal
@@ -17,10 +17,10 @@ export const AlertModal = ({
       description={description}
     >
       <div className="flex w-full items-center justify-end space-x-2 pt-6">
-        <Button disabled={loading} variant="outline" onClick={onClose}>
+        <Button disabled={isLoading} variant="outline" onClick={onClose}>
           Hủy
         </Button>
-        <Button disabled={loading} variant="destructive" onClick={onConfirm}>
+        <Button disabled={isLoading} variant="destructive" onClick={onConfirm}>
           Tiếp tục
         </Button>
       </div>

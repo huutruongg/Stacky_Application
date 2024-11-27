@@ -17,7 +17,7 @@ export const useJobSave = () => {
 export const JobSaveProvider = ({ children }) => {
   const { user } = useAuth();
   const [jobSaveData, setJobSaveData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -31,16 +31,15 @@ export const JobSaveProvider = ({ children }) => {
       } catch (error) {
         console.error("Error fetching saved jobs:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
-
     fetchSavedJobs();
   }, [user]);
 
   const value = useMemo(
-    () => ({ jobSaveData, loading }),
-    [jobSaveData, loading]
+    () => ({ jobSaveData, isLoading }),
+    [jobSaveData, isLoading]
   );
 
   return (

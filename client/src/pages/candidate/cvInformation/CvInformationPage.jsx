@@ -21,7 +21,7 @@ import toast from "react-hot-toast";
 const CvInformationPage = () => {
   const { user } = useAuth();
   const [hasExperience, setHasExperience] = useState(false);
-  const [status, setStatus] = useState({ loading: true, error: null });
+  const [status, setStatus] = useState({ isLoading: true, error: null });
 
   const form = useForm({
     resolver: zodResolver(profileCVSchema(hasExperience)),
@@ -81,10 +81,10 @@ const CvInformationPage = () => {
             : [],
         });
 
-        setStatus({ loading: false, error: null });
+        setStatus({ isLoading: false, error: null });
       } catch (error) {
         console.error("Error while fetching job data:", error);
-        setStatus({ loading: false, error });
+        setStatus({ isLoading: false, error });
       }
     };
     getData();
@@ -117,7 +117,7 @@ const CvInformationPage = () => {
     }
   };
 
-  if (status.loading) return <div>Loading...</div>;
+  if (status.isLoading) return <div>Loading...</div>;
   if (status.error)
     return <div>Error fetching data: {status.error.message}</div>;
 

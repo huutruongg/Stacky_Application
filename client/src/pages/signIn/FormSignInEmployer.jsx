@@ -22,7 +22,7 @@ import { decodeJWT } from "@/utils/jwt";
 const FormSignInEmployer = () => {
   const navigate = useNavigate();
   const { login } = useAuth(); // Sử dụng login từ context
-  const [loading, setLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const [open, setOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -43,7 +43,7 @@ const FormSignInEmployer = () => {
   // Hàm xử lý submit, sử dụng useCallback để tránh re-creation của hàm
   const onSubmit = useCallback(
     async (values) => {
-      setLoading(true); // Bắt đầu loading
+      setIsLoading(true); // Bắt đầu loading
       try {
         const { email, password } = values;
 
@@ -73,7 +73,7 @@ const FormSignInEmployer = () => {
           "Đăng nhập thất bại. Vui lòng kiểm tra thông tin và thử lại."
         );
       } finally {
-        setLoading(false); // Kết thúc loading
+        setIsLoading(false); // Kết thúc loading
       }
     },
     [login, navigate]
@@ -119,9 +119,9 @@ const FormSignInEmployer = () => {
               kind="primary"
               className="w-full"
               type="submit"
-              disabled={loading}
+              disabled={isLoading}
             >
-              {loading ? "Đang đăng nhập..." : "Đăng nhập"}{" "}
+              {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}{" "}
               {/* Show loading state */}
             </Button>
           </div>
@@ -131,7 +131,7 @@ const FormSignInEmployer = () => {
         <AlertModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          loading={loading}
+          isLoading={isLoading}
         />
         <Modal
           isOpen={openUpdate}

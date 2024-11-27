@@ -2,8 +2,9 @@ import React, { Fragment } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import FromBeginPageClick from "../scrollToTop/FromBeginPageClick";
 import HeadingEmployer from "./header/HeadingEmployer";
-import NavbarEmployer from "@/components/shared/navbarEmployer/NavbarEmployer";
+
 import Panel from "../panel/Panel";
+import NavbarEmployer from "./navbar/NavbarEmployer";
 
 const LayoutEmployer = () => {
   const location = useLocation();

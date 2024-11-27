@@ -4,9 +4,11 @@ import IconSearch from "@/components/icons/IconSearch";
 import IconClose from "@/components/icons/IconClose";
 import { NavLink } from "react-router-dom";
 import PaginationDemo from "@/components/pagination/Pagination";
+import CompanyInfoSkeleton from "@/components/skeleton/CompanyInfoSkeleton";
 
 const TopCompanyListsPage = () => {
   const [searchInput, setSearchInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = () => {
     console.log(params);
@@ -82,11 +84,21 @@ const TopCompanyListsPage = () => {
           DANH SÁCH CÁC TOP CÔNG TY
         </h3>
         <div className="grid w-full grid-cols-3 gap-5">
-          <ItemCompany />
-          <ItemCompany />
-          <ItemCompany />
+          {isLoading ? (
+            <>
+              <CompanyInfoSkeleton />
+              <CompanyInfoSkeleton />
+              <CompanyInfoSkeleton />
+            </>
+          ) : (
+            <>
+              <ItemCompany />
+              <ItemCompany />
+              <ItemCompany />
+            </>
+          )}
         </div>
-        {data.length > 0 ? (
+        {/* {data.length > 0 ? (
           <div className="mt-5">
             <PaginationDemo
               PerPage="newsPerPage"
@@ -95,7 +107,7 @@ const TopCompanyListsPage = () => {
               onPageChange="handlePageChange"
             />
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </div>
   );

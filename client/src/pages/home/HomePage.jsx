@@ -9,7 +9,7 @@ import Buttonchild from "@/components/button/Buttonchild";
 
 const HomePage = () => {
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
   return (
     <>
       {!user || user.role === "CANDIDATE" ? (

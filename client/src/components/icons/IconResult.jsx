@@ -13,7 +13,7 @@ const IconResult = ({ className }) => {
       <path
         d="M2 12H22M22 12L13 3M22 12L13 21"
         stroke="#000"
-        stroke-width="2"
+        strokeWidth="2"
       />
     </svg>
   );

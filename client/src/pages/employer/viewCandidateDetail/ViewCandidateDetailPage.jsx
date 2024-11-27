@@ -18,7 +18,7 @@ const ViewCandidateDetailPage = () => {
   const { jobId, userId } = useParams();
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [dataCandidate, setDataCandidate] = useState({
     projects: [],
     educations: [],
@@ -28,7 +28,7 @@ const ViewCandidateDetailPage = () => {
   });
   const form = {};
 
-  console.log(dataCandidate);
+  // console.log(dataCandidate);
 
   const onCloseReview = () => {
     setOpenReview(false);
@@ -37,13 +37,16 @@ const ViewCandidateDetailPage = () => {
   useEffect(() => {
     const getData = async () => {
       try {
+        setIsLoading(true);
         const result = await axiosInstance.get(
           `/recruiter/get-potential-candidate/${jobId}/${userId}`
         );
         setDataCandidate(result.data.result);
       } catch (error) {
         console.error("Error while fetching job data:", error);
-      }
+      } finally {
+        setIsLoading(false);
+      } 
     };
     getData();
   }, [jobId, userId]);
@@ -57,7 +60,7 @@ const ViewCandidateDetailPage = () => {
               <img
                 src={dataCandidate.avatarUrl || imgAvatar}
                 alt="Avatar"
-                className="w-auto max-h-[270px] max-w-[230px]"
+                className="object-contain w-auto min-h-[270px] min-w-[230px] max-h-[270px] max-w-[230px] border rounded-lg"
               />
             </div>
             <div className="flex flex-col gap-3 ml-5">
@@ -263,7 +266,7 @@ const ViewCandidateDetailPage = () => {
         <AlertModal
           isOpen={open}
           onClose={() => setOpen(false)}
-          loading={loading}
+          isLoading={isLoading}
         />
         <Modal
           isOpen={openReview}
@@ -272,7 +275,11 @@ const ViewCandidateDetailPage = () => {
           title="Kết quả phân tích"
           description="Kết quả phân tích của AI"
         >
-          <ModalViewResult form={form} modalClose={onCloseReview} />
+          <ModalViewResult
+            form={form}
+            modalClose={onCloseReview}
+            data={dataCandidate}
+          />
           <div className="flex justify-center gap-5 py-5">
             <Button
               kind="secondary"

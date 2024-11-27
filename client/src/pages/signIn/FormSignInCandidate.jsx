@@ -10,7 +10,7 @@ const FormSignInCandidate = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = useCallback(() => {
     window.location.href = "http://localhost:5050/auth/google/callback";
@@ -21,7 +21,7 @@ const FormSignInCandidate = () => {
   }, []);
 
   const handleTokenRetrieval = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await axiosInstance.get("/auth/get-access-token", {
         withCredentials: true,
@@ -41,7 +41,7 @@ const FormSignInCandidate = () => {
       console.error("Lỗi lấy token:", error);
       alert("Lỗi khi lấy token. Vui lòng thử lại!");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [login, navigate]);
 
@@ -59,7 +59,7 @@ const FormSignInCandidate = () => {
       <button
         className="flex items-center justify-center gap-3 w-full h-14 font-medium border border-text1 rounded-lg"
         onClick={handleGoogleLogin}
-        disabled={loading}
+        disabled={isLoading}
       >
         <IconGoogle />
         <span className="text-text2">Đăng nhập với Google</span>
@@ -68,7 +68,7 @@ const FormSignInCandidate = () => {
       <button
         className="flex items-center justify-center gap-3 w-full h-14 font-medium border rounded-lg bg-[#424242]"
         onClick={handleGithubLogin}
-        disabled={loading}
+        disabled={isLoading}
       >
         <IconGithub className={"w-6 h-6"} color={"#fff"} />
         <span className="text-white">Đăng nhập với Github</span>
