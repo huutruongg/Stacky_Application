@@ -26,7 +26,8 @@ const JobPostSchema: Schema = new Schema({
   jobSchedule: { type: String, required: true },
   staffLevel: { type: String, required: true },
   genderRequired: { type: String, required: true },
-  postedAt: { type: Date, default: Date.now }
+  postedAt: { type: Date, default: Date.now },
+  invisible: { type: Boolean, default: false }
 });
 
 JobPostSchema.index({ jobTitle: 1, location: 1, typeOfIndustry: 1 });

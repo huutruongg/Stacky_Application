@@ -1,10 +1,12 @@
+import cron from 'node-cron'; // Import node-cron
 import { log } from 'console';
 import app from './app';
 import { connectDB, disconnectDB } from './config/Database';
 import { Server } from 'socket.io';
 import http from 'http';
+import mongoose from 'mongoose';
 
-const PORT = process.env.PORT || 5050; // Sử dụng 5000 nếu không có PORT trong env
+const PORT = process.env.PORT || 5050;
 
 // Khởi tạo HTTP server từ Express app
 const server = http.createServer(app);
@@ -22,7 +24,7 @@ export const io = new Server(server, {
     },
 });
 
-// Middleware để đưa `io` vào request, có thể dùng trong các controller nếu cần
+// Middleware để đưa `io` vào request
 app.use((req, res, next) => {
     (req as any).io = io;
     next();
@@ -30,24 +32,42 @@ app.use((req, res, next) => {
 
 // Kết nối với cơ sở dữ liệu và khởi động server
 connectDB()
-    .then(() => {
+    .then(async () => {
         log('Database connection established.');
 
-        // Cấu hình Socket.IO để lắng nghe các sự kiện kết nối từ client
+        // Cấu hình Socket.IO
         io.on('connection', (socket) => {
             log(`Client connected: ${socket.id}`);
 
-            // Lắng nghe sự kiện tùy chỉnh từ client
             socket.on('new-notification', (data) => {
                 log('New notification received:', data);
-                // Phát thông báo tới tất cả các client kết nối
                 io.emit('new-notification', data);
             });
 
-            // Xử lý sự kiện ngắt kết nối
             socket.on('disconnect', () => {
                 log(`Client disconnected: ${socket.id}`);
             });
+        });
+
+        // Thiết lập node-cron để chạy lúc 12h đêm mỗi ngày
+        cron.schedule('0 0 * * *', async () => {
+            log('Running daily task at midnight...');
+            try {
+                const db = await connectDB(); // Đảm bảo DB đã kết nối
+                const jobPostCollection = db.collection('jobposts');
+
+                const currentDate = new Date();
+
+                // Cập nhật trạng thái bài viết
+                const result = await jobPostCollection.updateMany(
+                    { invisible: false, applicationDeadline: { $lt: currentDate } }, // Bài viết hết hạn
+                    { $set: { invisible: true } } // Chuyển trạng thái thành invisible
+                );
+
+                log(`${result.modifiedCount} job posts marked as invisible.`);
+            } catch (error) {
+                console.error('Error running daily task:', error);
+            }
         });
 
         // Lắng nghe cổng
@@ -59,7 +79,7 @@ connectDB()
         console.error('Failed to connect to the database:', error);
     });
 
-// Xử lý tín hiệu `SIGINT` để ngắt kết nối cơ sở dữ liệu và dừng server an toàn
+// Xử lý SIGINT để đóng kết nối DB và server an toàn
 process.on('SIGINT', async () => {
     await disconnectDB();
     server.close(() => {

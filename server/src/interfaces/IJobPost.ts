@@ -29,6 +29,7 @@ export interface IJobPost extends Document {
     genderRequired: string;
     postStatus: PostStatus;
     postedAt: Date;
+    invisible: boolean;
 }
 
 export interface IJobPostMin {

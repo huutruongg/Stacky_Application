@@ -63,11 +63,11 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
     }
 
     async getAllJobPosts(): Promise<IJobPost[]> {
-        return await this.model.find().exec();
+        return await this.model.find({invisible: false}).exec();
     }
 
     async getJobPostsByPage(page: number, pageSize: number): Promise<IJobPost[]> {
-        return await this.model.find().skip(page * pageSize).limit(pageSize).exec();
+        return await this.model.find({invisible: false}).skip(page * pageSize).limit(pageSize).exec();
     }
 
     async getJobPostByIds(ids: string[]): Promise<any[]> {
@@ -112,4 +112,151 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         log("data", data);
         return data;
     }
+
+    async findAll_a(): Promise<IJobPost[]> {
+        const result = await this.model.aggregate([
+            {
+                $project: {
+                    _id: 1,
+                    jobTitle: 1,
+                    orgName: 1,
+                    typeOfIndustry: 1,
+                    candidatesLimit: 1,
+                    postedAt: 1,
+                    applicationDeadline: 1
+                }
+            },
+            {
+                $sort: { postedAt: -1 }
+            }
+        ]);
+        return result;
+    }
+
+    // async countJobsByMonth(): Promise<{ month: number, postCount: number }[]> {
+    //     const result = await JobPostModel.aggregate([
+    //         // Chuyển đổi `postedAt` thành kiểu Date nếu cần thiết
+    //         {
+    //             $addFields: {
+    //                 postedAt: { $toDate: "$postedAt" } // Chuyển đổi nếu `postedAt` là chuỗi
+    //             }
+    //         },
+    //         // Nhóm dữ liệu theo tháng
+    //         {
+    //             $group: {
+    //                 _id: { $month: "$postedAt" }, // Lấy tháng từ `postedAt`
+    //                 postCount: { $sum: 1 } // Đếm số lượng bài viết
+    //             }
+    //         },
+    //         // Chuẩn hóa dữ liệu (thêm tháng không có bài viết với postCount = 0)
+    //         {
+    //             $project: {
+    //                 month: '$_id',
+    //                 postCount: 1,
+    //                 _id: 0
+    //             }
+    //         },
+    //         // Thêm các tháng mặc định từ 1 đến 12
+    //         {
+    //             $unionWith: {
+    //                 // coll: null, // Thực hiện trên pipeline hiện tại
+    //                 pipeline: [
+    //                     {
+    //                         $project: {
+    //                             month: {
+    //                                 $literal: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] // Tất cả các tháng
+    //                             },
+    //                             postCount: { $literal: 0 } // Số lượng mặc định
+    //                         }
+    //                     },
+    //                     { $unwind: "$month" } // Tách từng tháng thành các tài liệu riêng
+    //                 ]
+    //             }
+    //         },
+    //         // Tổng hợp dữ liệu, ưu tiên dữ liệu thực tế
+    //         {
+    //             $group: {
+    //                 _id: "$month",
+    //                 postCount: { $max: "$postCount" } // Giữ giá trị lớn nhất (ưu tiên dữ liệu thực tế)
+    //             }
+    //         },
+    //         // Định dạng dữ liệu
+    //         {
+    //             $project: {
+    //                 month: '$_id',
+    //                 postCount: 1,
+    //                 _id: 0
+    //             }
+    //         },
+    //         // Sắp xếp theo thứ tự tháng
+    //         {
+    //             $sort: { month: 1 }
+    //         }
+    //     ]);
+
+
+    //     return result;
+    // };
+    async stacticsJobsfor12Months(): Promise<any> {
+        const twelveMonthsAgo = new Date();
+        twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11); // Go back 11 months
+    
+        const monthNames = [
+            "January", "February", "March", "April", "May", 
+            "June", "July", "August", "September", "October", 
+            "November", "December"
+        ];
+    
+        const months = Array.from({ length: 12 }, (_, i) => {
+            const date = new Date();
+            date.setMonth(date.getMonth() - 11 + i); // Generate months dynamically
+            return { month: date.getMonth() + 1, postCount: 0 }; // Default value
+        });
+    
+        const result = await this.model.aggregate([
+            {
+                $addFields: {
+                    postedAt: { $toDate: "$postedAt" }
+                }
+            },
+            {
+                $match: {
+                    postedAt: { $gte: twelveMonthsAgo } // Only include jobs from the last 12 months
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$postedAt" },
+                    postCount: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    month: "$_id",
+                    postCount: 1,
+                    _id: 0
+                }
+            }
+        ]);
+    
+        // Merge with default months
+        const mergedResult = months.map((month) => {
+            const found = result.find((r) => r.month === month.month);
+            return found || month;
+        });
+    
+        // Map result to named format
+        const namedResult: Record<string, number> = {};
+        mergedResult.forEach(({ month, postCount }) => {
+            const monthName = monthNames[month - 1];
+            namedResult[monthName] = postCount;
+        });
+    
+        return namedResult;
+    }
+    
+    async count_a(): Promise<number> {
+        return await this.model.countDocuments();
+    }
+    
 }

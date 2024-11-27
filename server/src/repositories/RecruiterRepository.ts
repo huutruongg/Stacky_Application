@@ -159,7 +159,65 @@ export default class RecruiterRepository extends BaseRepository<IRecruiter> {
         };
     }
 
-    //     async findCompany(search: string): Promise<IRecruiter[] | null> {
-    //         return await this.model.find({ orgName: { $regex: search, $options: 'i' } }).lean().exec() as IRecruiter[];
-    //     }
+    async findAll_a(): Promise<IRecruiter[]> {
+        const result = await this.model.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $project: {
+                    userId: 1,
+                    orgEmail: 1,
+                    orgName: 1,
+                    createdAt: { $arrayElemAt: ['$user.createdAt', 0] }
+                }
+            }
+        ]);
+        return result;
+    }
+
+    async findOne_a(userId: string): Promise<IRecruiter | null> {
+        const result = await RecruiterModel.aggregate([
+            {
+                $lookup: {
+                    from: 'jobposts',
+                    localField: 'userId',
+                    foreignField: 'userId',
+                    as: 'jobPosts'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    orgName: 1,
+                    orgTaxNumber: 1,
+                    orgAddress: 1,
+                    orgWebsiteUrl: 1,
+                    contactPerson: 1,
+                    orgEmail: 1,
+                    phoneNumber: { $arrayElemAt: ['$user.phoneNumber', 0] },
+                    jobPostCount: { $size: '$jobPosts' }
+                }
+            }
+        ]);
+
+        return result[0];
+    }
+
+    async count_a(): Promise<number> {
+        return await this.model.countDocuments().lean().exec();
+    }
 }

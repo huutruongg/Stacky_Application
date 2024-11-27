@@ -8,6 +8,7 @@ export async function connectDB() {
         await mongoose.connect(String(process.env.DATABASE_URI));
         console.log("Connected to database");
 
+        return mongoose.connection; // Trả về kết nối để dùng tiếp
     } catch (error) {
         console.error("Error connecting to database: ", error);
         process.exit(1);

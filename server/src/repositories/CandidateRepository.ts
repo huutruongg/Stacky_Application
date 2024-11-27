@@ -34,7 +34,7 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
                 console.warn(`No applied jobs found for user: ${userId}`);
                 return [];
             }
-            
+
             return result.jobApplied;
         } catch (error) {
             console.error('Error fetching applied jobs:', error);
@@ -184,7 +184,36 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
 
     async getGithubToken(userId: string): Promise<IOAuthToken | null> {
         const candidate = await this.model.findOne({ userId: new Types.ObjectId(userId) }).select("oauthTokens").lean();
-        if(!candidate) return null;
+        if (!candidate) return null;
         return candidate.oauthTokens?.find((token: IOAuthToken) => token.provider === "GITHUB") || null;
+    }
+
+    async findAll_a(): Promise<ICandidate[]> {
+        const result = await this.model.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { userId: '$userId' },
+                    pipeline: [
+                        { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
+                        { $project: { createdAt: 1, _id: 0 } }
+                    ],
+                    as: 'user'
+                }
+            },
+            {
+                $project: {
+                    userId: 1,
+                    fullName: 1,
+                    publicEmail: 1,
+                    createdAt: { $arrayElemAt: ['$user.createdAt', 0] }
+                }
+            }
+        ]);
+        return result;
+    }
+
+    async count_a(): Promise<number> {
+        return await this.model.countDocuments().lean().exec();
     }
 }

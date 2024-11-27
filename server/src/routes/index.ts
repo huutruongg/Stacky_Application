@@ -41,6 +41,9 @@ import NotificationService from "../services/NotificationService";
 import AIController from "../controllers/AIController";
 import AIRouter from "./AIRouter";
 import GithubRoutes from "./GithubRoutes";
+import AdminController from "../controllers/AdminController";
+import AdminService from "../services/AdminService";
+import AdminRoutes from "./AdminRoutes";
 
 class Routes {
     public router: Router;
@@ -60,6 +63,7 @@ class Routes {
         // Initialize shared services and repositories
         this.authService = new AuthService();
         this.candidateRepository = new CandidateRepository();
+
         this.userRepository = new UserRepository();
         this.recruiterRepository = new RecruiterRepository();
         this.jobPostRepository = new JobPostRepository();
@@ -73,6 +77,7 @@ class Routes {
     // Lazy load objects to avoid circular dependencies
     private initializeRoutes(): void {
         this.router.use('/auth', this.lazyLoadAuthRoutes());
+        this.router.use('/admin', this.lazyLoadAdminRoutes());
         this.router.use('/candidate', this.lazyLoadCandidateRoutes());
         this.router.use('/recruiter', this.lazyLoadRecruiterRoutes());
         this.router.use('/job-post', this.lazyLoadJobPostRoutes());
@@ -164,6 +169,15 @@ class Routes {
             const githubController = new GithubController(this.githubService, this.applicantRepository);
             const githubRoutes = new GithubRoutes(githubController);
             githubRoutes.getRouter()(req, res, next);
+        }
+    }
+
+    private lazyLoadAdminRoutes() {
+        return (req: Request, res: Response, next: NextFunction) => {
+            const adminService = new AdminService(this.candidateRepository, new RecruiterRepository(), new JobPostRepository());
+            const adminController = new AdminController(adminService);
+            const adminRoutes = new AdminRoutes(adminController);
+            adminRoutes.getRouter()(req, res, next);
         }
     }
 }
