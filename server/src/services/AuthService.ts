@@ -166,7 +166,7 @@ export default class AuthService {
         if (!user) {
             return false;
         }
-        const url = `${process.env.URL_CLIENT}/recruiter/reset-password/${user._id}`;
+        const url = `${process.env.URL_CLIENT}/recruiter/forgot-password/${user._id}`;
         log("URL: ", url);
         const htmlContent = resetPasswordTemplate(url);
         const result = await EmailService.sendEmail(
