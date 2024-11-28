@@ -1,0 +1,29 @@
+/* src/styles/Dashboard.css */
+.dashboard {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+    min-height: 100vh;
+}
+
+.dashboard-statcards {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.dashboard-chart {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}

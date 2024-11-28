@@ -1,0 +1,27 @@
+/* src/styles/TopCompanies.css */
+.top-companies-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.top-companies-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #48038C;
+    margin-bottom: 15px;
+}
+
+.top-companies-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.top-companies-growth {
+    color: #16C098;
+    font-weight: bold;
+}

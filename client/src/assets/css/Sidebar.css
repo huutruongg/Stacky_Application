@@ -1,0 +1,35 @@
+.sidebar {
+    width: 240px;
+    padding: 20px;
+    background-color: #f0f2f5;
+    height: 100vh;
+}
+
+.menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    color: black; /* Màu chữ mặc định */
+    transition: color 0.3s;
+}
+
+.menu-item.active {
+    color: #48038C; /* Màu chữ khi mục được chọn */
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    transition: filter 0.3s;
+}
+
+.active-icon {
+    filter: invert(29%) sepia(96%) saturate(1503%) hue-rotate(246deg) brightness(97%) contrast(101%);
+}

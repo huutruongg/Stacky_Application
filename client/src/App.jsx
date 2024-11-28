@@ -1,5 +1,5 @@
 import React, { Fragment, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/scrollToTop/ScrollToTop";
 import Main from "./components/shared/Main";
 import SignInPage from "./pages/signIn/SignInPage";
@@ -11,7 +11,6 @@ import LayoutEmployer from "./components/shared/LayoutEmployer";
 import ResetPasswordPage from "./pages/employer/resetPassword/ResetPasswordPage";
 import JobPostPage from "./pages/employer/jobPost/JobPostPage";
 import JobPostManagerPage from "./pages/employer/jobPostManager/JobPostManagerPage";
-import useAuth from "./hooks/useAuth";
 import NotFoundPage from "./pages/errorPage/NotFoundPage";
 import HomePage from "./pages/home/HomePage";
 import JobDetailPage from "./pages/jobDetail/JobDetailPage";
@@ -20,13 +19,15 @@ import CompanyInfoPage from "./pages/employer/companyInfo/CompanyInfoPage";
 import JobPostManagerDetailPage from "./pages/employer/jobPostManagerDetail/JobPostManagerDetailPage";
 import ViewCandidateDetailPage from "./pages/employer/viewCandidateDetail/ViewCandidateDetailPage";
 import CompanyDetailPage from "./pages/candidate/companyDetail/CompanyDetailPage";
+import AdminRoutes from "./pages/admin/admin"; // Import AdminRoutes
 
 function App() {
   return (
     <Fragment>
       <ScrollToTop />
-      <Suspense fallback={<></>}>
+      <Suspense fallback={<div>Loading...</div>}>
         <Routes>
+          {/* Public routes */}
           <Route element={<Main />}>
             <Route path="/account.stacky.vn" element={<SignInPage />} />
             <Route path="/" element={<HomePage />} />
@@ -43,6 +44,8 @@ function App() {
               <Route path="/uploaded-cv" element={<CvUploadedPage />} />
             </Route>
           </Route>
+
+          {/* Employer routes */}
           <Route element={<LayoutEmployer />}>
             <Route element={<RequireAuth allowedRoles={["RECRUITER"]} />}>
               <Route path="/company-profile" element={<CompanyInfoPage />} />
@@ -58,8 +61,12 @@ function App() {
               />
             </Route>
           </Route>
+
+          {/* Admin routes */}
+          <Route path="/admin/*" element={<AdminRoutes />} />
+
+          {/* Wildcard route */}
           <Route path="*" element={<NotFoundPage />} />
-          {/* Wildcard route for 404 */}
         </Routes>
       </Suspense>
     </Fragment>
