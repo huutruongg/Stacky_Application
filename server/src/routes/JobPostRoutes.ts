@@ -20,7 +20,7 @@ export default class JobPostRoutes extends BaseRoutes {
         this.router.get('/find-job-posts', cacheMiddleware, this.jobPostController.findByCondition);
         this.router.get('/get-job-detail/:jobPostId', cacheMiddleware, this.jobPostController.getJobDetail);
         this.router.get('/get-related-job-posts', cacheMiddleware, this.jobPostController.getRelatedJobPosts);
-        // this.router.get('/get-job-posts-by-recruiter/:recruiterId', cacheMiddleware, this.jobPostController.getJobPostedByRecruiter);
+        this.router.get('/get-job-posted-by-recruiter/:recruiterId', cacheMiddleware, this.jobPostController.getJobPostedByRecruiter);
 
         // Candidate-specific routes
         this.router.get(

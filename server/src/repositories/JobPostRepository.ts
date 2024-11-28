@@ -113,6 +113,10 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         return data;
     }
 
+    async getJobPostedByRecruiter(userId: string): Promise<IJobPost[]> {
+        return await this.model.find({ userId: new Types.ObjectId(userId), invisible: false }).select("_id userId jobTitle orgName typeOfIndustry candidatesLimit postedAt applicationDeadline").lean().exec();
+    }
+
     async findAll_a(): Promise<IJobPost[]> {
         const result = await this.model.aggregate([
             {
@@ -202,9 +206,9 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11); // Go back 11 months
     
         const monthNames = [
-            "January", "February", "March", "April", "May", 
-            "June", "July", "August", "September", "October", 
-            "November", "December"
+            "january", "february", "march", "april", "may", 
+            "june", "july", "august", "september", "october", 
+            "november", "december"
         ];
     
         const months = Array.from({ length: 12 }, (_, i) => {

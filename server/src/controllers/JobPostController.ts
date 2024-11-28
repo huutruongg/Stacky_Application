@@ -358,4 +358,14 @@ export default class JobPostController extends BaseController {
             return this.sendError(res, 500, 'Internal Server Error!');
         }
     }
+
+    public async getJobPostedByRecruiter(req: Request, res: Response) {
+        try {
+            const { recruiterId } = req.params;
+            const result = await this.jobPostService.getJobPostedByRecruiter(recruiterId);
+            return this.sendResponse(res, 200, { success: true, result });
+        } catch (error) {
+            return this.sendError(res, 500, 'Internal Server Error!');
+        }
+    }
 }

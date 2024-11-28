@@ -387,6 +387,20 @@ export default class JobPostService {
         }
     }
 
+    async getJobPostedByRecruiter(recruiterId: string): Promise<IJobPost[]> {
+        try {
+            const jobPosts = await this.jobPostRepository.getJobPostedByRecruiter(recruiterId);
+            if (!jobPosts) {
+                console.warn(`No job posts found for recruiter ${recruiterId}`);
+                return [];
+            }
+            return jobPosts;
+        } catch (error) {
+            console.error('Error fetching job posts by recruiter:', error);
+            throw new Error('Could not fetch job posts by recruiter');
+        }
+    }
+
     saveAIResult(userId: string, jobPostId: string, aiResult: IAIResult) {
         try {
             const isExisting = this.applicantRepository.isExistingApplicant(userId, jobPostId);
