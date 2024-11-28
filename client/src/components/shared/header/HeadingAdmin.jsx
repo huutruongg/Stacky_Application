@@ -9,22 +9,25 @@ import { useJobSave } from "@/components/context/JobSaveProvider";
 import IconUpload from "@/components/icons/IconUpload";
 import IconProfile from "@/components/icons/IconProfile";
 import axiosInstance from "@/lib/authorizedAxios";
+import IconMenu from "@/components/icons/IconMenu";
+import IconSearch from "@/components/icons/IconSearch";
+import IconClose from "@/components/icons/IconClose";
 
-const HeadingAdmin = () => {
+const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
-  const { jobSaveData, loading } = useJobSave();
-  const [error, setError] = useState(null);
+  const [searchInput, setSearchInput] = useState("");
   const [data, setData] = useState(null);
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
 
+  const handleClearInput = () => setSearchInput("");
+
   useEffect(() => {
     const getData = async () => {
       try {
         const result = await axiosInstance.get(`/candidate/get-profile`);
-        // console.log(result.data.result);
         setData(result.data.result);
       } catch (error) {
         console.error("Error while fetching job data:", error);
@@ -32,14 +35,40 @@ const HeadingAdmin = () => {
     };
     getData();
   }, []);
-  // console.log(data);
 
   return (
     <header className="bg-white shadow-md">
       <div className="container flex justify-between items-center text-[#212F3F] border-b border-b-[#E9EAEC] h-[64px] lg:max-w-[1748px]">
-        <Link to={"/"}>
-          <Logo />
-        </Link>
+        <div className="flex items-center gap-20">
+          <Link to={"/"}>
+            <Logo />
+          </Link>
+          <div
+            className="p-1 rounded-md bg-[#ead6fd] hover:opacity-70 cursor-pointer"
+            onClick={handleToggleNavbar}
+          >
+            <IconMenu
+              className={`${isOpen ? "" : "rotate-180"} w-6 h-6`}
+              color={"#48038C"}
+            />
+          </div>
+        </div>
+        <div className="relative flex items-center min-w-[500px] border border-text4 rounded-full p-1">
+          <IconSearch className="absolute m-2 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Tìm kiếm"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="w-full pl-10 pr-5 py-1 outline-none rounded-lg"
+          />
+          {searchInput && (
+            <IconClose
+              className="cursor-pointer hover:bg-secondary rounded-full w-6 h-6 mr-2"
+              onClick={handleClearInput}
+            />
+          )}
+        </div>
         <div className="flex justify-between items-center gap-5">
           {user ? (
             <div className="flex items-center">

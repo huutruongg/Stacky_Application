@@ -65,14 +65,14 @@ const DashboardPage = () => {
     labels: labels,
     datasets: [
       {
-        label: "Doanh thu theo tháng",
+        label: "Tổng doanh thu Stacky",
         data: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
         tension: 0.1,
       },
       {
-        label: "Số lượng bài đăng",
+        label: "Tổng doanh thu bài đăng",
         data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
         fill: false,
         borderColor: "rgb(255, 99, 132)",
@@ -90,7 +90,7 @@ const DashboardPage = () => {
       },
       title: {
         display: true,
-        text: "Biểu đồ doanh thu",
+        text: "Thống kê doanh thu",
       },
     },
   };
@@ -116,7 +116,7 @@ const DashboardPage = () => {
         label: "Số lượng bài đăng theo tháng",
         data: [65, 59, 80, 81, 56, 55, 40, 10, 20, 30, 40, 50],
         backgroundColor: "#48038C",
-        borderRadius: 4
+        borderRadius: 4,
       },
     ],
   };
@@ -130,7 +130,7 @@ const DashboardPage = () => {
       },
       title: {
         display: true,
-        text: "Biểu đồ số lượng bài đăng",
+        text: "Thống kê số lượng bài đăng",
       },
     },
     scales: {
@@ -149,6 +149,7 @@ const DashboardPage = () => {
           unit="VND"
           icon={<IconPrice className="w-6 h-6" color="#fff" />}
           color="#ffcf3f"
+          path="/admin/dashboard"
         />
         <ItemDashboard
           title="Tổng bài viết"
@@ -156,6 +157,7 @@ const DashboardPage = () => {
           unit="Bài viết"
           icon={<IconManagerPost className="w-6 h-6" color="#fff" />}
           color="#0F3DDE"
+          path="/admin/post-management"
         />
         <ItemDashboard
           title="Công ty"
@@ -163,6 +165,7 @@ const DashboardPage = () => {
           unit="Công ty"
           icon={<IconBag className="w-6 h-6" color="#fff" />}
           color="#48538f"
+          path="/admin/company-management"
         />
         <ItemDashboard
           title="Tài khoản"
@@ -170,6 +173,7 @@ const DashboardPage = () => {
           unit="Tài khoản"
           icon={<IconAccount className="w-6 h-6" color="#fff" />}
           color="#d83636"
+          path="/admin/account-management"
         />
       </div>
       <div className="flex flex-col gap-5">
@@ -181,7 +185,12 @@ const DashboardPage = () => {
         <div className="col-span-6 bg-white p-5 rounded-lg">
           <div className="flex justify-between items-center text-primary">
             <h3 className="text-xl font-medium">Top công ty đăng bài</h3>
-            <div className="flex items-center px-3 py-1 bg-gray-100 rounded-lg gap-2 cursor-pointer" onClick={() => {handleSort()}}>
+            <div
+              className="flex items-center px-3 py-1 bg-gray-100 rounded-lg gap-2 cursor-pointer"
+              onClick={() => {
+                handleSort();
+              }}
+            >
               <span>Sắp xếp</span>
               <IconSort className="w-6 h-6" color="#48038C" />
             </div>
@@ -213,7 +222,11 @@ const DashboardPage = () => {
                 <TableCell className="text-center line-clamp-1 leading-10">
                   Phát triển Phần mềm
                 </TableCell>
-                <TableCell className="text-center">100</TableCell>
+                <TableCell className="text-center">
+                  <span className="text-primary px-2 py-1 bg-[#ead6fd] rounded-md">
+                    100
+                  </span>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>

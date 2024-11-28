@@ -29,6 +29,9 @@ import NotificationPage from "./pages/candidate/notification/NotificationPage";
 import ProfilePage from "./pages/candidate/profile/ProfilePage";
 import LayoutAdmin from "./components/shared/LayoutAdmin";
 import DashboardPage from "./pages/admin/dashboard/dashboardPage";
+import PostManagerPage from "./pages/admin/postManager/PostManagerPage";
+import CompanyManagerPage from "./pages/admin/companyManager/CompanyManagerPage";
+import AccountManagerPage from "./pages/admin/accountManager/AccountManagerPage";
 
 function App() {
   return (
@@ -79,6 +82,18 @@ function App() {
           </Route>
           <Route element={<LayoutAdmin />}>
             <Route path="/admin/dashboard" element={<DashboardPage />} />
+            <Route
+              path="/admin/post-management"
+              element={<PostManagerPage />}
+            />
+            <Route
+              path="/admin/company-management"
+              element={<CompanyManagerPage />}
+            />
+            <Route
+              path="/admin/account-management"
+              element={<AccountManagerPage />}
+            />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
           {/* Wildcard route for 404 */}
