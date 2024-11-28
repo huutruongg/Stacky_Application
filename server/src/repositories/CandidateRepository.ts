@@ -206,6 +206,7 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
                     userId: 1,
                     fullName: 1,
                     publicEmail: 1,
+                    avatarUrl: 1,
                     createdAt: { $arrayElemAt: ['$user.createdAt', 0] }
                 }
             }
