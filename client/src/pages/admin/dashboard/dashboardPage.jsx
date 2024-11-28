@@ -13,14 +13,26 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarElement,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2";
+import IconSort from "@/components/icons/IconSort";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -29,6 +41,10 @@ ChartJS.register(
 const DashboardPage = () => {
   const formatNumber = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const handleSort = () => {
+    console.log("sort");
   };
 
   const labels = [
@@ -49,10 +65,17 @@ const DashboardPage = () => {
     labels: labels,
     datasets: [
       {
-        label: "Doanh thu theo tháng",
-        data: [65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40],
+        label: "Tổng doanh thu Stacky",
+        data: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100],
         fill: false,
         borderColor: "rgb(75, 192, 192)",
+        tension: 0.1,
+      },
+      {
+        label: "Tổng doanh thu bài đăng",
+        data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+        fill: false,
+        borderColor: "rgb(255, 99, 132)",
         tension: 0.1,
       },
     ],
@@ -67,7 +90,52 @@ const DashboardPage = () => {
       },
       title: {
         display: true,
-        text: "Biểu đồ doanh thu",
+        text: "Thống kê doanh thu",
+      },
+    },
+  };
+
+  const postLabels = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const postData = {
+    labels: postLabels,
+    datasets: [
+      {
+        label: "Số lượng bài đăng theo tháng",
+        data: [65, 59, 80, 81, 56, 55, 40, 10, 20, 30, 40, 50],
+        backgroundColor: "#48038C",
+        borderRadius: 4,
+      },
+    ],
+  };
+
+  const postOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Thống kê số lượng bài đăng",
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
       },
     },
   };
@@ -81,6 +149,7 @@ const DashboardPage = () => {
           unit="VND"
           icon={<IconPrice className="w-6 h-6" color="#fff" />}
           color="#ffcf3f"
+          path="/admin/dashboard"
         />
         <ItemDashboard
           title="Tổng bài viết"
@@ -88,6 +157,7 @@ const DashboardPage = () => {
           unit="Bài viết"
           icon={<IconManagerPost className="w-6 h-6" color="#fff" />}
           color="#0F3DDE"
+          path="/admin/post-management"
         />
         <ItemDashboard
           title="Công ty"
@@ -95,6 +165,7 @@ const DashboardPage = () => {
           unit="Công ty"
           icon={<IconBag className="w-6 h-6" color="#fff" />}
           color="#48538f"
+          path="/admin/company-management"
         />
         <ItemDashboard
           title="Tài khoản"
@@ -102,11 +173,66 @@ const DashboardPage = () => {
           unit="Tài khoản"
           icon={<IconAccount className="w-6 h-6" color="#fff" />}
           color="#d83636"
+          path="/admin/account-management"
         />
       </div>
       <div className="flex flex-col gap-5">
         <div className="bg-white p-5 rounded-lg" style={{ height: "300px" }}>
           <Line className="w-full" options={options} data={data} />
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-5">
+        <div className="col-span-6 bg-white p-5 rounded-lg">
+          <div className="flex justify-between items-center text-primary">
+            <h3 className="text-xl font-medium">Top công ty đăng bài</h3>
+            <div
+              className="flex items-center px-3 py-1 bg-gray-100 rounded-lg gap-2 cursor-pointer"
+              onClick={() => {
+                handleSort();
+              }}
+            >
+              <span>Sắp xếp</span>
+              <IconSort className="w-6 h-6" color="#48038C" />
+            </div>
+          </div>
+          <Table className="mt-5">
+            <TableHeader className="text-base">
+              <TableRow>
+                <TableHead className="text-center w-[40%]">
+                  Tên công ty
+                </TableHead>
+                <TableHead className="text-center w-[40%]">Lĩnh vực</TableHead>
+                <TableHead className="text-center w-[20%]">
+                  Số bài viết
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow className="font-medium">
+                <TableCell className="text-center">
+                  <div className="flex items-center gap-2">
+                    <img
+                      src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
+                      alt=""
+                      className="w-8 h-8 rounded-full border border-gray-200"
+                    />
+                    <span className="line-clamp-1 leading-10">Công ty A</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-center line-clamp-1 leading-10">
+                  Phát triển Phần mềm
+                </TableCell>
+                <TableCell className="text-center">
+                  <span className="text-primary px-2 py-1 bg-[#ead6fd] rounded-md">
+                    100
+                  </span>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+        <div className="col-span-6 bg-white p-5 rounded-lg">
+          <Bar className="w-full" options={postOptions} data={postData} />
         </div>
       </div>
     </div>

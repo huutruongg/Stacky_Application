@@ -8,7 +8,6 @@ import IconSignUp from "@/components/icons/IconSignUp";
 import IconVietNamese from "@/components/icons/IconVietNamese";
 import Button from "@/components/button/Button";
 import IconEnglish from "@/components/icons/IconEnglish";
-import IconUSerAcount from "@/components/icons/IconUSerAcount";
 import IconProfile from "@/components/icons/IconProfile";
 
 const HeadingEmployer = () => {
@@ -25,7 +24,6 @@ const HeadingEmployer = () => {
         <Link to={"/"}>
           <Logo />
         </Link>
-
         <div className="flex justify-between items-center gap-8">
           <NavLink className="w-full rounded-lg" to={"/job-post"}>
             <Button
