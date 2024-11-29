@@ -64,15 +64,16 @@ export default class JobPostService {
         return await this.jobPostRepository.findById(jobPostId);
     }
 
-    async createJobPost(userId: string, data: Partial<IJobPost>): Promise<IJobPost | null> {
+    async createJobPost(userId: string, data: any): Promise<IJobPost | null> {
         try {
+            log("userId", userId);
             const recruiter = await this.recruiterRepository.findRecruiterByUserId(userId);
+            log("Has recruiter: ", recruiter);
             if (!recruiter) {
                 console.warn(`Recruiter with ID ${userId} not found.`);
                 return null;
             }
-
-            const createdJobPost = await this.jobPostRepository.createJobPost(recruiter.orgName, { userId, ...data });
+            const createdJobPost = await this.jobPostRepository.createJobPost(recruiter.orgName, {...data, userId: userId} as IJobPost);
             log("Job posting created successfully");
             return createdJobPost;
         } catch (error) {
@@ -375,7 +376,7 @@ export default class JobPostService {
             const jobPosts = await this.jobPostRepository.getJobPostsByRecruiter(recruiterId);
             log("jobPosts", jobPosts);
             const result = jobPosts.map((job) => this.toJobPostDTO(job));
-            if(!result) {
+            if (!result) {
                 console.warn(`No job posts found for recruiter ${recruiterId}`);
                 return [];
             }

@@ -187,34 +187,4 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
         if (!candidate) return null;
         return candidate.oauthTokens?.find((token: IOAuthToken) => token.provider === "GITHUB") || null;
     }
-
-    async findAll_a(): Promise<ICandidate[]> {
-        const result = await this.model.aggregate([
-            {
-                $lookup: {
-                    from: 'users',
-                    let: { userId: '$userId' },
-                    pipeline: [
-                        { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
-                        { $project: { createdAt: 1, _id: 0 } }
-                    ],
-                    as: 'user'
-                }
-            },
-            {
-                $project: {
-                    userId: 1,
-                    fullName: 1,
-                    publicEmail: 1,
-                    avatarUrl: 1,
-                    createdAt: { $arrayElemAt: ['$user.createdAt', 0] }
-                }
-            }
-        ]);
-        return result;
-    }
-
-    async count_a(): Promise<number> {
-        return await this.model.countDocuments().lean().exec();
-    }
 }

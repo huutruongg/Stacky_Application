@@ -13,6 +13,7 @@ import { scaleScore, transformCV } from "../utils/CVHandler";
 import CandidateModel from "../models/CandidateModel";
 import JobPostModel from "../models/JobPostModel";
 import { IAIResult } from "../interfaces/ICandidate";
+import { IJobPost } from "../interfaces/IJobPost";
 // import { getUserInfo } from "../middlewares/authenticate.m";
 
 export default class JobPostController extends BaseController {
@@ -134,7 +135,7 @@ export default class JobPostController extends BaseController {
 
     async createJobPost(req: Request, res: Response) {
         try {
-            const jobPostData = req.body;
+            const jobPostData = req.body.data;
             const userInfo = await (req as any).userData;
             log('userInfo', userInfo);
             log('jobPostData', jobPostData);

@@ -24,10 +24,9 @@ export interface IJobPost extends Document {
     jobDescription: string;
     workEnvironment: string;
     applicationDeadline: Date;
-    jobSchedule: string;
+    jobSchedule: Date;
     staffLevel: string;
     genderRequired: string;
-    postStatus: PostStatus;
     postedAt: Date;
     invisible: boolean;
 }
