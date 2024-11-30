@@ -56,9 +56,10 @@ const JobPostPage = () => {
     console.log(data);
     try {
       setIsLoading(true);
-      const response = await axiosInstance.post("/job-post/create-job-post", {
-        data,
-      });
+      const response = await axiosInstance.post(
+        "/job-post/create-job-post",
+        data
+      );
       setOpenReview(false);
       toast.success("Tạo bài viết thành công!!!");
     } catch (error) {

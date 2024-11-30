@@ -28,7 +28,7 @@ const NavbarAdmin = ({ isOpen }) => {
           isOpen={isOpen}
         />
         <ItemNavbar
-          label="Quản lý tài khoản"
+          label="Quản lý ứng viên"
           Icon={IconAccount}
           path="/admin/account-management"
           isOpen={isOpen}

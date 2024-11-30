@@ -1,6 +1,8 @@
+import FormatDate from "@/components/format/FormatDate";
 import React from "react";
 
-const ViewAccount = () => {
+const ViewAccount = ({ candidateData }) => {
+  console.log("candidateData", candidateData);
   return (
     <div className="py-5 px-10">
       <div className="flex items-center justify-around gap-10">
@@ -12,15 +14,15 @@ const ViewAccount = () => {
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <span className="font-medium">Họ và tên:</span>
-            <span>Nguyễn Văn Trần Anh</span>
+            <span>{candidateData?.fullName}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-medium">Email:</span>
-            <span>nguyenvana@email.com</span>
+            <span>{candidateData?.publicEmail}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-medium">Ngày đăng ký:</span>
-            <span>01/01/2024</span>
+            <span>{FormatDate.formatDate(candidateData?.createdAt)}</span>
           </div>
         </div>
       </div>

@@ -16,13 +16,11 @@ import IconClose from "@/components/icons/IconClose";
 const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
   const [data, setData] = useState(null);
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
 
-  const handleClearInput = () => setSearchInput("");
 
   useEffect(() => {
     const getData = async () => {
@@ -52,22 +50,6 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
               color={"#48038C"}
             />
           </div>
-        </div>
-        <div className="relative flex items-center min-w-[500px] border border-text4 rounded-full p-1">
-          <IconSearch className="absolute m-2 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Tìm kiếm"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-5 py-1 outline-none rounded-lg"
-          />
-          {searchInput && (
-            <IconClose
-              className="cursor-pointer hover:bg-secondary rounded-full w-6 h-6 mr-2"
-              onClick={handleClearInput}
-            />
-          )}
         </div>
         <div className="flex justify-between items-center gap-5">
           {user ? (
