@@ -146,6 +146,52 @@ export default class AuthController extends BaseController {
     };
   }
 
+  public authWithGithub(provider: "google" | "github") {
+    return async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): Promise<void> => {
+      try {
+        passport.authenticate(
+          provider,
+          { session: false },
+          async (err: any, user: IUser, info: any) => {
+            if (err || !user) {
+              log(err || info.message);
+              res
+                .status(401)
+                .json({
+                  success: false,
+                  message: info?.message || "Authentication failed",
+                });
+              return;
+            }
+            const candidate = await this.authService.findById(String(user._id));
+            // log("candidate", candidate);
+            if (!candidate) {
+              res
+                .status(401)
+                .json({ success: false, message: "Authentication failed" });
+              return;
+            }
+            // Set the authentication cookies for the user
+            await setAuthCookies(req, res, user);
+            const userInfo = await (req as any).userData;
+            let isSuccessful = userInfo?.userId ? true : false;
+            log("success: ", isSuccessful);
+            log("userInfo oauth: ", userInfo);
+            res.redirect(
+              `${process.env.URL_CLIENT}/account.stacky.vn?token=${isSuccessful}`
+            );
+          }
+        )(req, res, next);
+      } catch (error) {
+        return next(error);
+      }
+    };
+  }
+
   public async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { error } = RecruiterSignUpSchema.validate(req.body, { abortEarly: false });

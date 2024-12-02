@@ -20,7 +20,7 @@ export default class GithubController extends BaseController {
     public async getGithubScore(req: Request, res: Response): Promise<void> {
         try {
             const userInfo = (req as any).userData;
-            const jobPostId = req.params.jobPostId;
+            const {jobPostId, githubToken} = req.body;
             const score = await this.githubService.getGitHubScore(String(userInfo.userId), jobPostId);
             if (!score) {
                 return this.sendError(res, 404, 'No data found');

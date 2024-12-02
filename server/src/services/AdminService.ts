@@ -254,7 +254,8 @@ export default class AdminService {
             {
                 $group: {
                     _id: "$userId",  // Group by recruiter (userId)
-                    numberOfPost: { $sum: 1 }  // Count the number of posts for each recruiter
+                    numberOfPost: { $sum: 1 },  // Count the number of posts for each recruiter
+                    typeOfIndustry: { $first: "$typeOfIndustry" }  // Get the type of industry for each recruiter
                 }
             },
             {
@@ -272,7 +273,7 @@ export default class AdminService {
                 $project: {
                     orgImage: "$recruiterDetails.orgImage",
                     orgName: "$recruiterDetails.orgName",
-                    typeOfIndustry: "$recruiterDetails.typeOfIndustry",
+                    typeOfIndustry: 1,
                     numberOfPost: 1  // Include the number of posts
                 }
             },
@@ -283,6 +284,7 @@ export default class AdminService {
                 $limit: 5  // Limit to top 5 recruiters
             }
         ]);
+        log("topRecruiters", topRecruiters);
         return topRecruiters;
     }
 
