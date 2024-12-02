@@ -155,12 +155,13 @@ payButton.addEventListener("click", () => {
 
 
 function callCreateTransactionAPI(amount) {
+    const packageName = "Gói nạp tiền";
     fetch("http://localhost:5050/payment/create-transaction", { // Replace with your API endpoint
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ amount: amount })
+        body: JSON.stringify({ packageName, amount: amount })
     })
     .then(response => response.json())
     .then(data => {
@@ -214,13 +215,12 @@ function checkTransactionStatus(transId) {
 
 
 function updateServerBalance(amount) {
-    const packageName = "Gói nạp tiền"; // Optional - can be passed from the client
     fetch('http://localhost:5050/payment/deposit-funds', {  // Replace with your server endpoint
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ packageName: packageName, amount: amount })
+        body: JSON.stringify({ amount: amount })
     })
     .then(response => response.json())
     .then(data => {

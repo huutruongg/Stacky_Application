@@ -65,7 +65,8 @@ export default class AdminController extends BaseController {
 
     public async countJobsByMonth(req: Request, res: Response): Promise<void> {
         try {
-            const result = await this.adminService.countJobsByMonth();
+            const year = req.query.year as string;
+            const result = await this.adminService.countJobsByMonth(year);
             return this.sendResponse(res, 200, { success: true, result });
         } catch (error) {
             log(error);

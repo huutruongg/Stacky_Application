@@ -151,63 +151,65 @@ export default class AdminService {
         return result;
     }
 
-    public async countJobsByMonth() {
-        const twelveMonthsAgo = new Date();
-        twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11); // Go back 11 months
-
+    public async countJobsByMonth(year: string) {
+        const selectedYear = parseInt(year, 10);
+        log("selectedYear", selectedYear);
         const monthNames = [
             "january", "february", "march", "april", "may",
             "june", "july", "august", "september", "october",
             "november", "december"
         ];
-
-        const months = Array.from({ length: 12 }, (_, i) => {
-            const date = new Date();
-            date.setMonth(date.getMonth() - 11 + i); // Generate months dynamically
-            return { month: date.getMonth() + 1, postCount: 0 }; // Default value
-        });
-
+    
+        // Initialize months array with default values for the selected year
+        const months = Array.from({ length: 12 }, (_, i) => ({
+            month: i + 1, // 1 for January, 2 for February, etc.
+            postCount: 0,
+        }));
+    
         const result = await JobPostModel.aggregate([
             {
                 $addFields: {
-                    postedAt: { $toDate: "$postedAt" }
-                }
+                    postedAt: { $toDate: "$postedAt" }, // Ensure postedAt is a Date
+                },
             },
             {
                 $match: {
-                    postedAt: { $gte: twelveMonthsAgo } // Only include jobs from the last 12 months
-                }
+                    $expr: {
+                        $eq: [{ $year: "$postedAt" }, selectedYear], // Match only the selected year
+                    },
+                },
             },
             {
                 $group: {
-                    _id: { $month: "$postedAt" },
-                    postCount: { $sum: 1 }
-                }
+                    _id: { $month: "$postedAt" }, // Group by month
+                    postCount: { $sum: 1 }, // Count posts in each month
+                },
             },
             {
                 $project: {
                     month: "$_id",
                     postCount: 1,
-                    _id: 0
-                }
-            }
+                    _id: 0,
+                },
+            },
         ]);
-
+    
         // Merge with default months
         const mergedResult = months.map((month) => {
             const found = result.find((r) => r.month === month.month);
             return found || month;
         });
-
+    
         // Map result to named format
         const namedResult: Record<string, number> = {};
         mergedResult.forEach(({ month, postCount }) => {
             const monthName = monthNames[month - 1];
             namedResult[monthName] = postCount;
         });
-
+    
         return namedResult;
     }
+    
 
     private async getTotalDepositRevenue() {
         const totalDeposit = await RevenueReport.aggregate([
@@ -286,9 +288,7 @@ export default class AdminService {
 
     public async getRevenueReport(year: string) {
         // find all revenue report by year
-        const revenue = await RevenueReport.find({ year })
-            .sort({ month: 1 }); // sort by month ascending
-
+        const revenue = await RevenueReport.find({ year: year }).sort({ month: 1 }); // sort by month ascending
         // Month names
         const monthNames = [
             "january", "february", "march", "april", "may", "june",
@@ -298,14 +298,12 @@ export default class AdminService {
         // Map revenue data to month names
         const monthlyRevenue = monthNames.reduce((result: any, monthName: string, index: any) => {
             const month = index + 1; // Tháng từ 1 đến 12
-            const monthData = revenue.find(item => item.month === month);
-
+            const monthData = revenue.find(item => String(item.month) === month.toString());
             // If monthData is not found, set depositRevenue and paymentRevenue to 0
             result[monthName] = {
                 depositRevenue: monthData ? monthData.depositRevenue : 0,
                 paymentRevenue: monthData ? monthData.paymentRevenue : 0,
             };
-
             return result;
         }, {});
 
