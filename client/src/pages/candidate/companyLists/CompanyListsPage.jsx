@@ -131,8 +131,8 @@ const CompanyListsPage = () => {
               <CompanyInfoSkeleton />
             </>
           ) : (
-            currentCompanyData.map((item) => (
-              <ItemCompany key={item._id} item={item} />
+            currentCompanyData.map((item, index) => (
+              <ItemCompany key={index} item={item} />
             ))
           )}
         </div>
