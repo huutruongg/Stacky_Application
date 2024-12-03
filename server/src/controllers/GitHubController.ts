@@ -17,7 +17,7 @@ export default class GithubController extends BaseController {
         this.applicantRepository = applicantRepository;
     }
 
-    public async getGithubScore(req: Request, res: Response): Promise<void> {
+    public getGithubScore = async (req: Request, res: Response) => {
         try {
             const userInfo = (req as any).userData;
             const { jobPostId, token } = req.query;
@@ -35,7 +35,7 @@ export default class GithubController extends BaseController {
         }
     }
 
-    public async isLoggedInGithub(req: Request, res: Response): Promise<void> {
+    public isLoggedInGithub = async (req: Request, res: Response) => {
         try {
             const userInfo = (req as any).userData;
             log("userInfo", userInfo);
@@ -45,7 +45,12 @@ export default class GithubController extends BaseController {
                 return this.sendError(res, 404, 'No candidate found');
             }
             const isLoggedInGithub = candidate.oauthToken?.provider === Provider.GITHUB;
-            this.sendResponse(res, 200, { success: true, result: { isLoggedInGithub } });
+            const token = candidate.oauthToken?.accessToken;
+            if (isLoggedInGithub && token) {
+                return this.sendResponse(res, 200, { success: true, isLoggedInGithub, token });
+            }
+
+            return this.sendResponse(res, 200, { success: true, result: { isLoggedInGithub } });
 
         } catch (error) {
             log(error);
