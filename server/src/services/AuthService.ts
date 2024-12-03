@@ -71,7 +71,6 @@ export default class AuthService {
 
     async handleUserOAuth(
         provider: string,
-        providerId: string,
         privateEmail: string,
         fullName: string,
         accessToken: string
@@ -86,7 +85,7 @@ export default class AuthService {
             }
 
             // If the role is CANDIDATE, update OAuth details and return the user
-            await this.candidateRepository.updateOauth(String(existingUser._id), provider, providerId, accessToken);
+            await this.candidateRepository.updateOauth(String(existingUser._id), provider, accessToken);
             return existingUser;
         }
 
@@ -108,7 +107,7 @@ export default class AuthService {
         log("Candidate profile created: ", candidate);
 
         // Update OAuth details for the new user
-        await this.candidateRepository.updateOauth(String(newUser._id), provider, providerId, accessToken);
+        await this.candidateRepository.updateOauth(String(newUser._id), provider, accessToken);
 
         return newUser;
     }

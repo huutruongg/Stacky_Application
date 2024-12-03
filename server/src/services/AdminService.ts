@@ -132,10 +132,10 @@ export default class AdminService {
 
     public async getDetailCandidate(candidateId: string) {
         const data = await CandidateModel.findOne({ userId: new Types.ObjectId(candidateId) })
-            .select("userId fullName publicEmail avatarUrl createdAt oauthTokens")
+            .select("userId fullName publicEmail avatarUrl createdAt oauthToken")
             .lean()
             .exec() as ICandidate | null;
-        if (!data || !data.oauthTokens) return null;
+        if (!data || !data.oauthToken) return null;
 
         const userData = await UserModel.findById({ _id: new Types.ObjectId(candidateId) }).select("privateEmail createdAt").lean().exec();
         if (!userData) return null; 
@@ -146,7 +146,7 @@ export default class AdminService {
             publicEmail: data.publicEmail,
             avatarUrl: data.avatarUrl,
             createdAt: userData.createdAt,
-            loginWith: `${data.oauthTokens[0].provider} - ${userData.privateEmail}`
+            loginWith: `${data.oauthToken.provider} - ${userData.privateEmail}`
         };
         return result;
     }

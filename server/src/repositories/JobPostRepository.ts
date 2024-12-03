@@ -4,9 +4,7 @@ import { log } from "console";
 import { IJobPostMin } from "../interfaces/IJobPost";
 import JobPostModel from "../models/JobPostModel";
 import { BaseRepository } from "./BaseRepository";
-import { Document, Types } from "mongoose";
-import { PostStatus } from "../enums/EPostStatus";
-import { ApplyStatus } from "../enums/EApplySatus";
+import { Types } from "mongoose";
 import { IApplicant } from "../interfaces/ICandidate";
 
 export default class JobPostRepository extends BaseRepository<IJobPost> {

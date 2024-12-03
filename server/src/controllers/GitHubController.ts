@@ -1,12 +1,12 @@
 import { log } from "console";
-import { Repo } from "../interfaces/IGithub";
 import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
 import CandidateRepository from "../repositories/CandidateRepository";
 import GithubService from "../services/GitHubService";
-import { App } from "firebase-admin/app";
 import ApplicantRepository from "../repositories/ApplicantRepository";
-
+import dotenv from "dotenv";
+import { Provider } from "../enums/EProvider";
+dotenv.config();
 
 export default class GithubController extends BaseController {
     private githubService: GithubService;
@@ -20,17 +20,14 @@ export default class GithubController extends BaseController {
     public async getGithubScore(req: Request, res: Response): Promise<void> {
         try {
             const userInfo = (req as any).userData;
-            const {jobPostId, githubToken} = req.body;
-            const score = await this.githubService.getGitHubScore(String(userInfo.userId), jobPostId);
+            const { jobPostId, token } = req.query;
+            const score = await this.githubService.getGitHubScore(String(jobPostId), String(token));
             if (!score) {
                 return this.sendError(res, 404, 'No data found');
             }
             const roundedScore = Math.round(score);
             log("roundedScore", roundedScore);
-            const isUpdated = await this.applicantRepository.updateGithubScore(String(userInfo.userId), jobPostId, roundedScore);
-            // if (!isUpdated) {
-            //     return this.sendError(res, 500, 'Failed to update score');
-            // }
+            await this.applicantRepository.updateGithubScore(String(userInfo.userId), String(jobPostId), roundedScore);
             return this.sendResponse(res, 200, { success: true, score: roundedScore });
         } catch (error) {
             log(error);
@@ -47,10 +44,7 @@ export default class GithubController extends BaseController {
             if (!candidate) {
                 return this.sendError(res, 404, 'No candidate found');
             }
-            if (!Array.isArray(candidate.oauthTokens)) {
-                return this.sendError(res, 404, 'No oauth tokens found');
-            }
-            const isLoggedInGithub = Array.isArray(candidate?.oauthTokens) && candidate.oauthTokens.some(token => token.provider === "GITHUB");
+            const isLoggedInGithub = candidate.oauthToken?.provider === Provider.GITHUB;
             this.sendResponse(res, 200, { success: true, result: { isLoggedInGithub } });
 
         } catch (error) {

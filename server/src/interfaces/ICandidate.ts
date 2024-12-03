@@ -23,7 +23,7 @@ export interface ICandidate extends Document {
     githubUrl?: string;
     personalDescription?: string;
     jobPosition?: string;
-    oauthTokens?: IOAuthToken[];
+    oauthToken?: IOAuthToken;
     languages?: ILanguage[];
     projects?: IProject[];
     educations?: IEducation[];

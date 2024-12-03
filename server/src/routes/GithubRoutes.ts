@@ -18,7 +18,7 @@ export default class GithubRoutes extends BaseRoutes {
     private initializeRoutes() {
         this.router.get('/github-score', this.serveGithubPage);
         this.router.get('/is-github-logged-in', authenticateJWT, this.githubController.isLoggedInGithub);
-        this.router.get('/get-github-score/:jobPostId', authenticateJWT, this.githubController.getGithubScore);
+        this.router.get('/get-github-score', authenticateJWT, this.githubController.getGithubScore);
     }
     
     private serveGithubPage(req: Request, res: Response): void {

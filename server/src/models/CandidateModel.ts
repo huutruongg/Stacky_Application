@@ -5,9 +5,7 @@ import { ApplyStatus } from '../enums/EApplySatus';
 // Define the schema for OAuthTokenSchema
 const OAuthTokenSchema: Schema = new Schema({
     provider: { type: String, required: true },
-    providerId: { type: String, required: true },
     accessToken: { type: String, required: true },
-    refreshToken: { type: String }
 });
 
 
@@ -83,7 +81,7 @@ const CandidateSchema: Schema = new Schema({
     githubUrl: { type: String },
     personalDescription: { type: String },
     jobPosition: { type: String },
-    oauthTokens: [OAuthTokenSchema],
+    oauthToken: OAuthTokenSchema,
     languages: [LanguageSchema],
     projects: [ProjectSchema],
     educations: [EducationSchema],

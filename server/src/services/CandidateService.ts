@@ -34,10 +34,9 @@ export default class CandidateService {
     async updateOauth(
         userId: string,
         provider: string,
-        providerId: string,
         accessToken: string
     ): Promise<ICandidate | null> {
-        return await this.candidateRepository.updateOauth(userId, provider, providerId, accessToken);
+        return await this.candidateRepository.updateOauth(userId, provider, accessToken);
     }
 
     async updateProfile(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {

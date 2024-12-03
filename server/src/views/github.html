@@ -103,33 +103,10 @@
         const calculateScoreButton = document.getElementById("calculate-score-button");
 
         // Check login status
-        async function checkLoginStatus() {
-            // const response = await fetch("http://localhost:5050/github/is-github-logged-in");
-            const response = await fetch('http://localhost:5050/github/is-github-logged-in', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            var isLoggedInGithub = false;
-            if (response.ok) {
-                const data = await response.json();
-                console.log("data", data.isLoggedInGithub);
-                isLoggedInGithub = data.result.isLoggedInGithub;
-            }
-            console.log("isLoggedInGithub", isLoggedInGithub);
-            if (isLoggedInGithub) {
-                // Show "Calculate Score" button if logged in
-                githubAuthButton.style.display = "none";
-                calculateScoreButton.style.display = "inline-block";
-                document.getElementById("description").textContent =
-                    "You are logged in. Click 'Calculate Score' to calculate your GitHub contribution score.";
-            } else {
-                // Show "Authorize with GitHub" button if not logged in
-                githubAuthButton.style.display = "inline-block";
-                calculateScoreButton.style.display = "none";
-            }
-        }
+        githubAuthButton.style.display = "none";
+        calculateScoreButton.style.display = "inline-block";
+        document.getElementById("description").textContent =
+            "You are logged in. Click 'Calculate Score' to calculate your GitHub contribution score.";
 
         // Redirect to GitHub Authorization Page
         githubAuthButton.addEventListener("click", () => {
@@ -162,9 +139,22 @@
         // Simulate GitHub Score Calculation API (Replace this with real API logic)
         async function calculateGitHubScore() {
             const jobPostId = "4c3f3554cb345d6be482d69a";
+            const token = "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";
 
             try {
-                const response = await fetch(`http://localhost:5050/github/get-github-score/${jobPostId}`);
+                // Append jobPostId and token as query parameters in the URL
+                const url = new URL('http://localhost:5050/github/get-github-score');
+                url.searchParams.append('jobPostId', jobPostId);
+                url.searchParams.append('token', token);
+
+                const response = await fetch(url.toString(), {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include' // Include credentials if necessary
+                });
+
                 if (!response.ok) {
                     throw new Error(`Failed to fetch score. HTTP status: ${response.status}`);
                 }
@@ -172,19 +162,15 @@
                 const data = await response.json(); // Parse the response
                 console.log("Parsed API response:", data);
 
-                // if (!data.result) {
-                //     throw new Error("API response does not contain 'result'");
-                // }
                 alert(data.score);
-                return data.score; 
+                return data.score;
             } catch (error) {
                 console.error("Error calculating GitHub score:", error.message);
                 throw error; // Let the caller handle the error
             }
+
         }
 
-        // Initialize UI based on login status
-        checkLoginStatus();
     </script>
 </body>
 

@@ -51,16 +51,17 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
     async updateOauth(
         userId: string,
         provider: string,
-        providerId: string,
         accessToken: string
     ): Promise<ICandidate | null> {
         log("userId", userId);
+    
         return await this.model.findOneAndUpdate(
             { userId: new Types.ObjectId(userId) },
-            { $set: { "oauthTokens": { provider, providerId, accessToken } } },
-            { new: true }
+            { $set: { oauthToken: { provider, accessToken } } },
+            { new: true } // Trả về document đã cập nhật
         ).exec();
     }
+    
 
     async updateCandidate(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {
         const result = await this.model.findOneAndUpdate(
@@ -182,9 +183,9 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
         return result.modifiedCount > 0;
     }
 
-    async getGithubToken(userId: string): Promise<IOAuthToken | null> {
-        const candidate = await this.model.findOne({ userId: new Types.ObjectId(userId) }).select("oauthTokens").lean();
+    async getGithubToken(userId: string): Promise<string | null> {
+        const candidate = await this.model.findOne({ userId: new Types.ObjectId(userId) }).select("oauthToken").lean();
         if (!candidate) return null;
-        return candidate.oauthTokens?.find((token: IOAuthToken) => token.provider === "GITHUB") || null;
+        return candidate.oauthToken?.accessToken as string;
     }
 }

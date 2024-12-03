@@ -1,12 +1,9 @@
-import { Application } from 'express';
-
 import JobPostRepository from "../repositories/JobPostRepository";
 import { Types } from "mongoose";
 import CandidateRepository from "../repositories/CandidateRepository";
 import RecruiterRepository from "../repositories/RecruiterRepository";
 import { ApplyStatus } from "../enums/EApplySatus";
 import { UserRoles } from "../utils/roles";
-import { PostStatus } from "../enums/EPostStatus";
 import { JobPostDTO } from "../dtos/JobPostDTO";
 import { IAIResult, IApplicant } from "../interfaces/ICandidate";
 import { log } from "console";
