@@ -4,7 +4,6 @@ import app from './app';
 import { connectDB, disconnectDB } from './config/Database';
 import { Server } from 'socket.io';
 import http from 'http';
-import mongoose from 'mongoose';
 
 const PORT = process.env.PORT || 5050;
 

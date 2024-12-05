@@ -15,7 +15,6 @@ export default class AdminRoutes extends BaseRoutes {
         // getting
         this.router.get('/get-all-jobs', authenticateJWT, this.adminController.getAllJobs);
         this.router.get('/get-all-candidates', authenticateJWT, this.adminController.getAllCandidates);
-        this.router.get('/get-detail-candidate/:candidateId', authenticateJWT, this.adminController.getDetailCandidate);
         this.router.get('/get-all-companies', authenticateJWT, this.adminController.getAllCompanies);
         this.router.get('/get-detail-company/:recruiterId', authenticateJWT, this.adminController.getDetailCompany);
         this.router.get('/count-jobs-by-month', authenticateJWT, this.adminController.countJobsByMonth);

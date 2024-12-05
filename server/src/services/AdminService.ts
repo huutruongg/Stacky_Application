@@ -22,7 +22,7 @@ export default class AdminService {
 
     }
 
-    public async getAllCandidates() {
+    public async getAllCandidates(includeDetails = false) {
         const result = await CandidateModel.aggregate([
             {
                 $lookup: {
@@ -30,7 +30,7 @@ export default class AdminService {
                     let: { userId: '$userId' },
                     pipeline: [
                         { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
-                        { $project: { createdAt: 1, _id: 0 } }
+                        { $project: { createdAt: 1, privateEmail: 1, _id: 0 } }
                     ],
                     as: 'user'
                 }
@@ -41,10 +41,40 @@ export default class AdminService {
                     fullName: 1,
                     publicEmail: 1,
                     avatarUrl: 1,
-                    createdAt: { $arrayElemAt: ['$user.createdAt', 0] }
+                    createdAt: { $arrayElemAt: ['$user.createdAt', 0] },
+                    loginWith: {
+                            $concat: [
+                                { $ifNull: ['$oauthToken.provider', 'Unknown Provider'] },
+                                ' - ',
+                                { $ifNull: [{ $arrayElemAt: ['$user.privateEmail', 0] }, 'No Email'] } 
+                            ]
+                        }
+
                 }
             }
         ]);
+
+        return result;
+    }
+
+    public async getDetailCandidate(candidateId: string) {
+        const data = await CandidateModel.findOne({ userId: new Types.ObjectId(candidateId) })
+            .select("userId fullName publicEmail avatarUrl createdAt oauthToken")
+            .lean()
+            .exec() as ICandidate | null;
+        if (!data || !data.oauthToken) return null;
+
+        const userData = await UserModel.findById({ _id: new Types.ObjectId(candidateId) }).select("privateEmail createdAt").lean().exec();
+        if (!userData) return null;
+
+        const result = {
+            userId: data.userId,
+            fullName: data.fullName,
+            publicEmail: data.publicEmail,
+            avatarUrl: data.avatarUrl,
+            createdAt: userData.createdAt,
+            loginWith: `${data.oauthToken.provider} - ${userData.privateEmail}`
+        };
         return result;
     }
 
@@ -80,7 +110,8 @@ export default class AdminService {
                     typeOfIndustry: 1,
                     candidatesLimit: 1,
                     postedAt: 1,
-                    applicationDeadline: 1
+                    applicationDeadline: 1,
+                    invisible: 1
                 }
             },
             {
@@ -130,27 +161,6 @@ export default class AdminService {
         return result.length > 0 ? result[0] : null;
     }
 
-    public async getDetailCandidate(candidateId: string) {
-        const data = await CandidateModel.findOne({ userId: new Types.ObjectId(candidateId) })
-            .select("userId fullName publicEmail avatarUrl createdAt oauthToken")
-            .lean()
-            .exec() as ICandidate | null;
-        if (!data || !data.oauthToken) return null;
-
-        const userData = await UserModel.findById({ _id: new Types.ObjectId(candidateId) }).select("privateEmail createdAt").lean().exec();
-        if (!userData) return null; 
-
-        const result = {
-            userId: data.userId,
-            fullName: data.fullName,
-            publicEmail: data.publicEmail,
-            avatarUrl: data.avatarUrl,
-            createdAt: userData.createdAt,
-            loginWith: `${data.oauthToken.provider} - ${userData.privateEmail}`
-        };
-        return result;
-    }
-
     public async countJobsByMonth(year: string) {
         const selectedYear = parseInt(year, 10);
         log("selectedYear", selectedYear);
@@ -159,13 +169,13 @@ export default class AdminService {
             "june", "july", "august", "september", "october",
             "november", "december"
         ];
-    
+
         // Initialize months array with default values for the selected year
         const months = Array.from({ length: 12 }, (_, i) => ({
             month: i + 1, // 1 for January, 2 for February, etc.
             postCount: 0,
         }));
-    
+
         const result = await JobPostModel.aggregate([
             {
                 $addFields: {
@@ -193,23 +203,23 @@ export default class AdminService {
                 },
             },
         ]);
-    
+
         // Merge with default months
         const mergedResult = months.map((month) => {
             const found = result.find((r) => r.month === month.month);
             return found || month;
         });
-    
+
         // Map result to named format
         const namedResult: Record<string, number> = {};
         mergedResult.forEach(({ month, postCount }) => {
             const monthName = monthNames[month - 1];
             namedResult[monthName] = postCount;
         });
-    
+
         return namedResult;
     }
-    
+
 
     private async getTotalDepositRevenue() {
         const totalDeposit = await RevenueReport.aggregate([

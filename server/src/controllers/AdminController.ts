@@ -31,17 +31,6 @@ export default class AdminController extends BaseController {
         }
     }
 
-    public async getDetailCandidate(req: Request, res: Response): Promise<void> {
-        try {
-            const candidateId = req.params.candidateId;
-            const candidate = await this.adminService.getDetailCandidate(candidateId);
-            return this.sendResponse(res, 200, { success: true, candidate });
-        } catch (error) {
-            log(error);
-            return this.sendError(res, 500, 'Internal server error');
-        }
-    }
-
     public async getAllCompanies(req: Request, res: Response): Promise<void> {
         try {
             const companies = await this.adminService.getAllRecruiters();
@@ -87,7 +76,7 @@ export default class AdminController extends BaseController {
     public async getTop5PostedJobs(req: Request, res: Response): Promise<void> {
         try {
             const top5PostedJobs = await this.adminService.getTop5PostedJobs();
-            return this.sendResponse(res, 200, { success: true, top5PostedJobs });
+            return this.sendResponse(res, 200, { success: true, result: top5PostedJobs });
         } catch (error) {
             log(error);
             return this.sendError(res, 500, 'Internal server error');
