@@ -1,5 +1,6 @@
+import { Server } from "socket.io";
 import NotificationRepository from "../repositories/NotificationRepository";
-import {io} from '../server.local';
+type ConnectedUsers = Record<string, string>;
 export default class NotificationService {
     private notificationRepository: NotificationRepository;
 
@@ -7,13 +8,21 @@ export default class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    addNotification = async (userId: string, message: string) => {
-        const notification = await this.notificationRepository.createNotification({ userId, message });
-        io.to(userId).emit('new-notification', {
-            message: notification.message,
-            unreadCount: await this.getUnreadCount(userId),
-          });
-        return notification;
+    sendNotification = async (io: Server, connectedUsers: ConnectedUsers, message: string, userIds: string[]) => {
+        await Promise.all(
+            userIds.map(async (userId) => {
+                await this.notificationRepository.createNotification({ userId, message });
+                const socketId = connectedUsers[userId];
+                if (socketId) {
+                    const unreadCount = await this.getUnreadCount(userId);
+
+                    io.to(socketId).emit("notification", {
+                        message,
+                        unreadCount,
+                    });
+                }
+            })
+        );
     }
 
     getAllNotifications = async (userId: string) => {

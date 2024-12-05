@@ -4,13 +4,13 @@ import app from './app';
 import { connectDB, disconnectDB } from './config/Database';
 import { Server } from 'socket.io';
 import http from 'http';
-
+let connectedUsers: any = {};
 const PORT = process.env.PORT || 5050;
 
-// Khởi tạo HTTP server từ Express app
+// Initialize the HTTP server
 const server = http.createServer(app);
 
-// Khởi tạo Socket.IO server với HTTP server
+// Initialize Socket.IO
 export const io = new Server(server, {
     cors: {
         origin: [
@@ -23,32 +23,37 @@ export const io = new Server(server, {
     },
 });
 
-// Middleware để đưa `io` vào request
+// Middleware to inject the Socket.IO server instance into the request object
 app.use((req, res, next) => {
     (req as any).io = io;
+    (req as any).connectedUsers = connectedUsers;
     next();
 });
 
-// Kết nối với cơ sở dữ liệu và khởi động server
+// Connect to the database
 connectDB()
     .then(async () => {
         log('Database connection established.');
-
-        // Cấu hình Socket.IO
+        // Listen for incoming socket.io connections
         io.on('connection', (socket) => {
-            log(`Client connected: ${socket.id}`);
+            console.log(`User connected: ${socket.id}`);
 
-            socket.on('new-notification', (data) => {
-                log('New notification received:', data);
-                io.emit('new-notification', data);
+            socket.on('register', (userId) => {
+                connectedUsers[userId] = socket.id;
+                console.log(`User registered: ${userId}`);
             });
 
             socket.on('disconnect', () => {
-                log(`Client disconnected: ${socket.id}`);
+                console.log(`User disconnected: ${socket.id}`);
+                for (const userId in connectedUsers) {
+                    if (connectedUsers[userId] === socket.id) {
+                        delete connectedUsers[userId];
+                    }
+                }
             });
         });
 
-        // Thiết lập node-cron để chạy lúc 12h đêm mỗi ngày
+        // Run a daily task at midnight
         cron.schedule('0 0 * * *', async () => {
             log('Running daily task at midnight...');
             try {
@@ -57,10 +62,10 @@ connectDB()
 
                 const currentDate = new Date();
 
-                // Cập nhật trạng thái bài viết
+                // Update all job posts that have passed the application deadline
                 const result = await jobPostCollection.updateMany(
-                    { invisible: false, applicationDeadline: { $lt: currentDate } }, // Bài viết hết hạn
-                    { $set: { invisible: true } } // Chuyển trạng thái thành invisible
+                    { invisible: false, applicationDeadline: { $lt: currentDate } }, // The application deadline has passed
+                    { $set: { invisible: true } } // Mark the job post as invisible
                 );
 
                 log(`${result.modifiedCount} job posts marked as invisible.`);
@@ -68,8 +73,7 @@ connectDB()
                 console.error('Error running daily task:', error);
             }
         });
-
-        // Lắng nghe cổng
+        // Start the server
         server.listen(PORT, () => {
             log(`[server]: Server is running at http://localhost:${PORT}`);
         });
@@ -78,7 +82,7 @@ connectDB()
         console.error('Failed to connect to the database:', error);
     });
 
-// Xử lý SIGINT để đóng kết nối DB và server an toàn
+// Handle graceful shutdown
 process.on('SIGINT', async () => {
     await disconnectDB();
     server.close(() => {
