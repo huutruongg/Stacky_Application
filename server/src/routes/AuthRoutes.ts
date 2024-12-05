@@ -17,19 +17,20 @@ export default class AuthRoutes extends BaseRoutes {
         this.router.get('/f-login', this.serveLoginPage);
         this.router.get('/logout', this.serveLogoutPage);
 
-        // Cập nhật các route OAuth cho GitHub và Google
+        // Cập nhật các route OAuth cho GitHub
         this.router.get('/github/login', this.authController.githubLoginRedirect);
         this.router.get('/github/callback', this.authController.handleGitHubCallback);
+        this.router.get('/github-info', this.authController.githubInfo);
 
         // Các route OAuth cho Google
         this.router.get('/google/login', this.authController.googleLoginRedirect);
         this.router.get('/google/callback', this.authController.handleGoogleCallback);
-        this.router.get('/github-info', this.authController.githubInfo);
-
+        
         // Các route đăng ký và đăng nhập thông thường
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authController.login);
         this.router.post('/logout', this.authController.logout);
+        this.router.get('/get-access-token', this.authController.getAccessToken);
     }
 
     private serveLoginPage(req: Request, res: Response): void {
