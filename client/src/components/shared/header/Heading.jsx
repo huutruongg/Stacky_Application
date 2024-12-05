@@ -35,7 +35,7 @@ const Heading = () => {
     };
     getData();
   }, []);
-  // console.log(data);
+  console.log(data);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -84,7 +84,8 @@ const Heading = () => {
                   ) : (
                     <IconAvatar />
                   )}
-                  <IconDropdown />
+                  <span className="text-sm">{data?.fullName}</span>
+                  <IconDropdown className={"w-3 h-3"}/>
                 </button>
                 <div className="absolute after:contents w-full h-4 top-12"></div>
                 {isHovered && (

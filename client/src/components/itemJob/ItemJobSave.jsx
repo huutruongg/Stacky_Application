@@ -5,13 +5,20 @@ import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import axiosInstance from "@/lib/authorizedAxios";
 import Buttonchild from "../button/Buttonchild";
+import { useJobSave } from "../context/JobSaveProvider";
+import { NavLink } from "react-router-dom";
 
 const ItemJobSave = ({ jobData }) => {
+  const { removeJob } = useJobSave();
+  console.log(jobData);
+
   const handleDeleteSaveJob = async () => {
     try {
       await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
       toast.success("Xóa bài viết thành công");
+      removeJob(jobData._id); // Gọi hàm từ context để cập nhật trạng thái
     } catch (error) {
+      console.error("Error deleting saved job:", error);
       toast.error("Xóa bài viết thất bại");
     }
   };
@@ -61,7 +68,7 @@ const ItemJobSave = ({ jobData }) => {
             </div>
             <div className="flex items-center gap-5">
               <Buttonchild kind="primary" className="px-5 py-1">
-                Ứng tuyển
+                <NavLink to={""}>Ứng tuyển</NavLink>
               </Buttonchild>
               <Buttonchild
                 kind="secondary"

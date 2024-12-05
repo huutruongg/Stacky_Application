@@ -33,6 +33,8 @@ ChartJS.register(
 );
 
 const DashboardPage = () => {
+  const [revenueYear, setRevenueYear] = useState(2024);
+  const [postYear, setPostYear] = useState(2024);
   const [data, setData] = useState([]);
   const [revenueData, setRevenueData] = useState([]);
   const [topPostCompany, setTopPostCompany] = useState([]);
@@ -45,19 +47,26 @@ const DashboardPage = () => {
   };
 
   const handleSort = () => {
-    console.log("sort");
+    const sortedCompanies = [...topPostCompany].sort((a, b) =>
+      a.property > b.property ? 1 : -1
+    );
+    setTopPostCompany(sortedCompanies);
   };
 
   useEffect(() => {
     const getData = async () => {
       try {
         const result = await axiosInstance.get(`/admin/get-total-cards`);
-        const result2 = await axiosInstance.get(`/admin/get-revenue-report`);
+        const result2 = await axiosInstance.get(
+          `/admin/get-revenue-report?year=${revenueYear}`
+        );
         const result3 = await axiosInstance.get(`/admin/get-top-5-posted-jobs`);
-        const result4 = await axiosInstance.get(`/admin/count-jobs-by-month`);
+        const result4 = await axiosInstance.get(
+          `/admin/count-jobs-by-month?year=${postYear}`
+        );
         setData(result.data.totalCards);
         setRevenueData(result2.data.result);
-        setTopPostCompany(result3.data.top5PostedJobs);
+        setTopPostCompany(result3.data.result);
         setChartPostData(result4.data.result);
       } catch (error) {
         console.log(error);
@@ -66,7 +75,7 @@ const DashboardPage = () => {
       }
     };
     getData();
-  }, []);
+  }, [revenueYear, postYear]);
 
   if (isLoading) {
     return (
@@ -113,7 +122,7 @@ const DashboardPage = () => {
         />
       </div>
       <div className="flex flex-col gap-5">
-        <RevenueChart revenueData={revenueData} />
+        <RevenueChart revenueData={revenueData} setYear={setRevenueYear} />
       </div>
       <div className="grid grid-cols-12 gap-5">
         <div className="col-span-6 bg-white p-5 rounded-lg">
@@ -131,8 +140,8 @@ const DashboardPage = () => {
           </div>
           <TopPostCompanyTable topPostCompany={topPostCompany} />
         </div>
-        <div className="col-span-6 bg-white p-5 rounded-lg">
-          <JobPostChart chartPostData={chartPostData} />
+        <div className="col-span-6 bg-white rounded-lg">
+          <JobPostChart chartPostData={chartPostData} setYear={setPostYear} />
         </div>
       </div>
     </div>

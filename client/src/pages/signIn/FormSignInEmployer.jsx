@@ -66,7 +66,11 @@ const FormSignInEmployer = () => {
         login(userInfo, accessToken); // Sử dụng hàm login từ context để lưu user và token
 
         // Điều hướng sau khi đăng nhập thành công
-        navigate("/company-profile");
+        if (userInfo.role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/company-profile");
+        }
       } catch (error) {
         console.error("Login failed:", error);
         toast.error(

@@ -81,19 +81,21 @@ function App() {
             </Route>
           </Route>
           <Route element={<LayoutAdmin />}>
-            <Route path="/admin/dashboard" element={<DashboardPage />} />
-            <Route
-              path="/admin/post-management"
-              element={<PostManagerPage />}
-            />
-            <Route
-              path="/admin/company-management"
-              element={<CompanyManagerPage />}
-            />
-            <Route
-              path="/admin/account-management"
-              element={<AccountManagerPage />}
-            />
+            <Route element={<RequireAuth allowedRoles={["ADMIN"]} />}>
+              <Route path="/admin/dashboard" element={<DashboardPage />} />
+              <Route
+                path="/admin/post-management"
+                element={<PostManagerPage />}
+              />
+              <Route
+                path="/admin/company-management"
+                element={<CompanyManagerPage />}
+              />
+              <Route
+                path="/admin/account-management"
+                element={<AccountManagerPage />}
+              />
+            </Route>
           </Route>
           <Route path="*" element={<NotFoundPage />} />
           {/* Wildcard route for 404 */}

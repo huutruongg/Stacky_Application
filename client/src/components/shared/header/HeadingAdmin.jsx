@@ -5,13 +5,10 @@ import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
 import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
-import { useJobSave } from "@/components/context/JobSaveProvider";
 import IconUpload from "@/components/icons/IconUpload";
 import IconProfile from "@/components/icons/IconProfile";
 import axiosInstance from "@/lib/authorizedAxios";
 import IconMenu from "@/components/icons/IconMenu";
-import IconSearch from "@/components/icons/IconSearch";
-import IconClose from "@/components/icons/IconClose";
 
 const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
   const { user, logout } = useAuth();
@@ -20,7 +17,6 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
-
 
   useEffect(() => {
     const getData = async () => {
@@ -33,6 +29,7 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
     };
     getData();
   }, []);
+  console.log(data);
 
   return (
     <header className="bg-white shadow-md">
@@ -60,35 +57,12 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
                 onMouseLeave={handleMouseLeave}
               >
                 <button className="flex justify-between items-center gap-5 px-5 py-1 rounded-md hover:bg-secondary z-10">
-                  {data?.avatarUrl ? (
-                    <img
-                      src={data.avatarUrl}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full"
-                    />
-                  ) : (
-                    <IconAvatar />
-                  )}
-                  <span className="text-sm">{data?.fullName}</span>
-                  <IconDropdown />
+                  <IconAvatar />
+                  <IconDropdown className={"w-3 h-3"} />
                 </button>
                 <div className="absolute after:contents w-full h-4 top-12"></div>
                 {isHovered && (
                   <div className="absolute flex flex-col items-center bg-white min-w-[200px] right-0 z-50 shadow-md rounded-md top-[54px]">
-                    <ItemDropdown
-                      url={"/uploaded-cv"}
-                      icon={
-                        <IconUpload className={"w-6 h-6"} color={"#424242"} />
-                      }
-                      children={"CV đã đăng tuyển"}
-                    />
-                    <ItemDropdown
-                      url={`/profile`}
-                      icon={
-                        <IconProfile className={"w-6 h-6"} color={"#424242"} />
-                      }
-                      children={"Thông tin cá nhân"}
-                    />
                     <ItemDropdown
                       url={"/account.stacky.vn"}
                       icon={

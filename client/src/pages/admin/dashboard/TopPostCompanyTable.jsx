@@ -21,7 +21,7 @@ const TopPostCompanyTable = ({ topPostCompany }) => {
       </TableHeader>
       <TableBody>
         {topPostCompany?.map((item, index) => (
-          <TableRow className="font-medium">
+          <TableRow className="font-medium" key={index}>
             <TableCell className="text-center">
               <div className="flex items-center gap-2">
                 <img
@@ -32,7 +32,9 @@ const TopPostCompanyTable = ({ topPostCompany }) => {
                 <span className="text-justify">{item?.orgName}</span>
               </div>
             </TableCell>
-            <TableCell className="text-justify">{item?.orgIndustry}</TableCell>
+            <TableCell className="text-center">
+              <span className="text-justify">{item?.typeOfIndustry}</span>
+            </TableCell>
             <TableCell className="text-center">
               <span className="text-primary px-2 py-1 bg-[#ead6fd] rounded-md">
                 {item?.numberOfPost}

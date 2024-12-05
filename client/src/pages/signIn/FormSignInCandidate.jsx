@@ -13,11 +13,11 @@ const FormSignInCandidate = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = useCallback(() => {
-    window.location.href = "http://localhost:5050/auth/google/callback";
+    window.location.href = "http://localhost:5050/auth/google/login";
   }, []);
 
   const handleGithubLogin = useCallback(() => {
-    window.location.href = "http://localhost:5050/auth/github/callback";
+    window.location.href = "http://localhost:5050/auth/github/login";
   }, []);
 
   const handleTokenRetrieval = useCallback(async () => {

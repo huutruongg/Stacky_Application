@@ -19,6 +19,7 @@ import axiosInstance from "@/lib/authorizedAxios";
 import FormatDate from "@/components/format/FormatDate";
 import IconSearch from "@/components/icons/IconSearch";
 import IconClose from "@/components/icons/IconClose";
+import toast from "react-hot-toast";
 
 const AccountManagerPage = () => {
   const [open, setOpen] = useState(false);
@@ -75,6 +76,19 @@ const AccountManagerPage = () => {
     };
     fetchData();
   }, []);
+
+  const handleDeleteCandidate = async (id) => {
+    try {
+      const res = await axiosInstance.delete(`/admin/delete-candidate/${id}`);
+      toast.success("Xoá tài khoản thành công");
+      // Render lại dữ liệu sau khi xóa thành công
+      const result = await axiosInstance.get("/admin/get-all-candidates");
+      setCandidateData(result.data.candidates);
+      setOpenReview(false)
+    } catch (error) {
+      toast.error("Xoá công ty thất bại");
+    }
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -144,7 +158,10 @@ const AccountManagerPage = () => {
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center items-center gap-5">
-                    <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
+                    <div
+                      className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
+                      onClick={() => handleDeleteCandidate(candidate.userId)}
+                    >
                       <IconDelete className="w-6 h-6" color={"#48038C"} />
                     </div>
                     <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
@@ -186,6 +203,7 @@ const AccountManagerPage = () => {
                 className="text-center px-10 disabled:opacity-50"
                 type="submit"
                 isLoading={isLoading}
+                onClick={() => handleDeleteCandidate(selectedCandidate?.userId)}
               >
                 Xoá tài khoản
               </Button>

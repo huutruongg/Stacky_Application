@@ -12,7 +12,7 @@ const HomePage = () => {
   // console.log(user);
   return (
     <>
-      {!user || user.role === "CANDIDATE" ? (
+      {!user || user.role === "CANDIDATE" || user.role === "ADMIN" ? (
         <div>
           <div className="relative flex justify-center">
             <img src={ImgHome} alt="" className="w-full h-full object-fill" />

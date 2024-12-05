@@ -18,6 +18,9 @@ export const JobSaveProvider = ({ children }) => {
   const { user } = useAuth();
   const [jobSaveData, setJobSaveData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0); // State để trigger re-fetch
+
+  const refreshSavedJobs = () => setRefreshKey((prev) => prev + 1);
 
   useEffect(() => {
     const fetchSavedJobs = async () => {
@@ -34,11 +37,17 @@ export const JobSaveProvider = ({ children }) => {
         setIsLoading(false);
       }
     };
+
+    setIsLoading(true); // Đặt lại loading mỗi khi gọi API
     fetchSavedJobs();
-  }, [user]);
+  }, [user, refreshKey]); // Thêm `refreshKey` vào dependencies
+
+  const removeJob = (jobId) => {
+    setJobSaveData((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+  };
 
   const value = useMemo(
-    () => ({ jobSaveData, isLoading }),
+    () => ({ jobSaveData, isLoading, refreshSavedJobs, removeJob }),
     [jobSaveData, isLoading]
   );
 

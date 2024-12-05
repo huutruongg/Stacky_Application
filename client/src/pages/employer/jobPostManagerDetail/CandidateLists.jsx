@@ -42,29 +42,106 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const onCloseReview = () => setOpenReview(false);
   const [selectedCandidates, setSelectedCandidates] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+  const [message, setMessage] = useState("This is a test notification");
   const form = useForm({
     resolver: zodResolver(emailSchema),
     defaultValues: {
       text: "",
     },
   });
-  // console.log(selectedCandidates);
+
+  const emails = setSelectedCandidates(
+    data.map((candidate) => candidate.publicEmail)
+  );
+  const userIds = setSelectedCandidates(
+    data.map((candidate) => candidate.userId)
+  );
+  console.log(
+    setSelectedCandidates(data.map((candidate) => candidate.publicEmail))
+  );
+  console.log(setSelectedCandidates(data.map((candidate) => candidate.userId)));
 
   const handleSelectAll = () => {
     setSelectedCandidates(data.map((candidate) => candidate.publicEmail));
+    setSelectedCandidates(data.map((candidate) => candidate.userId));
+  };
+  const handleSelectCandidate = (email, userId) => {
+    setSelectedCandidates((prev) => {
+      const isSelected = prev.some(
+        (candidate) => candidate.email === email && candidate.userId === userId
+      );
+      if (isSelected) {
+        // Loại bỏ ứng viên nếu đã được chọn trước đó
+        return prev.filter(
+          (candidate) =>
+            candidate.email !== email || candidate.userId !== userId
+        );
+      } else {
+        // Thêm ứng viên mới vào danh sách đã chọn
+        return [...prev, { email, userId }];
+      }
+    });
   };
 
-  const handleSelectCandidate = (email) => {
-    setSelectedCandidates((prev) =>
-      prev.includes(email) ? prev.filter((e) => e !== email) : [...prev, email]
-    );
+  useEffect(() => {
+    // Kết nối với server WebSocket
+    const socket = io(import.meta.env.VITE_API_URL);
+
+    // Đăng ký userId khi kết nối
+    socket.emit("register", userIds);
+
+    // Lắng nghe thông báo từ server
+    socket.on("notification", (notification) => {
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        notification,
+      ]);
+    });
+
+    // Cleanup khi component unmount
+    return () => {
+      socket.disconnect();
+    };
+  }, [userIds]);
+
+  // Hàm gửi yêu cầu tạo thông báo đến backend
+  const createNotification = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/notification/create-notification`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message,
+            userIds: selectedCandidates.map((candidate) => candidate.userId), // Danh sách userIds nhận thông báo
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Notification created successfully");
+      } else {
+        console.error("Failed to create notification");
+      }
+    } catch (error) {
+      console.error("Error creating notification:", error);
+    }
+  };
+
+  // Gửi thông báo khi nhấn nút
+  const handleSendNotification = () => {
+    createNotification();
   };
 
   const onSubmit = async (formData) => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.post(`/email/send-email`, {
-        to: selectedCandidates,
+        to: selectedCandidates.map((candidate) => candidate.email),
         subject: "Gửi mail",
         text: formData.text,
       });
@@ -84,9 +161,18 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   return (
     <Form {...form}>
       <div className="bg-secondary rounded-xl text-sm">
-        <div className="flex justify-between items-center py-2 rounded-tl-xl rounded-tr-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
+        <div className="flex justify-between items-center gap-2 py-2 rounded-tl-xl rounded-tr-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
           <h3 className="text-xl ml-5 text-white">Thông tin giao dịch</h3>
-          <div className="flex items-center justify-center gap-10 mr-10">
+          <div className="flex items-center justify-center gap-5 mr-10">
+            <Buttonchild
+              className="px-4 py-1"
+              type="button"
+              kind="primary"
+              onClick={() => handleSendNotification}
+              disabled={selectedCandidates.length === 0}
+            >
+              Gửi thông báo
+            </Buttonchild>
             <Buttonchild
               className="px-4 py-1"
               type="button"
@@ -97,7 +183,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
               Gửi gmail
             </Buttonchild>
             <Select>
-              <SelectTrigger className="w-[185px] h-8 border-primary text-white rounded-md">
+              <SelectTrigger className="w-[180px] h-8 border-primary text-white rounded-md">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
@@ -138,7 +224,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
               <span>Điểm Gitub</span>
             </div>
           </div>
-          {!  isLoading ? (
+          {!isLoading ? (
             data.length > 0 ? (
               data.map((item, index) => (
                 <ItemCandidate
@@ -286,7 +372,7 @@ const ItemCandidate = ({
               <Checkbox
                 id="candidate-select"
                 className="w-5 h-5 mr-5"
-                onClick={() => handleSelectCandidate(publicEmail)}
+                onClick={() => handleSelectCandidate(publicEmail, userId)}
               />
             </div>
           </div>

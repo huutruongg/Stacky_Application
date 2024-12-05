@@ -19,6 +19,7 @@ import { AlertModal } from "@/components/shared/AlertModal";
 import { Modal } from "@/components/ui/modal";
 import Button from "@/components/button/Button";
 import ViewCompany from "./ViewCompany";
+import toast from "react-hot-toast";
 
 const CompanyManagerPage = () => {
   const [companyData, setCompanyData] = useState([]);
@@ -75,6 +76,19 @@ const CompanyManagerPage = () => {
     };
     fetchData();
   }, []);
+
+  const handleDeleteCompany = async (id) => {
+    try {
+      const res = await axiosInstance.delete(`/admin/delete-recruiter/${id}`);
+      toast.success("Xoá công ty thành công");
+      // Render lại dữ liệu sau khi xóa thành công
+      const result = await axiosInstance.get("/admin/get-all-companies");
+      setCompanyData(result.data.companies);
+      setOpenReview(false)
+    } catch (error) {
+      toast.error("Xoá công ty thất bại");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -134,7 +148,10 @@ const CompanyManagerPage = () => {
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center items-center gap-5">
-                    <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
+                    <div
+                      className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
+                      onClick={() => handleDeleteCompany(company.userId)}
+                    >
                       <IconDelete className="w-6 h-6" color={"#48038C"} />
                     </div>
                     <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
@@ -175,6 +192,7 @@ const CompanyManagerPage = () => {
                 className="text-center px-10 disabled:opacity-50"
                 type="submit"
                 isLoading={isLoading}
+                onClick={() => handleDeleteCompany(selectedCompany.userId)}
               >
                 Xoá tài khoản
               </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import IconAvatar from "@/components/icons/IconAvatar";
 import IconDropdown from "@/components/icons/IconDropdown";
@@ -9,15 +9,32 @@ import IconVietNamese from "@/components/icons/IconVietNamese";
 import Button from "@/components/button/Button";
 import IconEnglish from "@/components/icons/IconEnglish";
 import IconProfile from "@/components/icons/IconProfile";
+import axiosInstance from "@/lib/authorizedAxios";
 
 const HeadingEmployer = () => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
-  const [language, setLanguage] = useState(true);
+  const [data, setData] = useState(null);
+  const [language, setLanguage] = useState(null);
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const result = await axiosInstance.get(
+          `/recruiter/get-company-info/${user.userId}`
+        );
+        setData(result.data.result);
+      } catch (error) {
+        console.error("Error while fetching job data:", error);
+      }
+    };
+    getData();
+  }, []);
+  // console.log(data);
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <div className="container flex justify-between items-center text-[#212F3F] border-b border-b-[#E9EAEC] h-[64px] lg:max-w-[1748px]">
@@ -41,16 +58,27 @@ const HeadingEmployer = () => {
             )}
           </button>
           {user ? (
-            <div className="flex items-center bg-secondary rounded-md">
+            <div className="flex w-full items-center bg-secondary rounded-md">
               <div
-                className="relative"
+                className="relative w-full"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="flex justify-between items-center gap-10 px-5 py-1 rounded-md hover:bg-secondary z-10">
-                  <IconAvatar />
-                  <IconDropdown />
-                </button>
+                <div className="flex w-full justify-between items-center gap-5 px-5 py-1 rounded-md hover:bg-secondary z-10">
+                  {data?.orgImage ? (
+                    <img
+                      src={data?.orgImage}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                  ) : (
+                    <IconAvatar />
+                  )}
+                  <span className="text-sm w-52 line-clamp-1">
+                    {data?.orgName}
+                  </span>
+                  <IconDropdown className={"w-3 h-3"} />
+                </div>
                 <div className="absolute after:contents w-full h-4 top-12"></div>
                 {isHovered && (
                   <div className="absolute flex flex-col items-center bg-white min-w-[200px] right-0 z-50 shadow-md rounded-md top-[54px]">

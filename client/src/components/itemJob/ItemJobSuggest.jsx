@@ -3,10 +3,11 @@ import IconHeart from "@/components/icons/IconHeart";
 import imgCompany from "@/components/image/imgCompany.png";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
+import { useJobSave } from "../context/JobSaveProvider";
 
 const ItemJobSuggest = ({ jobData }) => {
-  const [liked, setLiked] = useState(jobData.isLiked); // Initialize with the jobData's liked status
-  // console.log(jobData);
+  const [liked, setLiked] = useState(jobData.isLiked);
+  const { refreshSavedJobs } = useJobSave();
 
   const handleHeartClick = () => {
     if (liked) {
@@ -20,6 +21,7 @@ const ItemJobSuggest = ({ jobData }) => {
       await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
       toast.success("Lưu bài viết thành công");
       setLiked(true); // Update the liked state
+      refreshSavedJobs();
     } catch (error) {
       toast.error("Lưu bài viết thất bại");
     }
@@ -30,6 +32,7 @@ const ItemJobSuggest = ({ jobData }) => {
       await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
       toast.success("Xóa bài viết thành công");
       setLiked(false); // Update the liked state
+      refreshSavedJobs();
     } catch (error) {
       toast.error("Xóa bài viết thất bại");
     }

@@ -14,14 +14,15 @@ import IconSearch from "@/components/icons/IconSearch";
 import IconClose from "@/components/icons/IconClose";
 import axiosInstance from "@/lib/authorizedAxios";
 import FormatDate from "@/components/format/FormatDate";
+import toast from "react-hot-toast";
 
 const PostManagerPage = () => {
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
   const [postData, setPostData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [searchInput, setSearchInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(10);
 
@@ -59,6 +60,22 @@ const PostManagerPage = () => {
     };
     fetchData();
   }, []);
+
+  // console.log(postData);
+
+  const handleDeletePost = async (id) => {
+    try {
+      const res = await axiosInstance.delete(`/admin/delete-job/${id}`);
+      console.log(res);
+      toast.success("Xoá bài viết thành công");
+      // Render lại dữ liệu sau khi xóa thành công
+      const result = await axiosInstance.get("/admin/get-all-jobs");
+      setPostData(result.data.jobs);
+    } catch (error) {
+      console.log(error);
+      toast.error("Xoá bài viết thất bại");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -109,7 +126,7 @@ const PostManagerPage = () => {
           </TableHeader>
           <TableBody>
             {currentPostData.map((post, index) => (
-              <TableRow className="font-medium">
+              <TableRow className="font-medium" key={index}>
                 <TableCell className="text-center">{index + 1}</TableCell>
                 <TableCell className="text-center line-clamp-1 leading-10">
                   {post.jobTitle}
@@ -127,11 +144,18 @@ const PostManagerPage = () => {
                 <TableCell className="text-center">
                   {FormatDate.formatDate(post.applicationDeadline)}
                 </TableCell>
-                <TableCell className="text-center text-accepted">
-                  Đang mở
+                <TableCell className="text-center">
+                  {!post?.invisible ? (
+                    <span className="text-accepted">Đang mở</span>
+                  ) : (
+                    <span className="text-error">Đã đóng</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-center">
-                  <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
+                  <div
+                    className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
+                    onClick={() => handleDeletePost(post._id)}
+                  >
                     <IconDelete className="w-6 h-6" color={"#48038C"} />
                   </div>
                 </TableCell>
