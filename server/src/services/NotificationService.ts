@@ -1,6 +1,5 @@
-import { Server } from "socket.io";
 import NotificationRepository from "../repositories/NotificationRepository";
-type ConnectedUsers = Record<string, string>;
+import { log } from "console";
 export default class NotificationService {
     private notificationRepository: NotificationRepository;
 
@@ -8,7 +7,7 @@ export default class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    sendNotification = async (io: Server, connectedUsers: ConnectedUsers, message: string, userIds: string[]) => {
+    sendNotification = async (io: any, connectedUsers: any, message: string, userIds: string[]) => {
         await Promise.all(
             userIds.map(async (userId) => {
                 await this.notificationRepository.createNotification({ userId, message });

@@ -5,6 +5,7 @@ import { authorize } from '../middlewares/Authorize';
 import { cacheMiddleware } from '../middlewares/CacheRedis';
 import NotificationController from '../controllers/NotificationController';
 import { BaseRoutes } from './BaseRoutes';
+import { socketMiddleware } from '../middlewares/socket';
 
 export default class NotificationRoutes extends BaseRoutes {
     private notificationController: NotificationController;
@@ -24,21 +25,21 @@ export default class NotificationRoutes extends BaseRoutes {
         this.router.get(
             '/get-all-notifications',
             authenticateJWT,
-            authorize(['notification:read']),
+            // authorize(['notification:read']),
             this.notificationController.getAllNotifications
         );
 
         this.router.get(
             '/unread',
             authenticateJWT,
-            authorize(['notification:read']),
+            // authorize(['notification:read']),
             this.notificationController.getUnreadCount
         );
 
         this.router.put(
             '/mark-all-as-read',
             authenticateJWT,
-            authorize(['notification:update']),
+            // authorize(['notification:update']),
             this.notificationController.markAllAsRead
         );
 
@@ -46,7 +47,8 @@ export default class NotificationRoutes extends BaseRoutes {
         this.router.post(
             '/create-notification',
             authenticateJWT,
-            authorize(['notification:write']),
+            // authorize(['notification:write']),
+            socketMiddleware,
             this.notificationController.createNotification
         );
     }

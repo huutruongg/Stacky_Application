@@ -4,12 +4,11 @@ import app from './app';
 import { connectDB, disconnectDB } from './config/Database';
 import { Server } from 'socket.io';
 import http from 'http';
-let connectedUsers: any = {};
+import { connectedUsers } from './utils/connectedSocket';
 const PORT = process.env.PORT || 5050;
 
 // Initialize the HTTP server
 const server = http.createServer(app);
-
 // Initialize Socket.IO
 export const io = new Server(server, {
     cors: {
@@ -23,13 +22,6 @@ export const io = new Server(server, {
     },
 });
 
-// Middleware to inject the Socket.IO server instance into the request object
-app.use((req, res, next) => {
-    (req as any).io = io;
-    (req as any).connectedUsers = connectedUsers;
-    next();
-});
-
 // Connect to the database
 connectDB()
     .then(async () => {
@@ -37,7 +29,6 @@ connectDB()
         // Listen for incoming socket.io connections
         io.on('connection', (socket) => {
             console.log(`User connected: ${socket.id}`);
-
             socket.on('register', (userId) => {
                 connectedUsers[userId] = socket.id;
                 console.log(`User registered: ${userId}`);

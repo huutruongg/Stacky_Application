@@ -1,6 +1,8 @@
+import { Types } from "mongoose";
 import { INotification } from "../interfaces/INotification";
 import NotificationModel from "../models/NotificationModel";
 import { BaseRepository } from "./BaseRepository";
+import { log } from "console";
 
 export default class NotificationRepository extends BaseRepository<INotification> {
     constructor() {
@@ -8,7 +10,8 @@ export default class NotificationRepository extends BaseRepository<INotification
     }
 
     async getNotifications(userId: string): Promise<INotification[]> {
-        return await this.model.find({ userId }).lean().exec();
+        log("Getting notifications for user", userId);
+        return await this.model.find({ userId: new Types.ObjectId(userId) }).lean().exec();
     }
 
     async createNotification(data: Partial<INotification>): Promise<INotification> {
@@ -20,7 +23,7 @@ export default class NotificationRepository extends BaseRepository<INotification
     }
 
     async markAllAsRead(userId: string): Promise<boolean> {
-        const result = await this.model.updateMany({ userId }, { unread: false }).lean().exec();
+        const result = await this.model.updateMany({ userId: new Types.ObjectId(userId) }, { unread: false }).lean().exec();
         return !!result;
     }
 }

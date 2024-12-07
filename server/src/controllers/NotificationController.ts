@@ -1,3 +1,4 @@
+import { log } from "console";
 import NotificationService from "../services/NotificationService";
 import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
