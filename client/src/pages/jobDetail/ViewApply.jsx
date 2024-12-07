@@ -27,9 +27,9 @@ const ViewApply = ({ id }) => {
     }
   };
 
-  const handleLoginGithub = useCallback(() => {
-    window.location.href = "http://localhost:5050/auth/github/callback";
-  }, []);
+  const handleLoginGithub = () => {
+    window.location.href = `http://localhost:5050/auth/github-info?jobPostId=${id}`;
+  };
 
   return (
     <div className="py-5 px-10">
@@ -48,7 +48,7 @@ const ViewApply = ({ id }) => {
             className="text-center px-10 disabled:opacity-50"
             onClick={handleLoginGithub}
           >
-            Đăng nhập Github
+            Cho quyền truy cập Github
           </Button>
         )}
       </div>

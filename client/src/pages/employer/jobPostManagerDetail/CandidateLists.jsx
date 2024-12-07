@@ -76,10 +76,8 @@ const CandidateLists = ({ data, candidatesLimit }) => {
 
   useEffect(() => {
     const socket = io(import.meta.env.VITE_API_URL);
-    socket.emit(
-      "register",
-      selectedCandidates.map((candidate) => candidate.userId)
-    );
+    const userIds = selectedCandidates.map((candidate) => candidate.userId);
+    socket.emit("register", userIds);
     socket.on("notification", (notification) => {
       setNotifications((prevNotifications) => [
         ...prevNotifications,
@@ -93,14 +91,14 @@ const CandidateLists = ({ data, candidatesLimit }) => {
 
   const createNotification = async (formData) => {
     console.log({
-      userId: selectedCandidates.map((candidate) => candidate.userId),
+      userIds: selectedCandidates.map((candidate) => candidate.userId),
       message: formData.notification,
     });
     try {
       const response = await axiosInstance.post(
         `/notification/create-notification`,
         {
-          userId: selectedCandidates.map((candidate) => candidate.userId),
+          userIds: selectedCandidates.map((candidate) => candidate.userId),
           message: formData.notification,
         }
       );

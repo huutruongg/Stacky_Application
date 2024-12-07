@@ -18,6 +18,7 @@ const Heading = () => {
   const { jobSaveData, loading } = useJobSave();
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
+  const [dataNotification, setDataNotification] = useState(null);
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
@@ -26,15 +27,31 @@ const Heading = () => {
     const getData = async () => {
       try {
         const result = await axiosInstance.get(`/candidate/get-profile`);
+        const resultNotification = await axiosInstance.get(
+          `/notification/unread`
+        );
         // console.log(result.data.result);
         setData(result.data.result);
+        setDataNotification(resultNotification.data.count);
       } catch (error) {
         console.error("Error while fetching job data:", error);
       }
     };
     getData();
   }, []);
-  // console.log(data);
+  console.log(dataNotification);
+
+  const handleReadNotification = async () => {
+    try {
+      await axiosInstance.put(`/notification/mark-all-as-read`);
+      const resultNotification = await axiosInstance.get(
+        `/notification/unread`
+      );
+      setDataNotification(resultNotification.data.count);
+    } catch (error) {
+      console.error("Error while fetching job data:", error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -60,9 +77,10 @@ const Heading = () => {
                   />
                   <ItemNotification
                     icon={<IconNotification />}
-                    children={"99"}
+                    children={dataNotification ? dataNotification : "0"}
                     className={"mx-5"}
                     url={"/notification"}
+                    onClick={handleReadNotification}
                   />
                 </div>
               ) : (
@@ -84,7 +102,7 @@ const Heading = () => {
                     <IconAvatar />
                   )}
                   <span className="text-sm">{data?.fullName}</span>
-                  <IconDropdown className={"w-3 h-3"}/>
+                  <IconDropdown className={"w-3 h-3"} />
                 </button>
                 <div className="absolute after:contents w-full h-4 top-12"></div>
                 {isHovered && (
@@ -164,10 +182,11 @@ const ItemDropdown = ({ url, icon, children, onClick = () => {} }) => {
   );
 };
 
-const ItemNotification = ({ icon, url, children, className }) => {
+const ItemNotification = ({ icon, url, children, className, onClick }) => {
   return (
     <li
       className={`relative list-none w-12 h-12 rounded-full bg-secondary ${className}`}
+      onClick={onClick}
     >
       <Link
         to={url}
@@ -175,9 +194,11 @@ const ItemNotification = ({ icon, url, children, className }) => {
       >
         {icon}
       </Link>
-      <div className="absolute flex justify-center items-center w-5 h-5 bg-primary rounded-full top-0 -right-1">
-        <span className="text-sm text-white">{children}</span>
-      </div>
+      {children > 0 && (
+        <div className="absolute flex justify-center items-center w-5 h-5 bg-primary rounded-full top-0 -right-1">
+          <span className="text-sm text-white">{children}</span>
+        </div>
+      )}
     </li>
   );
 };

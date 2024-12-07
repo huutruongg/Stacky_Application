@@ -6,10 +6,34 @@ import HotMajor from "./HotMajor";
 import HotEmployer from "./HotEmployer";
 import useAuth from "@/hooks/useAuth";
 import Buttonchild from "@/components/button/Buttonchild";
+import { io } from "socket.io-client";
 
 const HomePage = () => {
   const { user } = useAuth();
-  // console.log(user);
+  const socket = io("http://localhost:5050", {
+    transports: ["websocket"], // Ưu tiên giao thức WebSocket
+    withCredentials: true, // Nếu server bật credentials (CORS)
+  });
+
+  socket.on("connect", () => {
+    console.log("Connected to server, socket ID:", socket.id);
+
+    // Assume getLoggedInUserId() fetches the user ID from a token or session
+    const userId = "670fbcbda4cdb849c025d715";
+    if (userId) {
+      socket.emit("register", userId); // Send the user's ID to the server
+    }
+  });
+
+  // Nhận thông báo từ server
+  socket.on("notification", (data) => {
+    console.log("New notification:", data);
+  });
+
+  // Xử lý ngắt kết nối
+  socket.on("disconnect", () => {
+    console.log("Disconnected from server");
+  });
   return (
     <>
       {!user || user.role === "CANDIDATE" || user.role === "ADMIN" ? (
