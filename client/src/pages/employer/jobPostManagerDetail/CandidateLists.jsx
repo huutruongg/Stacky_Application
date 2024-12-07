@@ -1,6 +1,5 @@
 import IconDelete from "@/components/icons/IconDelete";
 import IconEye from "@/components/icons/IconEye";
-import TitleField from "@/components/titleField/TitleField";
 import imgAvatar from "@/components/image/avatarImg.png";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/Checkbox";
@@ -29,9 +28,12 @@ import FormatDate from "@/components/format/FormatDate";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
+import io from "socket.io-client";
+import ModalSendNotification from "./ModalSendNotification";
 
-const emailSchema = z.object({
+const schema = z.object({
   text: z.string(),
+  notification: z.string(),
 });
 
 const CandidateLists = ({ data, candidatesLimit }) => {
@@ -43,24 +45,14 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   const onCloseReview = () => setOpenReview(false);
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [notifications, setNotifications] = useState([]);
-  const [message, setMessage] = useState("This is a test notification");
+  const [isSendingNotification, setIsSendingNotification] = useState(false);
   const form = useForm({
-    resolver: zodResolver(emailSchema),
+    resolver: zodResolver(schema),
     defaultValues: {
       text: "",
+      notification: "",
     },
   });
-
-  const emails = setSelectedCandidates(
-    data.map((candidate) => candidate.publicEmail)
-  );
-  const userIds = setSelectedCandidates(
-    data.map((candidate) => candidate.userId)
-  );
-  console.log(
-    setSelectedCandidates(data.map((candidate) => candidate.publicEmail))
-  );
-  console.log(setSelectedCandidates(data.map((candidate) => candidate.userId)));
 
   const handleSelectAll = () => {
     setSelectedCandidates(data.map((candidate) => candidate.publicEmail));
@@ -72,69 +64,62 @@ const CandidateLists = ({ data, candidatesLimit }) => {
         (candidate) => candidate.email === email && candidate.userId === userId
       );
       if (isSelected) {
-        // Loại bỏ ứng viên nếu đã được chọn trước đó
         return prev.filter(
           (candidate) =>
             candidate.email !== email || candidate.userId !== userId
         );
       } else {
-        // Thêm ứng viên mới vào danh sách đã chọn
         return [...prev, { email, userId }];
       }
     });
   };
 
   useEffect(() => {
-    // Kết nối với server WebSocket
     const socket = io(import.meta.env.VITE_API_URL);
-
-    // Đăng ký userId khi kết nối
-    socket.emit("register", userIds);
-
-    // Lắng nghe thông báo từ server
+    socket.emit(
+      "register",
+      selectedCandidates.map((candidate) => candidate.userId)
+    );
     socket.on("notification", (notification) => {
       setNotifications((prevNotifications) => [
         ...prevNotifications,
         notification,
       ]);
     });
-
-    // Cleanup khi component unmount
     return () => {
       socket.disconnect();
     };
-  }, [userIds]);
+  }, [selectedCandidates]);
 
-  // Hàm gửi yêu cầu tạo thông báo đến backend
-  const createNotification = async () => {
+  const createNotification = async (formData) => {
+    console.log({
+      userId: selectedCandidates.map((candidate) => candidate.userId),
+      message: formData.notification,
+    });
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/notification/create-notification`,
+      const response = await axiosInstance.post(
+        `/notification/create-notification`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            message,
-            userIds: selectedCandidates.map((candidate) => candidate.userId), // Danh sách userIds nhận thông báo
-          }),
+          userId: selectedCandidates.map((candidate) => candidate.userId),
+          message: formData.notification,
         }
       );
 
-      if (response.ok) {
-        console.log("Notification created successfully");
+      console.log(response);
+
+      if (response.status === 200) {
+        toast.success("Gửi thông báo thành công");
       } else {
-        console.error("Failed to create notification");
+        toast.error("Gửi thông báo thất bại");
       }
     } catch (error) {
-      console.error("Error creating notification:", error);
+      toast.error("Gửi thông báo thất bại");
     }
   };
 
   // Gửi thông báo khi nhấn nút
-  const handleSendNotification = () => {
-    createNotification();
+  const handleSendNotification = (formData) => {
+    createNotification(formData);
   };
 
   const onSubmit = async (formData) => {
@@ -165,19 +150,25 @@ const CandidateLists = ({ data, candidatesLimit }) => {
           <h3 className="text-xl ml-5 text-white">Thông tin giao dịch</h3>
           <div className="flex items-center justify-center gap-5 mr-10">
             <Buttonchild
-              className="px-4 py-1"
+              className="px-4 py-1 disabled:opacity-50 disabled:hover:bg-primary"
               type="button"
               kind="primary"
-              onClick={() => handleSendNotification}
+              onClick={() => {
+                setOpenReview(true);
+                setIsSendingNotification(true);
+              }}
               disabled={selectedCandidates.length === 0}
             >
               Gửi thông báo
             </Buttonchild>
             <Buttonchild
-              className="px-4 py-1"
+              className="px-4 py-1 disabled:opacity-50 disabled:hover:bg-primary"
               type="button"
               kind="primary"
-              onClick={() => setOpenReview(true)}
+              onClick={() => {
+                setOpenReview(true);
+                setIsSendingNotification(false);
+              }}
               disabled={selectedCandidates.length === 0}
             >
               Gửi gmail
@@ -274,43 +265,82 @@ const CandidateLists = ({ data, candidatesLimit }) => {
           Quay lại
         </Button>
       </div>
-      {/* Modal for Sending Email */}
-      <div className="flex items-center justify-end w-full">
-        <AlertModal
-          isOpen={open}
-          onClose={() => setOpen(false)}
-          isLoading={isLoading}
-        />
-        <Modal
-          isOpen={openReview}
-          onClose={onCloseReview}
-          className="bg-white max-w-[600px]"
-          title="Gửi Mail"
-          description={"Gửi Email cho ứng viên mà bạn ứng tuyển"}
-        >
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ModalSendEmail form={form} modalClose={onCloseReview} />
-            <div className="flex justify-center gap-5 py-5">
-              <Button
-                kind="secondary"
-                className="text-center px-10 disabled:opacity-50"
-                type="button"
-                onClick={() => setOpenReview(false)}
-              >
-                Quay lại
-              </Button>
-              <Button
-                kind="primary"
-                className="text-center px-10 disabled:opacity-50"
-                type="submit"
-                isLoading={isLoading}
-              >
-                Gửi Mail
-              </Button>
-            </div>
-          </form>
-        </Modal>
-      </div>
+      {/* Modal for Sending */}
+      {isSendingNotification ? (
+        <div className="flex items-center justify-end w-full">
+          <AlertModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            isLoading={isLoading}
+          />
+          <Modal
+            isOpen={openReview}
+            onClose={onCloseReview}
+            className="bg-white max-w-[600px]"
+            title="Gửi Thông Báo"
+            description={"Gửi thông báo cho ứng viên mà bạn ứng tuyển"}
+          >
+            <form onSubmit={form.handleSubmit(handleSendNotification)}>
+              <ModalSendNotification form={form} />
+              <div className="flex justify-center gap-5 py-5">
+                <Button
+                  kind="secondary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="button"
+                  onClick={() => setOpenReview(false)}
+                >
+                  Quay lại
+                </Button>
+                <Button
+                  kind="primary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="submit"
+                  isLoading={isLoading}
+                >
+                  Gửi Thông Báo
+                </Button>
+              </div>
+            </form>
+          </Modal>
+        </div>
+      ) : (
+        <div className="flex items-center justify-end w-full">
+          <AlertModal
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            isLoading={isLoading}
+          />
+          <Modal
+            isOpen={openReview}
+            onClose={onCloseReview}
+            className="bg-white max-w-[600px]"
+            title="Gửi email"
+            description={"Gửi email cho ứng viên mà bạn ứng tuyển"}
+          >
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <ModalSendEmail form={form} />
+              <div className="flex justify-center gap-5 py-5">
+                <Button
+                  kind="secondary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="button"
+                  onClick={() => setOpenReview(false)}
+                >
+                  Quay lại
+                </Button>
+                <Button
+                  kind="primary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="submit"
+                  isLoading={isLoading}
+                >
+                  Gửi Email
+                </Button>
+              </div>
+            </form>
+          </Modal>
+        </div>
+      )}
     </Form>
   );
 };
@@ -327,6 +357,7 @@ const ItemCandidate = ({
   onClick,
   handleSelectCandidate,
   publicEmail,
+  userId,
 }) => {
   const navigate = useNavigate();
 

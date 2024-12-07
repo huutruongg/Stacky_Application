@@ -18,7 +18,6 @@ const Heading = () => {
   const { jobSaveData, loading } = useJobSave();
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const handleLogout = () => logout();
@@ -35,7 +34,7 @@ const Heading = () => {
     };
     getData();
   }, []);
-  console.log(data);
+  // console.log(data);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -79,7 +78,7 @@ const Heading = () => {
                     <img
                       src={data.avatarUrl}
                       alt="avatar"
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
                     <IconAvatar />

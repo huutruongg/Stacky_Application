@@ -11,16 +11,21 @@ const ACCEPTED_IMAGE_MIME_TYPES = [
 // Define the validation schema for a job posting form
 export const postJobSchema = z.object({
   jobImage: z
-  .string()
-  .url("Vui lòng nhập một URL hợp lệ cho Facebook.")
-  .optional(),
+    .string()
+    .url("Vui lòng nhập một URL hợp lệ cho Facebook.")
+    .optional(),
   // Other fields...
   jobTitle: z.string().min(1, "Tên công việc là bắt buộc"),
   typeOfWork: z.string().min(1, "Loại hình công việc là bắt buộc"),
   genderRequired: z.string().min(1, "Giới tính là bắt buộc"),
   location: z.string().min(1, "Địa điểm làm việc là bắt buộc"),
   jobSalary: z.string().min(1, "Mức lương là bắt buộc"),
-  candidatesLimit: z.string().min(1, "Số lượng tuyển dụng phải lớn hơn 0"),
+  candidatesLimit: z
+    .string() // Start with a string since form inputs are strings
+    .transform((value) => Number(value)) // Convert the string to a number
+    .refine((value) => Number.isInteger(value) && value > 0, {
+      message: "Số lượng tuyển dụng phải là số nguyên dương",
+    }),
   educationRequired: z.string().min(1, "Trình độ học vấn là bắt buộc"),
   yearsOfExperience: z.string().min(1, "Kinh nghiệm làm việc là bắt buộc"),
   typeOfIndustry: z.string().min(1, "Ngành nghề yêu cầu là bắt buộc"),
@@ -43,12 +48,18 @@ export const postJobSchema = z.object({
     .date()
     .nullable()
     .refine((date) => date !== null, {
-      message: "Ngày kết thúc nộp hồ sơ không được để trống",
+      message: "Thời gian không được để trống",
+    })
+    .refine((date) => date !== null && date > new Date(), {
+      message: "Thời gian kết thúc nộp hồ sơ phải hơn ngày thực tế",
     }),
   jobSchedule: z
     .date()
     .nullable()
     .refine((date) => date !== null, {
-      message: "Ngày làm việc dự kiến không được để trống",
+      message: "Thời gian làm việc dự kiến không được để trống",
+    })
+    .refine((date) => date !== null && date > new Date(), {
+      message: "Thời gian làm việc dự kiến phải hơn ngày thực tế",
     }),
 });

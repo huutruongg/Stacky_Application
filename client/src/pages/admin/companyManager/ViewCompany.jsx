@@ -53,6 +53,7 @@ const ViewCompany = ({ companyData }) => {
           <span>{companyDetailData?.orgWebsiteUrl}</span>
         </div>
         <div className="flex items-center gap-2">
+          
           <span className="font-medium">Email Liên Hệ:</span>
           <span>{companyDetailData?.orgEmail}</span>
         </div>

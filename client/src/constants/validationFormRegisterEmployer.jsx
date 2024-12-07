@@ -5,8 +5,14 @@ export const registerEmployerSchema = z
   .object({
     privateEmail: baseSchemas.requiredEmail(),
     password: baseSchemas.password(),
-    confirmPassword: z.string().nonempty("Xác nhận mật khẩu là bắt buộc"),
-    phoneNumber: z.string().min(10, "Số điện thoại không hợp lệ"),
+    confirmPassword: z.string().min(1, "Xác nhận mật khẩu là bắt buộc"),
+    phoneNumber: z
+      .string()
+      .regex(
+        /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g,
+        "Số điện thoại không hợp lệ"
+      )
+      .min(10, "Số điện thoại không hợp lệ"),
     orgTaxNumber: z.string().min(10, "Số thuế là bắt buộc"),
     orgName: baseSchemas.requiredString("Tên công ty là bắt buộc"),
     orgField: baseSchemas.requiredString("Vui lòng chọn lĩnh vực công ty"),

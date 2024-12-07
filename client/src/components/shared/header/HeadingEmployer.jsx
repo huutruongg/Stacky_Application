@@ -69,7 +69,7 @@ const HeadingEmployer = () => {
                     <img
                       src={data?.orgImage}
                       alt="avatar"
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
                     <IconAvatar />

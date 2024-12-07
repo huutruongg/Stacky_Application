@@ -11,6 +11,7 @@ import { AlertModal } from "@/components/shared/AlertModal";
 import { Modal } from "@/components/ui/modal";
 import ViewApply from "./ViewApply";
 import { useParams } from "react-router-dom";
+import FormatDate from "@/components/format/FormatDate";
 
 const JobSummary = ({ jobData, isliked }) => {
   const { id } = useParams();
@@ -26,19 +27,6 @@ const JobSummary = ({ jobData, isliked }) => {
   const handleOpenReview = () => {
     setOpenReview(true);
   };
-
-  const dateString = jobData.applicationDeadline;
-
-  // Chuyển đổi chuỗi thành đối tượng Date
-  const dateObject = new Date(dateString);
-
-  // Lấy ngày, tháng, và năm
-  const day = String(dateObject.getDate()).padStart(2, "0"); // Đảm bảo có 2 chữ số
-  const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
-  const year = dateObject.getFullYear();
-
-  // Tạo chuỗi định dạng DD/MM/YYYY
-  const formattedDate = `${day}/${month}/${year}`;
 
   const handleSaveJob = async () => {
     try {
@@ -74,7 +62,9 @@ const JobSummary = ({ jobData, isliked }) => {
       </div>
       <div className="flex items-center w-fit text-text2 p-2 rounded-xl bg-[#EFF0F3] gap-2 mb-5">
         <IconTimer></IconTimer>
-        <span>Hạn nộp hồ sơ: {formattedDate}</span>
+        <span>
+          Hạn nộp hồ sơ: {FormatDate.formatDate(jobData?.applicationDeadline)}
+        </span>
       </div>
       <div className="flex justify-center items-center gap-10">
         <Button
