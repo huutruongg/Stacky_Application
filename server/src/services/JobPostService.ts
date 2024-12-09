@@ -154,7 +154,7 @@ export default class JobPostService {
                 return false;
             }
 
-            const isExisting = this.candidateRepository.checkExistingUserInJobSaved(userId, jobPostId);
+            const isExisting = await this.candidateRepository.checkExistingUserInJobSaved(userId, jobPostId);
             return !!isExisting;
         } catch (error) {
             console.error("Error checking saved job post:", error);

@@ -88,10 +88,6 @@ export default class JobPostController extends BaseController {
             }
             const result = await this.jobPostService.findByJobPostId(jobPostId);
             const isSaved = await this.jobPostService.isSavedJobPost(userInfo.userId, jobPostId);
-            if (!result || !isSaved) {
-                return this.sendError(res, 404, new Error("Job not found!").message);
-            }
-
             return this.sendResponse(res, 200, { success: true, isLiked: isSaved, result });
         } catch (error) {
             return this.sendError(res, 500, new Error("Internal Server Error!").message);
@@ -107,9 +103,9 @@ export default class JobPostController extends BaseController {
                 return this.sendError(res, 401, new Error("Authentication required!").message);
             }
             const result = await this.jobPostService.getSavedJobs(userInfo.userId);
-            if (!result || result.length === 0) {
-                return this.sendError(res, 404, new Error("Jobs not found!").message);
-            }
+            // if (!result || result.length === 0) {
+            //     return this.sendError(res, 404, new Error("Jobs not found!").message);
+            // }
             return this.sendResponse(res, 200, { success: true, result });
         } catch (error) {
             return this.sendError(res, 500, new Error("Internal Server Error!").message);

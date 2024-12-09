@@ -33,7 +33,7 @@ export default class JobPostRoutes extends BaseRoutes {
             '/get-job-detail-by-candidate/:jobPostId',
             authenticateJWT,
             // authorize(['job-post:read']),
-            cacheMiddleware,
+            // cacheMiddleware,
             this.jobPostController.getJobDetailByCandidate
         );
         this.router.get(
