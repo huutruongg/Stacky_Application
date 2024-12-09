@@ -1,13 +1,13 @@
 import { ObjectId } from "mongoose";
 
 export default class RecruiterListDTO {
-    id: ObjectId;
+    userId: ObjectId;
     orgName: string;
     orgImage: string;
     orgCoverImage: string;
     orgIntroduction: string;
-    constructor(id: ObjectId, orgName: string, orgImage: string, orgCoverImage: string, orgIntroduction: string) {
-        this.id = id;
+    constructor(userId: ObjectId, orgName: string, orgImage: string, orgCoverImage: string, orgIntroduction: string) {
+        this.userId = userId;
         this.orgName = orgName;
         this.orgImage = orgImage;
         this.orgCoverImage = orgCoverImage;
@@ -16,7 +16,7 @@ export default class RecruiterListDTO {
 
     async toDTO() {
         return {
-            id: this.id,
+            userId: this.userId,
             orgName: this.orgName,
             orgImage: this.orgImage,
             orgCoverImage: this.orgCoverImage,

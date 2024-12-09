@@ -32,7 +32,7 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
             res.locals.data = body;
 
             // Lưu dữ liệu vào Redis sau khi response hoàn tất
-            const ttl = 900; // TTL 15 phút
+            const ttl = 120; // 2 phút
             if (body) {
                 redisClient.setEx(cacheKey, ttl, JSON.stringify(body));
             } else {

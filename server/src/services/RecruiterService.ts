@@ -119,7 +119,7 @@ export default class RecruiterService {
       return null;
     }
     return companies.map((company : IRecruiter) => new RecruiterListDTO(
-      company._id as ObjectId,
+      company.userId as ObjectId,
       company.orgName,
       company.orgImage,
       company.orgCoverImage,
@@ -133,7 +133,7 @@ export default class RecruiterService {
       return null;
     }
     return companies.map((company : IRecruiter) => new RecruiterListDTO(
-      company._id as ObjectId,
+      company.userId as ObjectId,
       company.orgName,
       company.orgImage,
       company.orgCoverImage,

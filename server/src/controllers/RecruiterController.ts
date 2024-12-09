@@ -121,7 +121,6 @@ export default class RecruiterController extends BaseController {
     async getListCompany(req: Request, res: Response) {
         try {
             const { search, page, pageSize } = req.query;
-            const {  } = req.query;
             let companies;
             if(page && pageSize && search) {
                 companies = await this.recruiterService.getListCompanyByPage(String(search), Number(page), Number(pageSize));
