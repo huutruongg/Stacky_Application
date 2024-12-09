@@ -18,19 +18,34 @@ export const registerEmployerSchema = z
     orgTaxNumber: z
       .string()
       .min(10, "Số thuế là bắt buộc")
-      .regex(/^[^\s]+$/, "Số thuế không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Số thuế không được chứa khoảng trắng đầu và cuối"
+      ),
     orgName: baseSchemas
       .requiredString("Tên công ty là bắt buộc")
-      .regex(/^[^\s]+$/, "Tên công ty không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Tên công ty không được chứa khoảng trắng đầu và cuối"
+      ),
     orgField: baseSchemas
       .requiredString("Vui lòng chọn lĩnh vực công ty")
-      .regex(/^[^\s]+$/, "Lĩnh vực công ty không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Lĩnh vực công ty không được chứa khoảng trắng đầu và cuối"
+      ),
     orgScale: baseSchemas
       .requiredString("Vui lòng chọn quy mô công ty")
-      .regex(/^[^\s]+$/, "Quy mô công ty không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Quy mô công ty không được chứa khoảng trắng đầu và cuối"
+      ),
     orgAddress: baseSchemas
       .requiredString("Vui lòng chọn địa chỉ công ty")
-      .regex(/^[^\s]+$/, "Địa chỉ công ty không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Địa chỉ công ty không được chứa khoảng trắng đầu và cuối"
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Mật khẩu và xác nhận mật khẩu không khớp",

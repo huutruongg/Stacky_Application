@@ -6,23 +6,38 @@ export const profileCVSchema = (hasExperience) =>
       .string()
       .nonempty("Họ và Tên không được để trống")
       .refine(
-        (data) => /^[A-Za-z][A-Za-z0-9_]{7,29}$/.test(data),
+        (data) =>
+          /^[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*(?:[ ][A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*)*$/.test(
+            data
+          ) ||
+          !/[^A-Za-zÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ]/.test(
+            data
+          ),
         "Họ và Tên không hợp lệ"
-      ).regex(/^[^\s]+$/, "Họ và Tên không được chứa khoảng trắng"),
-    jobPosition: z.string().nonempty("Vị trí ứng tuyển không được để trống").regex(/^[^\s]+$/, "Vị trí không được chứa khoảng trắng"),
+      ),
+    jobPosition: z
+      .string()
+      .nonempty("Vị trí ứng tuyển không được để trống")
+      .refine(
+        (data) => data.trim() === data,
+        "Vị trí ứng tuyển không được chứa khoảng trắng đầu và cuối"
+      ),
     publicEmail: z
       .string()
       .email("Địa chỉ email không hợp lệ")
       .nonempty("Email không được để trống")
-      .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Email không được chứa khoảng trắng đầu và cuối"
+      ),
     phoneNumber: z
       .string()
-      .regex(
-        /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g,
+      .nonempty("Số điện thoại không được để trống") // Ensures the field is not empty
+      .min(10, "Số điện thoại phải có ít nhất 10 ký tự") // Validates the minimum length
+      .refine(
+        (data) => /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g.test(data),
         "Số điện thoại không hợp lệ"
-      )
-      .min(10, "Số điện thoại không hợp lệ"),
-    gender: z.string().min(1, "Giới tính không được để trống"),
+      ),
     birthDate: z
       .date()
       .nullable()
@@ -92,7 +107,13 @@ export const profileCVSchema = (hasExperience) =>
     educations: z
       .array(
         z.object({
-          schoolName: z.string().nonempty("Tên trường không được để trống").regex(/^[^\s]+$/, "Tên trường không được chứa khoảng trắng"),
+          schoolName: z
+            .string()
+            .nonempty("Tên trường không được để trống")
+            .refine(
+              (data) => data.trim() === data,
+              "Tên trường không được chứa khoảng trắng đầu và cuối"
+            ),
           startDate: z
             .date()
             .nullable()
@@ -111,7 +132,7 @@ export const profileCVSchema = (hasExperience) =>
             .refine((date) => date !== null, {
               message: "Ngày kết thúc không được để trống",
             }),
-          fieldName: z.string().nonempty("Chuyên ngành không được để trống").regex(/^[^\s]+$/, "Chuyên ngành không được chứa khoảng trắng"),
+          fieldName: z.string().nonempty("Chuyên ngành không được để trống"),
         })
       )
       .optional(),
@@ -120,7 +141,7 @@ export const profileCVSchema = (hasExperience) =>
     experiences: hasExperience
       ? z.array(
           z.object({
-            companyName: z.string().nonempty("Tên công ty không được để trống").regex(/^[^\s]+$/, "Tên công ty không được chứa khoảng trắng"),
+            companyName: z.string().nonempty("Tên công ty không được để trống"),
             startDate: z
               .date()
               .nullable()
@@ -143,10 +164,10 @@ export const profileCVSchema = (hasExperience) =>
               }),
             jobPosition: z
               .string()
-              .nonempty("Vị trí làm việc không được để trống").regex(/^[^\s]+$/, "Vị trí không được chứa khoảng trắng"),
+              .nonempty("Vị trí làm việc không được để trống"),
             previousJobDetails: z
               .string()
-              .nonempty("Mô tả công việc không được để trống").regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
+              .nonempty("Mô tả công việc không được để trống"),
           })
         )
       : z.array(z.any()).optional(),

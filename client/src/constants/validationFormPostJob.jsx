@@ -14,10 +14,28 @@ export const postJobSchema = z.object({
     .string()
     .url("Vui lòng nhập một URL hợp lệ cho ảnh công việc.")
     .optional(),
-  jobTitle: z.string().min(1, "Tên công việc là bắt buộc").regex(/^[^\s]+$/, "Tên công việc không được chứa khoảng trắng"),
-  typeOfWork: z.string().min(1, "Loại hình công việc là bắt buộc").regex(/^[^\s]+$/, "Loại hình công việc không được chứa khoảng trắng"),
+  jobTitle: z
+    .string()
+    .min(1, "Tên công việc là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Tên công việc không được chứa khoảng trắng đầu và cuối"
+    ),
+  typeOfWork: z
+    .string()
+    .min(1, "Loại hình công việc là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Loại hình công việc không được chứa khoảng trắng đầu và cuối"
+    ),
   genderRequired: z.string().min(1, "Giới tính là bắt buộc"),
-  location: z.string().min(1, "Địa điểm làm việc là bắt buộc").regex(/^[^\s]+$/, "Địa điểm không được chứa khoảng trắng"),
+  location: z
+    .string()
+    .min(1, "Địa điểm làm việc là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Địa điểm không được chứa khoảng trắng đầu và cuối"
+    ),
   jobSalary: z
     .string()
     .transform((value) => Number(value))
@@ -30,12 +48,48 @@ export const postJobSchema = z.object({
     .refine((value) => Number.isInteger(value) && value > 0, {
       message: "Số lượng tuyển dụng phải là số nguyên dương",
     }),
-  educationRequired: z.string().min(1, "Trình độ học vấn là bắt buộc").regex(/^[^\s]+$/, "Trình độ học vấn không được chứa khoảng trắng"),
-  yearsOfExperience: z.string().min(1, "Kinh nghiệm làm việc là bắt buộc").regex(/^[^\s]+$/, "Kinh nghiệm không được chứa khoảng trắng"),
-  typeOfIndustry: z.string().min(1, "Ngành nghề yêu cầu là bắt buộc").regex(/^[^\s]+$/, "Ngành nghề không được chứa khoảng trắng"),
-  staffLevel: z.string().min(1, "Vị trí tuyển dụng là bắt buộc").regex(/^[^\s]+$/, "Vị trí không được chứa khoảng trắng"),
-  certificateRequired: z.string().min(1, "Chứng chỉ cần thiết là bắt buộc").regex(/^[^\s]+$/, "Chứng chỉ không được chứa khoảng trắng"),
-  professionalSkills: z.string().min(1, "Kỹ năng chuyên môn là bắt buộc").regex(/^[^\s]+$/, "Kỹ năng không được chứa khoảng trắng"),
+  educationRequired: z
+    .string()
+    .min(1, "Trình độ học vấn là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Trình độ học vấn không được chứa khoảng trắng đầu và cuối"
+    ),
+  yearsOfExperience: z
+    .string()
+    .min(1, "Kinh nghiệm làm việc là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Kinh nghiệm không được chứa khoảng trắng đầu và cuối"
+    ),
+  typeOfIndustry: z
+    .string()
+    .min(1, "Ngành nghề yêu cầu là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Ngành nghề không được chứa khoảng trắng đầu và cuối"
+    ),
+  staffLevel: z
+    .string()
+    .min(1, "Vị trí tuyển dụng là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Vị trí không được chứa khoảng trắng đầu và cuối"
+    ),
+  certificateRequired: z
+    .string()
+    .min(1, "Chứng chỉ cần thiết là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Chứng chỉ không được chứa khoảng trắng đầu và cuối"
+    ),
+  professionalSkills: z
+    .string()
+    .min(1, "Kỹ năng chuyên môn là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Kỹ năng không được chứa khoảng trắng đầu và cuối"
+    ),
   languagesRequired: z
     .array(
       z.object({
@@ -44,9 +98,15 @@ export const postJobSchema = z.object({
       })
     )
     .optional(),
-  jobBenefit: z.string().min(1, "Mô tả lợi ích nhân viên là bắt buộc").regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
+  jobBenefit: z
+    .string()
+    .min(1, "Mô tả lợi ích nhân viên là bắt buộc")
+    .regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
   leavePolicy: z.string().optional(),
-  jobDescription: z.string().min(1, "Mô tả công việc là bắt buộc").regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
+  jobDescription: z
+    .string()
+    .min(1, "Mô tả công việc là bắt buộc")
+    .regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
   workEnvironment: z.string().optional(),
   applicationDeadline: z
     .date()

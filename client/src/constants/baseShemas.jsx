@@ -5,7 +5,10 @@ export const baseSchemas = {
     z
       .string()
       .min(1, message)
-      .regex(/^[^\s]+$/, "Chuỗi không được chứa khoảng trắng"),
+      .refine(
+        (data) => data.trim() === data,
+        "Tên công ty không được chứa khoảng trắng đầu và cuối"
+      ),
 
   requiredEmail: (message) =>
     z

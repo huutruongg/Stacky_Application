@@ -35,15 +35,21 @@ const Footer = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-lg ">Kết nối với Stacky</span>
-            <div className="flex">
+            <div className="flex gap-5 mt-2">
               <a href="">
-                <IconFacebook></IconFacebook>
+                <IconFacebook
+                  className="w-8 h-8"
+                  color="#1877F2"
+                ></IconFacebook>
               </a>
               <a href="">
-                <IconYoutube></IconYoutube>
+                <IconYoutube className="w-8 h-8" color="#FF0000"></IconYoutube>
               </a>
               <a href="">
-                <IconInstagram></IconInstagram>
+                <IconInstagram
+                  className="w-8 h-8"
+                  color="#C13584"
+                ></IconInstagram>
               </a>
             </div>
           </div>
