@@ -19,10 +19,15 @@ export const postJobSchema = z.object({
   typeOfWork: z.string().min(1, "Loại hình công việc là bắt buộc"),
   genderRequired: z.string().min(1, "Giới tính là bắt buộc"),
   location: z.string().min(1, "Địa điểm làm việc là bắt buộc"),
-  jobSalary: z.string().min(1, "Mức lương là bắt buộc"),
+  jobSalary: z
+    .string()
+    .transform((value) => Number(value))
+    .refine((value) => Number.isInteger(value) && value > 0, {
+      message: "Mức lương phải là số nguyên dương",
+    }),
   candidatesLimit: z
-    .string() // Start with a string since form inputs are strings
-    .transform((value) => Number(value)) // Convert the string to a number
+    .string()
+    .transform((value) => Number(value))
     .refine((value) => Number.isInteger(value) && value > 0, {
       message: "Số lượng tuyển dụng phải là số nguyên dương",
     }),

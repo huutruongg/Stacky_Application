@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Modal } from "../ui/modal";
+import Buttonchild from "../button/Buttonchild";
 
 export const AlertModal = ({
   isOpen,
@@ -15,14 +15,25 @@ export const AlertModal = ({
       isOpen={isOpen}
       onClose={onClose}
       description={description}
+      className={"bg-white"}
     >
-      <div className="flex w-full items-center justify-end space-x-2 pt-6">
-        <Button disabled={isLoading} variant="outline" onClick={onClose}>
+      <div className="flex w-full items-center justify-center gap-5 py-5">
+        <Buttonchild
+          className="text-center py-1 px-5 disabled:opacity-50"
+          kind="secondary"
+          disabled={isLoading}
+          onClick={onClose}
+        >
           Hủy
-        </Button>
-        <Button disabled={isLoading} variant="destructive" onClick={onConfirm}>
+        </Buttonchild>
+        <Buttonchild
+          className="text-center py-1 px-5 disabled:opacity-50"
+          kind="primary"
+          disabled={isLoading}
+          onClick={onConfirm}
+        >
           Tiếp tục
-        </Button>
+        </Buttonchild>
       </div>
     </Modal>
   );

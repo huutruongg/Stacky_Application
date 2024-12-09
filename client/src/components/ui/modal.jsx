@@ -37,7 +37,7 @@ export const Modal = ({
             </DialogDescription>
           </div>
         </DialogHeader>
-        <div>{children}</div>
+        {children && <div className="bg-white">{children}</div>}
       </DialogContent>
     </Dialog>
   );

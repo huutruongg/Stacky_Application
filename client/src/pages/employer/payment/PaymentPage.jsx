@@ -4,18 +4,21 @@ import Buttonchild from "@/components/button/Buttonchild";
 import PayHistory from "./PayHistory";
 import { toast } from "react-toastify";
 import axiosInstance from "@/lib/authorizedAxios";
-import { fetchData } from "@/api/fetchData";
+import { useNavigate } from "react-router-dom";
+import FormatCurrency from "@/components/format/FormatCurrency";
 
 const PaymentPage = () => {
-  const [amount, setAmount] = useState(true);
+  const navigate = useNavigate();
+  const [amount, setAmount] = useState(0); // Sửa từ true thành 0 để phù hợp với kiểu dữ liệu
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const urlParams = new URLSearchParams(window.location.search);
+  const transId = urlParams.get("apptransid");
+  console.log(amount);
   useEffect(() => {
     const getData = async () => {
       try {
         const result = await axiosInstance.get(`/payment/get-payment-info`);
-        // console.log(result.data.historyDeposit);
         setData(result.data);
         setIsLoading(true);
       } catch (error) {
@@ -49,27 +52,29 @@ const PaymentPage = () => {
         }
       );
       setAmount(response.data.amount);
-      console.log(response.data);
     } catch (error) {
-      toast.error("Tạo giao dịch thất bại");
+      toast.error("Kiểm tra giao dịch thất bại");
     }
   };
-
   const updateBalance = async (amount) => {
     try {
-      const response = await axiosInstance.post("/payment/deposit-funds", {
+      const response = await axiosInstance.patch("/payment/deposit-funds", {
         amount: amount,
       });
+      toast.success("Cập nhật số dư thành công");
+      // Cập nhật lại dữ liệu sau khi cập nhật số dư thành công
+      window.location.reload();
     } catch (error) {
-      toast.error("Tạo giao dịch thất bại");
+      toast.error("Cập nhật số dư thất bại");
     }
   };
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const transId = urlParams.get("apptransid");
   if (transId) {
     checkTransaction(transId);
-    updateBalance(amount);
+    if (amount !== 0) {
+      updateBalance(amount);
+    }
+    navigate("/payment");
   }
 
   return (
@@ -85,7 +90,7 @@ const PaymentPage = () => {
           </div>
           <div className="flex items-center gap-3">
             <span className="font-medium">Số dư hiện tại:</span>
-            <span>{data.balance}</span>
+            <span>{FormatCurrency(data.balance || 0)}</span>
           </div>
           {!isLoading ? "" : <PayHistory data={data} />}
         </div>
@@ -123,7 +128,7 @@ const PaymentPage = () => {
               <Buttonchild
                 kind="secondary"
                 className="px-2 py-1"
-                onClick={() => handleCreateTransaction(5000000)}
+                onClick={() => handleCreateTransaction(500000)}
               >
                 500,000 VND
               </Buttonchild>

@@ -87,8 +87,10 @@ const PayHistory = ({ data }) => {
                   <TableCell className="text-center">
                     {FormatCurrency(item.payAmount)}
                   </TableCell>
-                  <TableCell className="text-center">Nạp tiền</TableCell>
-                  <TableCell className="text-center">Nạp tiền Stacky</TableCell>
+                  <TableCell className="text-center">Thanh toán</TableCell>
+                  <TableCell className="text-center">
+                    Thanh toán Stacky
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

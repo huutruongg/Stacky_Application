@@ -16,7 +16,6 @@ const Heading = () => {
   const { user, logout } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
   const { jobSaveData, loading } = useJobSave();
-  const [error, setError] = useState(null);
   const [data, setData] = useState(null);
   const [dataNotification, setDataNotification] = useState(null);
   const handleMouseEnter = () => setIsHovered(true);
@@ -30,7 +29,6 @@ const Heading = () => {
         const resultNotification = await axiosInstance.get(
           `/notification/unread`
         );
-        // console.log(result.data.result);
         setData(result.data.result);
         setDataNotification(resultNotification.data.count);
       } catch (error) {

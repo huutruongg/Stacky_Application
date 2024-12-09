@@ -98,8 +98,9 @@ const FormBasicInfo = ({ form }) => {
           {/* Salary Field */}
           <InputField
             control={form.control}
+            type="number"
             name="jobSalary"
-            placeholder="VD: 10 - 15 triệu, Thỏa thuận"
+            placeholder="VD: 10000000"
             labelName="Mức lương"
             id="jobSalary"
             {...commonInputProps}

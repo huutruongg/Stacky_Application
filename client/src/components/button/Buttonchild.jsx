@@ -21,7 +21,8 @@ const Buttonchild = ({
   switch (rest.kind) {
     case "primary":
       defaultClassName =
-        defaultClassName + " bg-primary text-white hover:bg-[#00F0FF]";
+        defaultClassName +
+        " bg-primary text-white border border-transparent hover:bg-[#00F0FF]";
       break;
     case "secondary":
       defaultClassName =
