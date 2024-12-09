@@ -55,8 +55,8 @@ export default class GithubController extends BaseController {
                 return this.sendResponse(res, 200, { success: true, isLoggedInGithub, token });
             }
 
-            return this.sendResponse(res, 200, { success: true, result: { isLoggedInGithub } });
-
+            // return this.sendResponse(res, 200, { success: true, result: { isLoggedInGithub } });
+            return this.sendResponse(res, 200, { success: true, isLoggedInGithub, token: isToken });
         } catch (error) {
             log(error);
             res.status(500).json({ message: 'Internal server error' });
