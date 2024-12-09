@@ -6,6 +6,7 @@ import { FlattenMaps, Types } from "mongoose";
 import { ApplyStatus } from "../enums/EApplySatus";
 import { IJobSaved } from "../interfaces/IJobPost";
 import { IOAuthToken } from "../interfaces/IOauthToken";
+import ApplicantModel from "../models/ApplicantModel";
 
 export default class CandidateRepository extends BaseRepository<ICandidate> {
     constructor() {

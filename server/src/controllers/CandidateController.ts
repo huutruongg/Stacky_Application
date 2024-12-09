@@ -35,6 +35,20 @@ export default class CandidateController extends BaseController {
         }
     }
 
+    async getAppliedJobs(req: Request, res: Response) {
+        try {
+            const userInfo = await (req as any).userData;
+            const userId = userInfo.userId;
+            const appliedJobs = await this.candidateService.getAppliedJobs(userId);
+            if (!appliedJobs) {
+                return this.sendError(res, 404, "Applied jobs not found");
+            }
+            return this.sendResponse(res, 200, { success: true, result: appliedJobs });
+        } catch (error) {
+            return this.sendError(res, 500, "Failed to get applied jobs");
+        }
+    }
+
     async updateCandidate(req: Request, res: Response) {
         try {
             const data = req.body;

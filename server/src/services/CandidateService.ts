@@ -2,6 +2,7 @@ import { log } from "console";
 import { ICandidate, IProfile } from "../interfaces/ICandidate";
 import CandidateRepository from "../repositories/CandidateRepository";
 import { Types } from "mongoose";
+import CandidateModel from "../models/CandidateModel";
 
 export default class CandidateService {
     private candidateRepository: CandidateRepository;
@@ -22,6 +23,41 @@ export default class CandidateService {
             throw new Error("Invalid User ID format.");
         }
         return await this.candidateRepository.findCandidateByUserId(userId);
+    }
+
+    async getAppliedJobs(userId: string): Promise<any[] | null> {
+        const candidate = await CandidateModel.findOne({ userId: new Types.ObjectId(userId) }).populate({
+            path: 'jobApplied.jobPostId', // Populate jobPostId trong jobApplied
+            model: 'JobPost', // Liên kết với bảng JobPost
+            select: 'jobImage orgName jobTitle location' // Chọn các trường cần thiết từ JobPost
+        });
+        log("Candidate:", candidate);
+
+        if (!candidate || !candidate.jobApplied || candidate.jobApplied.length === 0) {
+            return [];
+        }
+
+        // Duyệt qua danh sách jobApplied và chuẩn hóa dữ liệu
+        const appliedJobs = candidate.jobApplied.map(application => {
+            const jobPost = application.jobPostId as {
+                jobImage: string;
+                orgName: string;
+                jobTitle: string;
+                location: string;
+            };
+            if (!jobPost) return null; // Bỏ qua nếu jobPost không tồn tại
+        
+            return {
+                orgImage: jobPost.jobImage || null, // Đổi từ orgImage sang jobImage
+                orgName: jobPost.orgName,
+                jobTitle: jobPost.jobTitle,
+                location: jobPost.location,
+                appliedAt: application.appliedAt,
+                status: application.status
+            };
+        }).filter(job => job !== null); // Lọc bỏ các giá trị null
+
+        return appliedJobs;
     }
 
     async createCandidate(data: Partial<ICandidate>): Promise<ICandidate> {
@@ -79,7 +115,7 @@ export default class CandidateService {
 
     async prepareBulkOperations(userId: string, data: Partial<ICandidate>): Promise<any[]> {
         const bulkOps: any[] = [];
-    
+
         const replaceField = (fieldName: string, items: any[] | undefined) => {
             if (items) {
                 bulkOps.push({
@@ -90,17 +126,17 @@ export default class CandidateService {
                 });
             }
         };
-    
+
         // Apply replace logic for each field
         replaceField('languages', data.languages);
         replaceField('projects', data.projects);
         replaceField('educations', data.educations);
         replaceField('experiences', data.experiences);
         replaceField('certifications', data.certifications);
-    
+
         return bulkOps;
     }
-    
+
     async updateCandidateProfile(userId: string, data: Partial<IProfile>): Promise<boolean | null> {
         try {
             const candidateUpdate = {

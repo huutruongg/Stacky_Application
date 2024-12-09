@@ -300,6 +300,23 @@ export default class JobPostService {
         }
     }
 
+    async deleteApplication(candidateId: string, jobPostId: string): Promise<boolean> {
+        try {
+            const applicationDeleted = await this.applicantRepository.deleteApplication(candidateId, jobPostId);
+            const candidateDeleted = await this.candidateRepository.updateApplyStatus(candidateId, jobPostId, ApplyStatus.REJECTED);
+            if (!applicationDeleted || !candidateDeleted) {
+                console.warn(`No application found for user ${candidateId} and job ${jobPostId}.`);
+                return false;
+            }
+
+            console.log(`Successfully removed application for user ${candidateId} and job ${jobPostId}.`);
+            return true;
+        } catch (error) {
+            console.error('Error removing application:', error);
+            return false;
+        }
+    }
+
     async saveJobPost(userId: string, jobSavedId: string): Promise<boolean> {
         try {
             const jobExists = await this.jobPostRepository.exists(jobSavedId);

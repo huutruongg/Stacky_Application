@@ -21,7 +21,7 @@ export default class PaymentController extends BaseController {
         try {
             // const { urlRedirect, packageName, amount  } = req.body;
             const { packageName, amount } = req.body;
-            const urlRedirect = `${process.env.URL_CLIENT}/deposit`;
+            const urlRedirect = `${process.env.URL_CLIENT}/payment`;
             log("packageName: ", packageName);
             log("amount: ", amount);
             const data = await this.paymentService.createTransaction(urlRedirect, packageName, amount);

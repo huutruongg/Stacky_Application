@@ -250,6 +250,24 @@ export default class JobPostController extends BaseController {
         }
     }
 
+    async deleteApplication(req: Request, res: Response) {
+        try {
+            const { jobPostId, candidateId } = req.params;
+            const userInfo = await (req as any).userData;
+            log('userInfo', userInfo);
+            if (!userInfo) {
+                return this.sendError(res, 401, new Error('Authentication required!').message);
+            }
+            const isDeleted = await this.jobPostService.deleteApplication(candidateId, jobPostId);
+            if (!isDeleted) {
+                return this.sendError(res, 400, 'Failed to delete application!');
+            }
+            return this.sendResponse(res, 200, { success: true, message: 'Application deleted successfully!' });
+        } catch (error) {
+            return this.sendError(res, 500, 'Internal Server Error!');
+        }
+    }
+
     async saveJobPost(req: Request, res: Response) {
         try {
             const { jobPostId } = req.params;

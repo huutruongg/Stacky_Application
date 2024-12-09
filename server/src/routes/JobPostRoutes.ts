@@ -60,12 +60,15 @@ export default class JobPostRoutes extends BaseRoutes {
             // authorize(['job-post:write']),
             this.jobPostController.unSaveJobPost
         );
+
         this.router.post(
             '/create-application/:jobPostId',
             authenticateJWT,
             // authorize(['job-post:apply']),
             this.jobPostController.createApplication
         );
+
+        this.router.delete("/delete-application/:jobPostId/:candidateId", authenticateJWT, this.jobPostController.deleteApplication);
 
         // Recruiter/Admin-specific routes
         this.router.post(

@@ -19,7 +19,7 @@ export default class RecruiterService {
   }
 
   async getRecruiterByUserId(userId: string) {
-    const data: IRecruiter | null = await this.recruiterRepository.findOne({ userId });
+    const data: IRecruiter | null = await this.recruiterRepository.findOne({ userId: new Types.ObjectId(userId) });
     if (!data) {
       return null;
     }

@@ -37,6 +37,11 @@ export default class GithubController extends BaseController {
 
     public isLoggedInGithub = async (req: Request, res: Response) => {
         try {
+            const { isToken } = req.query;
+            if (isToken) {
+                this.sendResponse(res, 200, { success: true, isLoggedInGithub: true, token: isToken });
+                return;
+            }
             const userInfo = (req as any).userData;
             log("userInfo", userInfo);
             const candidateRepo = new CandidateRepository();

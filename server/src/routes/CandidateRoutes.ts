@@ -27,6 +27,8 @@ export default class CandidateRoutes extends BaseRoutes {
             this.candidateController.getCandidate
         );
 
+        this.router.get("/get-applied-jobs", authenticateJWT, this.candidateController.getAppliedJobs);
+
         this.router.get(
             '/get-profile',
             authenticateJWT,
