@@ -2,13 +2,26 @@ import { z } from "zod";
 
 export const profileCVSchema = (hasExperience) =>
   z.object({
-    fullName: z.string().nonempty("Họ và Tên không được để trống"),
-    jobPosition: z.string().nonempty("Vị trí ứng tuyển không được để trống"),
+    fullName: z
+      .string()
+      .nonempty("Họ và Tên không được để trống")
+      .refine(
+        (data) => /^[A-Za-z][A-Za-z0-9_]{7,29}$/.test(data),
+        "Họ và Tên không hợp lệ"
+      ).regex(/^[^\s]+$/, "Họ và Tên không được chứa khoảng trắng"),
+    jobPosition: z.string().nonempty("Vị trí ứng tuyển không được để trống").regex(/^[^\s]+$/, "Vị trí không được chứa khoảng trắng"),
     publicEmail: z
       .string()
       .email("Địa chỉ email không hợp lệ")
-      .nonempty("Email không được để trống"),
-    phoneNumber: z.string().nonempty("Số điện thoại không được để trống"),
+      .nonempty("Email không được để trống")
+      .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
+    phoneNumber: z
+      .string()
+      .regex(
+        /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g,
+        "Số điện thoại không hợp lệ"
+      )
+      .min(10, "Số điện thoại không hợp lệ"),
     gender: z.string().min(1, "Giới tính không được để trống"),
     birthDate: z
       .date()
@@ -79,7 +92,7 @@ export const profileCVSchema = (hasExperience) =>
     educations: z
       .array(
         z.object({
-          schoolName: z.string().nonempty("Tên trường không được để trống"),
+          schoolName: z.string().nonempty("Tên trường không được để trống").regex(/^[^\s]+$/, "Tên trường không được chứa khoảng trắng"),
           startDate: z
             .date()
             .nullable()
@@ -98,7 +111,7 @@ export const profileCVSchema = (hasExperience) =>
             .refine((date) => date !== null, {
               message: "Ngày kết thúc không được để trống",
             }),
-          fieldName: z.string().nonempty("Chuyên ngành không được để trống"),
+          fieldName: z.string().nonempty("Chuyên ngành không được để trống").regex(/^[^\s]+$/, "Chuyên ngành không được chứa khoảng trắng"),
         })
       )
       .optional(),
@@ -107,7 +120,7 @@ export const profileCVSchema = (hasExperience) =>
     experiences: hasExperience
       ? z.array(
           z.object({
-            companyName: z.string().nonempty("Tên công ty không được để trống"),
+            companyName: z.string().nonempty("Tên công ty không được để trống").regex(/^[^\s]+$/, "Tên công ty không được chứa khoảng trắng"),
             startDate: z
               .date()
               .nullable()
@@ -130,10 +143,10 @@ export const profileCVSchema = (hasExperience) =>
               }),
             jobPosition: z
               .string()
-              .nonempty("Vị trí làm việc không được để trống"),
+              .nonempty("Vị trí làm việc không được để trống").regex(/^[^\s]+$/, "Vị trí không được chứa khoảng trắng"),
             previousJobDetails: z
               .string()
-              .nonempty("Mô tả công việc không được để trống"),
+              .nonempty("Mô tả công việc không được để trống").regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
           })
         )
       : z.array(z.any()).optional(),
