@@ -433,4 +433,32 @@ export default class JobPostService {
             console.error('Error saving AI result:', error);
         }
     }
+
+    async getTopRecruiters(): Promise<any[]> {
+        try {
+            const topRecruiters = await this.jobPostRepository.getTopRecruiters();
+            if (!topRecruiters) {
+                console.warn("No top recruiters found.");
+                return [];
+            }
+            return topRecruiters;
+        } catch (error) {
+            console.error("Error fetching top recruiters:", error);
+            return [];
+        }
+    }
+
+    async getTopJobSalaries(): Promise<any[]> {
+        try {
+            const topSalaries = await this.jobPostRepository.getTopJobSalaries();
+            if (!topSalaries) {
+                console.warn("No top salaries found.");
+                return [];
+            }
+            return topSalaries;
+        } catch (error) {
+            console.error("Error fetching top salaries:", error);
+            return [];
+        }
+    }
 }
