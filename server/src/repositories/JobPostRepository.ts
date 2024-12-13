@@ -135,4 +135,67 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
     async getJobPostedByRecruiter(userId: string): Promise<IJobPost[]> {
         return await this.model.find({ userId: new Types.ObjectId(userId), invisible: false }).select("_id userId jobTitle orgName typeOfIndustry candidatesLimit postedAt applicationDeadline").lean().exec();
     }
+
+    async getTopRecruiters(): Promise<any[]> {
+        const topRecruiters = await this.model.aggregate([
+            {
+                $group: {
+                    _id: "$userId",  // Group by recruiter (userId)
+                    numberOfPost: { $sum: 1 },  // Count the number of posts for each recruiter
+                    typeOfIndustry: { $first: "$typeOfIndustry" }  // Get the type of industry for each recruiter
+                }
+            },
+            {
+                $lookup: {
+                    from: 'recruiters',  // Name of the Recruiter collection
+                    localField: '_id',    // The userId from JobPost
+                    foreignField: 'userId',  // The userId in the Recruiter collection
+                    as: 'recruiterDetails'
+                }
+            },
+            {
+                $unwind: "$recruiterDetails"  // Flatten the recruiterDetails array
+            },
+            {
+                $project: {
+                    orgImage: "$recruiterDetails.orgImage",
+                    orgName: "$recruiterDetails.orgName",
+                    typeOfIndustry: 1,
+                    numberOfPost: 1  // Include the number of posts
+                }
+            },
+            {
+                $sort: { numberOfPost: -1 }  // Sort by number of posts in descending order
+            },
+            {
+                $limit: 10  // Limit to top 10 recruiters
+            }
+        ]);
+        log("topRecruiters", topRecruiters);
+        return topRecruiters;
+    }
+
+    async getTopJobSalaries(): Promise<any[]> {
+        const topJobSalaries = await this.model.aggregate([
+            {
+                $match: { invisible: false }  // Only consider visible job posts
+            },
+            {
+                $sort: { jobSalary: -1 }  // Sort by job salary in descending order
+            },
+            {
+                $limit: 10  // Limit to top 10 job salaries
+            },
+            {
+                $project: {
+                    jobTitle: 1,
+                    jobImage: 1,
+                    typeOfIndustry: 1,
+                    jobSalary: 1
+                }
+            }
+        ]);
+        log("topJobSalaries", topJobSalaries);
+        return topJobSalaries;
+    }
 }
