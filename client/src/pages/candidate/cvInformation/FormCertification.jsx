@@ -112,7 +112,7 @@ const FormCertification = ({ form }) => {
                 id={`certificateDetail-${index}`}
                 htmlFor={`certificateDetail-${index}`}
               />
-              {fields.length > 1 && (
+              {fields.length > 0 && (
                 <div className="flex justify-end">
                   <Buttonchild
                     kind="primary"

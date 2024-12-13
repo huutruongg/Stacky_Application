@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import IconPrice from "@/components/icons/IconPrice";
 import IconTimer from "@/components/icons/IconTimer";
 import IconLocation from "@/components/icons/IconLocation";
@@ -12,13 +12,25 @@ import { Modal } from "@/components/ui/modal";
 import ViewApply from "./ViewApply";
 import { useParams } from "react-router-dom";
 import FormatDate from "@/components/format/FormatDate";
+import { useJobSave } from "@/components/context/JobSaveProvider";
+import axiosInstance from "@/lib/authorizedAxios";
+import IconHeartActive from "@/components/icons/IconHeartActive";
 
 const JobSummary = ({ jobData, isliked }) => {
   const { id } = useParams();
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
-  const [liked, setLiked] = useState(isliked); // Initialize with the jobData's liked status
+  const [liked, setLiked] = useState(isliked);
   const [isLoading, setIsLoading] = useState(false);
+  const { removeJob, refreshSavedJobs } = useJobSave();
+
+  useEffect(() => {
+    setLiked(isliked);
+  }, [isliked]);
+
+  const handleLiked = () => {
+    setLiked(!liked);
+  };
 
   const onCloseReview = () => {
     setOpenReview(false);
@@ -30,15 +42,46 @@ const JobSummary = ({ jobData, isliked }) => {
 
   const handleSaveJob = async () => {
     try {
+      setIsLoading(true);
       await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
       toast.success("Lưu bài viết thành công");
-      setLiked(true); // Update the liked state
+      setLiked(true);
+      refreshSavedJobs(); // Đảm bảo refresh sau khi lưu
     } catch (error) {
       toast.error("Lưu bài viết thất bại");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  console.log(jobData.jobTitle);
+  const handleDeleteSaveJob = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
+      toast.success("Xóa bài viết thành công");
+      refreshSavedJobs(); // Đảm bảo refresh sau khi xóa
+      setLiked(false);
+      removeJob(jobData._id);
+    } catch (error) {
+      console.error("Error deleting saved job:", error);
+      toast.error("Xóa bài viết thất bại");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleApplyJob = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.post(`/job-post/create-application/${jobData._id}`);
+      toast.success("Ứng tuyển thành công");
+      setOpenReview(false);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Ứng tuyển thất bại");
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-secondary p-8 rounded-xl">
@@ -69,21 +112,34 @@ const JobSummary = ({ jobData, isliked }) => {
       <div className="flex justify-center items-center gap-10">
         <Button
           kind="primary"
-          className="gap-3 px-16 w-full"
+          className="gap-3 w-7/12"
           onClick={handleOpenReview}
         >
           <IconSend></IconSend>
           <span className="font-semibold">ỨNG TUYỂN NGAY</span>
         </Button>
         <Button
-          className={`gap-3 px-10 border-2 border-[#48038C] ${
-            liked ? "disabled:opacity-50" : ""
-          }`}
-          disabled={liked}
-          onClick={handleSaveJob}
+          className={`gap-3 w-3/12 px-10 border-2 border-[#48038C]`}
+          onClick={
+            liked
+              ? () => {
+                  handleDeleteSaveJob();
+                  handleLiked();
+                }
+              : handleSaveJob
+          }
+          disabled={isLoading ? true : false}
         >
-          <IconHeart liked={liked}></IconHeart>
-          <span className="font-semibold text-primary">LƯU</span>
+          <div className="flex items-center justify-center">
+            {liked ? (
+              <IconHeartActive className="w-6 h-6"></IconHeartActive>
+            ) : (
+              <IconHeart className="w-6 h-6"></IconHeart>
+            )}
+          </div>
+          <span className="font-semibold w-full text-center text-primary">
+            {liked ? "ĐÃ LƯU" : "LƯU"}
+          </span>
         </Button>
       </div>
       <div className="flex items-center justify-end w-full">
@@ -106,6 +162,7 @@ const JobSummary = ({ jobData, isliked }) => {
               className="text-center px-10 disabled:opacity-50"
               type="button"
               isLoading={isLoading}
+              onClick={onCloseReview}
             >
               Hủy
             </Button>
@@ -114,6 +171,7 @@ const JobSummary = ({ jobData, isliked }) => {
               className="text-center px-10 disabled:opacity-50"
               type="submit"
               isLoading={isLoading}
+              onClick={handleApplyJob}
             >
               ứng tuyển
             </Button>

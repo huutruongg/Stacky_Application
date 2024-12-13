@@ -1,46 +1,38 @@
 import Button from "@/components/button/Button";
+import FormatDate from "@/components/format/FormatDate";
+import { AlertModal } from "@/components/shared/AlertModal";
 import TitleField from "@/components/titleField/TitleField";
+import { Modal } from "@/components/ui/modal";
 import axiosInstance from "@/lib/authorizedAxios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
+import ViewApply from "./ViewApply";
 
-const JobDescription = ({ jobData, isliked }) => {
-  const [liked, setLiked] = useState(isliked); // Initialize with the jobData's liked status
-
-  const dateString = jobData.applicationDeadline;
-
-  // Chuyển đổi chuỗi thành đối tượng Date
-  const dateObject = new Date(dateString);
-
-  // Lấy ngày, tháng, và năm
-  const day = String(dateObject.getDate()).padStart(2, "0"); // Đảm bảo có 2 chữ số
-  const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
-  const year = dateObject.getFullYear();
-
-  // Tạo chuỗi định dạng DD/MM/YYYY
-  const formattedDate = `${day}/${month}/${year}`;
-
-  const handleDeleteSaveJob = async () => {
-    try {
-      await axiosInstance.delete(`/job-post/unsave-job-post/${jobData._id}`);
-      toast.success("Xóa bài viết thành công");
-      setLiked(false);
-    } catch (error) {
-      toast.error("Xóa bài viết thất bại");
-    }
-  };
-  const handleSaveJob = async () => {
-    try {
-      await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
-      toast.success("Lưu bài viết thành công");
-      setLiked(true); // Update the liked state
-    } catch (error) {
-      toast.error("Lưu bài viết thất bại");
-    }
+const JobDescription = ({ jobData }) => {
+  const [open, setOpen] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const onCloseReview = () => {
+    setOpenReview(false);
   };
 
-  // console.log(jobData);
-  // console.log(liked);
+  const handleOpenReview = () => {
+    setOpenReview(true);
+  };
+
+  const handleApplyJob = async () => {
+    try {
+      setIsLoading(true);
+      await axiosInstance.post(`/job-post/create-application/${jobData._id}`);
+      toast.success("Ứng tuyển thành công");
+      setOpenReview(false);
+      setIsLoading(false);
+    } catch (error) {
+      toast.error("Ứng tuyển thất bại");
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
@@ -156,28 +148,55 @@ const JobDescription = ({ jobData, isliked }) => {
           </div>
         </div>
         <div className="">
-          <span>Hạn nộp hồ sơ: {formattedDate}</span>
+          <span>
+            Hạn nộp hồ sơ: {FormatDate.formatDate(jobData.applicationDeadline)}
+          </span>
         </div>
         <div className="flex justify-center items-center gap-10 mt-5">
-          <Button kind="primary" className="gap-3 px-16">
+          <Button
+            kind="primary"
+            className="gap-3 px-16"
+            onClick={handleOpenReview}
+          >
             <span className="font-semibold">ỨNG TUYỂN NGAY</span>
           </Button>
-          {liked ? (
-            <Button
-              className="gap-3 px-10 border-2 border-[#48038C]"
-              onClick={handleDeleteSaveJob}
-            >
-              <span className="font-semibold text-primary">XÓA TIN</span>
-            </Button>
-          ) : (
-            <Button
-              className="gap-3 px-10 border-2 border-[#48038C]"
-              onClick={handleSaveJob}
-            >
-              <span className="font-semibold text-primary">LƯU TIN</span>
-            </Button>
-          )}
         </div>
+      </div>
+      <div className="flex items-center justify-end w-full">
+        <AlertModal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          isLoading={isLoading}
+        />
+        <Modal
+          isOpen={openReview}
+          onClose={onCloseReview}
+          className="bg-white max-w-[600px]"
+          title={`Ứng tuyển ${jobData?.jobTitle}`}
+          description={`Nếu ngành bạn là Công Nghệ Thông Tin, hãy chia sẻ quyền truy cập Github của bạn để chúng tôi tính điểm số của bạn với bài viết này!`}
+        >
+          <ViewApply id={jobData?._id} />
+          <div className="flex justify-center gap-5 py-5">
+            <Button
+              kind="secondary"
+              className="text-center px-10 disabled:opacity-50"
+              type="button"
+              isLoading={isLoading}
+              onClick={onCloseReview}
+            >
+              Hủy
+            </Button>
+            <Button
+              kind="primary"
+              className="text-center px-10 disabled:opacity-50"
+              type="submit"
+              isLoading={isLoading}
+              onClick={handleApplyJob}
+            >
+              ứng tuyển
+            </Button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

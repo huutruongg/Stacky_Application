@@ -39,18 +39,20 @@ const CompanyInfo = ({ companyData }) => {
           </Swiper>
         </div>
         <div className="">
-          <h3 className="font-medium text-base">Chế độ đãi ngộ</h3>
-          <div>
-            {companyData?.orgBenefits
-              ? !companyData.orgBenefits.includes("\n")
-                ? companyData.orgBenefits
-                : companyData.orgBenefits.split("\n").map((line, index) => (
-                    <li key={index}>
-                      {line.replace(/^-/, "").trim()}{" "}
-                      {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                    </li>
-                  ))
-              : null}
+          <div className="">
+            <h3 className="font-medium text-base">Chế độ đãi ngộ</h3>
+            <div>
+              {companyData?.orgBenefits
+                ? !companyData.orgBenefits.includes("\n")
+                  ? companyData.orgBenefits
+                  : companyData.orgBenefits.split("\n").map((line, index) => (
+                      <li key={index}>
+                        {line.replace(/^-/, "").trim()}{" "}
+                        {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                      </li>
+                    ))
+                : null}
+            </div>
           </div>
         </div>
       </div>

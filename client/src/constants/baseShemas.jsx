@@ -13,8 +13,8 @@ export const baseSchemas = {
   requiredEmail: (message) =>
     z
       .string()
-      .email(message || "Email không hợp lệ")
       .min(1, "Email không được để trống")
+      .email(message || "Email không hợp lệ")
       .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
 
   optionalUrl: (message) => z.string().url(message).optional().nullable(),
@@ -35,6 +35,7 @@ export const baseSchemas = {
   password: () =>
     z
       .string()
+      .min(1, "Mật khẩu không được để trống")
       .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,

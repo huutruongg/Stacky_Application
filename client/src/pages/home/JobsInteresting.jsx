@@ -17,6 +17,8 @@ const JobsInteresting = () => {
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
 
+  console.log(jobData);
+
   useEffect(() => {
     const getData = async () => {
       try {

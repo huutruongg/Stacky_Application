@@ -16,16 +16,15 @@ const Button = ({
     children
   );
   let defaultClassName =
-    "flex items-center justify-center text-base font-semibold rounded-xl h-[48px] hover:opacity-90";
+    "flex items-center justify-center text-base font-semibold rounded-xl h-[48px] hover:opacity-80";
   switch (rest.kind) {
     case "primary":
       defaultClassName =
-        defaultClassName + " bg-primary text-white hover:bg-[#00F0FF]";
+        defaultClassName + " bg-primary text-white border-2 border-primary";
       break;
     case "secondary":
       defaultClassName =
-        defaultClassName +
-        " bg-white text-black border hover:bg-primary hover:text-white border-primary";
+        defaultClassName + " bg-white text-black border-2 border-primary";
       break;
     case "ghost":
       defaultClassName =

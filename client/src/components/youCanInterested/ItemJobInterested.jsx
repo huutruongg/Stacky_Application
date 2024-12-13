@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import IconHeart from "@/components/icons/IconHeart";
 import IconLocation from "../icons/IconLocation";
 import IconPrice from "../icons/IconPrice";
+import IconHeartActive from "../icons/IconHeartActive";
 
 const ItemJobInterested = () => {
+  const [liked, setLiked] = useState(false);
   return (
     <div className="flex flex-col gap-5 p-3 bg-white rounded-lg border hover:border hover:border-primary text-sm">
       <div className="flex justify-between gap-1">
@@ -21,7 +23,11 @@ const ItemJobInterested = () => {
               </a>
             </h3>
             <div>
-              <IconHeart className={"w-5 h-5"} liked={""}></IconHeart>
+              {liked ? (
+                <IconHeartActive className="w-6 h-6"></IconHeartActive>
+              ) : (
+                <IconHeart className="w-6 h-6"></IconHeart>
+              )}
             </div>
           </div>
           <div>

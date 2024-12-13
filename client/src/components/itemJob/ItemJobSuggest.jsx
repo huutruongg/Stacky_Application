@@ -4,6 +4,7 @@ import imgCompany from "@/components/image/imgCompany.png";
 import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import { useJobSave } from "../context/JobSaveProvider";
+import IconHeartActive from "../icons/IconHeartActive";
 
 const ItemJobSuggest = ({ jobData }) => {
   const [liked, setLiked] = useState(jobData.isLiked);
@@ -73,7 +74,11 @@ const ItemJobSuggest = ({ jobData }) => {
               className="z-10 hover:cursor-pointer"
               onClick={handleHeartClick}
             >
-              <IconHeart className="w-5 h-5" liked={liked} />
+              {liked ? (
+                <IconHeartActive className="w-6 h-6"></IconHeartActive>
+              ) : (
+                <IconHeart className="w-6 h-6"></IconHeart>
+              )}
             </div>
           </div>
           <div>

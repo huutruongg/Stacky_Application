@@ -7,6 +7,7 @@ import axiosInstance from "@/lib/authorizedAxios";
 import Buttonchild from "../button/Buttonchild";
 import { useJobSave } from "../context/JobSaveProvider";
 import { NavLink } from "react-router-dom";
+import FormatCurrency from "../format/FormatCurrency";
 
 const ItemJobSave = ({ jobData }) => {
   const { removeJob } = useJobSave();
@@ -42,7 +43,7 @@ const ItemJobSave = ({ jobData }) => {
                 <span className="text-xs font-semibold">HOT</span>
               </div>
               <h3 className="line-clamp-1 overflow-hidden font-medium text-ellipsis max-w-[330px] hover:text-primary">
-                <a href="" title={jobData.jobTitle}>
+                <a href={`/job-detail/${jobData._id}`} title={jobData.jobTitle}>
                   {jobData.jobTitle}
                 </a>
               </h3>
@@ -51,7 +52,7 @@ const ItemJobSave = ({ jobData }) => {
               <div className="bg-primary p-1 rounded-full">
                 <IconPrice className={"w-4 h-4"} color={"#fff"}></IconPrice>
               </div>
-              <span>{jobData.jobSalary}</span>
+              <span>{FormatCurrency(jobData.jobSalary)}</span>
             </div>
           </div>
           <div className="line-clamp-1 overflow-hidden text-sm text-ellipsis text-text3 hover:decoration-text3 hover:underline">
@@ -68,7 +69,7 @@ const ItemJobSave = ({ jobData }) => {
             </div>
             <div className="flex items-center gap-5">
               <Buttonchild kind="primary" className="px-5 py-1">
-                <NavLink to={""}>Ứng tuyển</NavLink>
+                <NavLink to={`/job-detail/${jobData._id}`}>Ứng tuyển</NavLink>
               </Buttonchild>
               <Buttonchild
                 kind="secondary"

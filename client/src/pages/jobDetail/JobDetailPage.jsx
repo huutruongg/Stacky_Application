@@ -18,13 +18,11 @@ const JobDetailPage = () => {
   const [error, setError] = useState(null);
   const [isliked, setIsliked] = useState(true);
 
-  console.log(isliked);
-  console.log(data);
-
   useEffect(() => {
     const loadData = async () => {
       try {
         if (!user) {
+          console.log(user);
           const response = await axiosInstance.get(
             `/job-post/get-job-detail/${jobId}`
           );
@@ -48,7 +46,7 @@ const JobDetailPage = () => {
     };
 
     loadData();
-  }, [jobId]); // Chạy khi component mount
+  }, [jobId, isliked]); // Chạy khi component mount
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;

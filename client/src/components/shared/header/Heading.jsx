@@ -37,7 +37,6 @@ const Heading = () => {
     };
     getData();
   }, []);
-  console.log(dataNotification);
 
   const handleReadNotification = async () => {
     try {
@@ -69,7 +68,7 @@ const Heading = () => {
               {jobSaveData ? (
                 <div className="flex items-center">
                   <ItemNotification
-                    icon={<IconHeart defaultLiked={false} />}
+                    icon={<IconHeart className="w-6 h-6"></IconHeart>}
                     children={jobSaveData ? jobSaveData.length : "0"}
                     url={"/job-save"}
                   />
@@ -134,7 +133,7 @@ const Heading = () => {
           ) : (
             <Link to={"/account.stacky.vn"}>
               <button className="px-5 py-2 rounded-xl border border-[#E9EAEC] bg-button text-white">
-                Đăng nhập
+                Đăng nhập / Đăng ký
               </button>
             </Link>
           )}

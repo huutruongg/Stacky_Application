@@ -10,20 +10,21 @@ export const registerEmployerSchema = z
     confirmPassword: z.string().min(1, "Xác nhận mật khẩu là bắt buộc"),
     phoneNumber: z
       .string()
-      .regex(
-        /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g,
-        "Số điện thoại không hợp lệ"
-      )
+      .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Số điện thoại không hợp lệ")
       .min(10, "Số điện thoại không hợp lệ"),
     orgTaxNumber: z
       .string()
-      .min(10, "Số thuế là bắt buộc")
+      .regex(/^\d{9,12}$/, "Số thuế không hợp lệ")
       .refine(
         (data) => data.trim() === data,
         "Số thuế không được chứa khoảng trắng đầu và cuối"
       ),
-    orgName: baseSchemas
-      .requiredString("Tên công ty là bắt buộc")
+    orgName: z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9\s&,.()/[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễếệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]{2,50}$/,
+        "Tên công ty phải có từ 2 đến 50 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
+      )
       .refine(
         (data) => data.trim() === data,
         "Tên công ty không được chứa khoảng trắng đầu và cuối"
@@ -40,11 +41,19 @@ export const registerEmployerSchema = z
         (data) => data.trim() === data,
         "Quy mô công ty không được chứa khoảng trắng đầu và cuối"
       ),
-    orgAddress: baseSchemas
-      .requiredString("Vui lòng chọn địa chỉ công ty")
+    orgAddress: z
+      .string()
+      .regex(
+        /^[a-zA-Z0-9À-ỹ\s,.'()-]{3,255}$/,
+        "Địa chỉ công ty phải có từ 3 đến 255 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (,.'()-)"
+      )
       .refine(
         (data) => data.trim() === data,
-        "Địa chỉ công ty không được chứa khoảng trắng đầu và cuối"
+        "Địa chỉ công ty không được chứa khoảng trắng ở đầu hoặc cuối"
+      )
+      .refine(
+        (data) => !/[,.()'-]{2,}/.test(data),
+        "Địa chỉ công ty không được chứa các ký tự đặc biệt liên tiếp (,, .. --)"
       ),
   })
   .refine((data) => data.password === data.confirmPassword, {

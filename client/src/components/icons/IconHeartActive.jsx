@@ -1,13 +1,13 @@
 import React from "react";
 
-const IconHeart = ({ className }) => {
+const IconHeartActive = ({ className }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
       viewBox="0 0 24 24"
-      fill="none"
+      fill="#48038C"
       stroke="#48038C"
       strokeWidth="2"
       strokeLinecap="round"
@@ -19,4 +19,4 @@ const IconHeart = ({ className }) => {
   );
 };
 
-export default IconHeart;
+export default IconHeartActive;

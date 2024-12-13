@@ -32,6 +32,7 @@ import DashboardPage from "./pages/admin/dashboard/dashboardPage";
 import PostManagerPage from "./pages/admin/postManager/PostManagerPage";
 import CompanyManagerPage from "./pages/admin/companyManager/CompanyManagerPage";
 import AccountManagerPage from "./pages/admin/accountManager/AccountManagerPage";
+import CaculatorGithubPage from "./pages/jobDetail/CaculatorGithubPage";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
               <Route path="/uploaded-cv" element={<CvUploadedPage />} />
               <Route path="/notification" element={<NotificationPage />} />
               <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/github-info" element={<CaculatorGithubPage />} />
             </Route>
           </Route>
           <Route element={<LayoutEmployer />}>

@@ -31,7 +31,7 @@ const CvInformationPage = () => {
     const getData = async () => {
       try {
         const result = await fetchData(`candidate/get-candidate`);
-        const experienceExists = result.experiences?.length > 0;
+        const experienceExists = result.experiences?.length !== 0;
 
         setHasExperience(experienceExists);
 
@@ -91,6 +91,7 @@ const CvInformationPage = () => {
   }, [form, user.userId]);
 
   const onUpdate = async (data) => {
+    console.log(data);
     const formattedData = {
       ...data,
       certifications: data.certifications.map((cert) => ({
@@ -112,7 +113,7 @@ const CvInformationPage = () => {
     try {
       await axiosInstance.put("/candidate/update-info", formattedData);
       toast.success("Cập nhật thành công.");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       toast.error("Cập nhật thất bại");
     }

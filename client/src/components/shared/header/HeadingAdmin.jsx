@@ -78,7 +78,7 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
           ) : (
             <Link to={"/account.stacky.vn"}>
               <button className="px-5 py-2 rounded-xl border border-[#E9EAEC] bg-button text-white">
-                Đăng nhập
+                Đăng nhập / Đăng ký
               </button>
             </Link>
           )}

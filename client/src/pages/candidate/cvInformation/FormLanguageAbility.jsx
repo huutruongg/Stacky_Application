@@ -113,7 +113,7 @@ const FormLanguageAbility = ({ form }) => {
                   { value: "native", label: "Bản ngữ" },
                 ]}
               />
-              {fields.length > 1 ? (
+              {fields.length > 0 ? (
                 <div className="flex justify-end">
                   <Buttonchild
                     kind="primary"

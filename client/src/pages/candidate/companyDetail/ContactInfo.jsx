@@ -5,6 +5,8 @@ import IconYoutube from "@/components/icons/IconYoutube";
 import React from "react";
 
 const ContactInfo = ({ companyData }) => {
+  console.log(companyData);
+
   return (
     <div className="flex flex-col gap-5">
       <div className="bg-secondary border border-primary rounded-xl">

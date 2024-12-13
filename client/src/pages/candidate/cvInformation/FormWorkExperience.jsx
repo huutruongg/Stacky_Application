@@ -26,6 +26,9 @@ const FormWorkExperience = ({ form, hasExperience, setHasExperience }) => {
 
   const toggleExperience = (value) => {
     setHasExperience(value);
+    if (!value) {
+      remove();
+    }
   };
 
   const handleRemoveWorkExperiences = (index, e) => {
@@ -67,7 +70,7 @@ const FormWorkExperience = ({ form, hasExperience, setHasExperience }) => {
               Với các bạn chưa có kinh nghiệm có thể bổ sung các dự án tại
               trường hoặc dự án cá nhân tại mục Dự án.
             </div>
-          ) : (
+          ) : fields && fields.length > 0 ? (
             fields.map((workExperience, index) => (
               <div key={workExperience.id} className="space-y-5 mb-5">
                 <InputField
@@ -198,7 +201,7 @@ const FormWorkExperience = ({ form, hasExperience, setHasExperience }) => {
                 )}
               </div>
             ))
-          )}
+          ) : null}
           <div className="flex items-center justify-center">
             {hasExperience && (
               <Button

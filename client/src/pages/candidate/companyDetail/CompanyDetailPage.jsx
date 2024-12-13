@@ -14,8 +14,6 @@ const CompanyDetailPage = () => {
   const [companyData, setCompanyData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  console.log(companyData);
-
   useEffect(() => {
     const getData = async () => {
       try {
@@ -53,7 +51,7 @@ const CompanyDetailPage = () => {
               {companyData?.orgName}
             </h1>
             <span className="flex items-center flex-wrap max-w-full gap-x-[20px] gap-y-[16px] mb-1">
-              {companyData?.orgIntroduction}
+              {companyData?.orgField}
             </span>
             <div className="flex items-center gap-8 text-white text-[16px] mr-[16px]">
               <div className="flex gap-2 items-center">

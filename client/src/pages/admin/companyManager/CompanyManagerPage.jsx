@@ -84,7 +84,7 @@ const CompanyManagerPage = () => {
       // Render lại dữ liệu sau khi xóa thành công
       const result = await axiosInstance.get("/admin/get-all-companies");
       setCompanyData(result.data.companies);
-      setOpenReview(false)
+      setOpenReview(false);
     } catch (error) {
       toast.error("Xoá công ty thất bại");
     }
@@ -102,7 +102,7 @@ const CompanyManagerPage = () => {
   return (
     <div className="p-5 my-5 mr-5 bg-white rounded-md">
       <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-semibold">Quản lý Bài viết</h3>
+        <h3 className="text-2xl font-semibold">Quản lý Công ty</h3>
         <div className="relative flex items-center min-w-[500px] border border-text4 rounded-full p-1 mr-[400px]">
           <IconSearch className="absolute m-2 w-5 h-5" />
           <input
