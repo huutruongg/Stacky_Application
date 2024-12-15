@@ -103,8 +103,10 @@ export default class GithubService {
 
     public getGitHubScore = async (jobPostId: string, githubToken: string): Promise<number> => {
         const repos = await this.getAllRepos(githubToken as string);
+        log("repos", repos);
         const jobPost = await this.jobPostRepository.findById(jobPostId);
         const jDLanguages = jobPost?.professionalSkills;
+        log("jDLanguages", jDLanguages);
         if (!jDLanguages) {
             log("No job description languages found for job post: " + jobPostId);
             return 0;

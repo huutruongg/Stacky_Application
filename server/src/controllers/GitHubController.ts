@@ -22,9 +22,6 @@ export default class GithubController extends BaseController {
             const userInfo = (req as any).userData;
             const { jobPostId, token } = req.query;
             const score = await this.githubService.getGitHubScore(String(jobPostId), String(token));
-            if (!score) {
-                return this.sendError(res, 404, 'No data found');
-            }
             const roundedScore = Math.round(score);
             log("roundedScore", roundedScore);
             await this.applicantRepository.updateGithubScore(String(userInfo.userId), String(jobPostId), roundedScore);

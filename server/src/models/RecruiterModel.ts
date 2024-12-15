@@ -2,11 +2,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { IRecruiter } from '../interfaces/IRecruiter';
 import { encrypt, decrypt } from '../utils/encryption';
 
-const ImageSchema = new Schema({
-    imageUrl: { type: String },
-    uploadedAt: { type: Date }
-});
-
 // Define the schema for the PaymentSchema
 const PaymentSchema = new Schema({
     payAmount: { type: Number, required: true },
