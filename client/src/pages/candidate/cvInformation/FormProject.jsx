@@ -75,7 +75,7 @@ const FormProject = ({ form }) => {
               <TextareaField
                 control={form.control}
                 name={`projects.${index}.projectDescription`}
-                labelName={"Giới thiệu dự án"}
+                labelName={"Mô tả dự án"}
                 placeholder="Giải quyết vấn đề, bài toán gì"
                 className={"flex items-center"}
                 classNameLabel="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5"

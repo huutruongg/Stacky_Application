@@ -101,12 +101,18 @@ export const postJobSchema = z.object({
   jobBenefit: z
     .string()
     .min(1, "Mô tả lợi ích nhân viên là bắt buộc")
-    .regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
+    .refine(
+      (data) => data.trim() === data,
+      "Mô tả lợi ích nhân viên không được chứa khoảng trắng đầu và cuối"
+    ),
   leavePolicy: z.string().optional(),
   jobDescription: z
     .string()
     .min(1, "Mô tả công việc là bắt buộc")
-    .regex(/^[^\s]+$/, "Mô tả không được chứa khoảng trắng"),
+    .refine(
+      (data) => data.trim() === data,
+      "Mô tả công việc không được chứa khoảng trắng đầu và cuối"
+    ),
   workEnvironment: z.string().optional(),
   applicationDeadline: z
     .date()

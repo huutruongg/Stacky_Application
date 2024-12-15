@@ -113,7 +113,7 @@ const CvInformationPage = () => {
     try {
       await axiosInstance.put("/candidate/update-info", formattedData);
       toast.success("Cập nhật thành công.");
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       toast.error("Cập nhật thất bại");
     }

@@ -68,38 +68,62 @@ const JobPostPage = () => {
     try {
       setIsLoading(true);
 
-      const results = await Promise.allSettled([
-        axiosInstance.patch("/payment/pay-for-job-post", {
-          balance: balanceData,
-          jobPostPrice,
-        }),
-        axiosInstance.post("/job-post/create-job-post", { data }),
-      ]);
-
-      // Kiểm tra kết quả của từng API
-      const paymentStatus = results[0];
-      const jobPostStatus = results[1];
-
-      if (
-        paymentStatus.status === "fulfilled" &&
-        jobPostStatus.status === "fulfilled"
-      ) {
-        setOpenReview(false);
-        toast.success("Tạo bài viết thành công!!!");
-        const result = await axiosInstance.get(`/payment/get-payment-info`);
-        setBalanceData(result.data.balance);
-        form.reset(); // Reset form sau khi tạo bài viết thành công
-      } else {
-        if (paymentStatus.status === "rejected") {
-          console.error("Payment API Error:", paymentStatus.reason);
-        }
-        if (jobPostStatus.status === "rejected") {
-          console.error("Job Post API Error:", jobPostStatus.reason);
-        }
-        toast.error(
-          "Số tiền không đủ hoặc lỗi tạo bài viết. Vui lòng thử lại."
-        );
+      // Kiểm tra điều kiện số dư
+      if (balanceData < jobPostPrice) {
+        toast.error("Số tiền không đủ. Vui lòng nạp thêm tiền.");
+        return;
       }
+
+      // Kiểm tra dữ liệu form
+      const missingFields = [];
+      if (!data.jobTitle) missingFields.push("Tiêu đề công việc");
+      if (!data.typeOfWork) missingFields.push("Loại hình công việc");
+      if (!data.genderRequired) missingFields.push("Yêu cầu giới tính");
+      if (!data.location) missingFields.push("Địa điểm");
+      if (!data.jobSalary) missingFields.push("Mức lương");
+      if (data.candidatesLimit <= 0)
+        missingFields.push("Giới hạn số lượng ứng viên");
+      if (!data.educationRequired)
+        missingFields.push("Trình độ học vấn yêu cầu");
+      if (!data.yearsOfExperience)
+        missingFields.push("Kinh nghiệm làm việc yêu cầu");
+      if (!data.typeOfIndustry) missingFields.push("Ngành nghề");
+      if (!data.staffLevel) missingFields.push("Cấp bậc");
+      if (!data.certificateRequired) missingFields.push("Chứng chỉ yêu cầu");
+      if (!data.professionalSkills) missingFields.push("Kỹ năng chuyên môn");
+      if (
+        !data.languagesRequired ||
+        data.languagesRequired.some((lang) => !lang.language || !lang.level)
+      ) {
+        missingFields.push("Ngôn ngữ và trình độ yêu cầu");
+      }
+      if (!data.jobBenefit) missingFields.push("Lợi ích công việc");
+      if (!data.leavePolicy) missingFields.push("Chính sách nghỉ phép");
+      if (!data.jobDescription) missingFields.push("Mô tả công việc");
+      if (!data.workEnvironment) missingFields.push("Môi trường làm việc");
+      if (!data.applicationDeadline) missingFields.push("Hạn chót ứng tuyển");
+      if (!data.jobSchedule) missingFields.push("Lịch làm việc");
+
+      if (missingFields.length > 0) {
+        toast.error(
+          `Các trường sau đây còn thiếu: ${missingFields.join(", ")}`
+        );
+        return;
+      }
+
+      // Thực hiện gọi API nếu cả hai điều kiện đúng
+      await axiosInstance.patch("/payment/pay-for-job-post", {
+        balance: balanceData,
+        jobPostPrice,
+      });
+
+      await axiosInstance.post("/job-post/create-job-post", { data });
+
+      setOpenReview(false);
+      toast.success("Tạo bài viết thành công!!!");
+      const result = await axiosInstance.get(`/payment/get-payment-info`);
+      setBalanceData(result.data.balance);
+      form.reset(); // Reset form sau khi tạo bài viết thành công
     } catch (error) {
       console.error("Unexpected Error:", error);
       toast.error("Có lỗi xảy ra. Vui lòng thử lại.");

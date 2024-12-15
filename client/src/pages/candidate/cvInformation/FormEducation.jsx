@@ -67,7 +67,7 @@ const FormEducation = ({ form }) => {
                             htmlFor={`startDate-${index}`}
                             className="flex items-center justify-between min-w-44 max-w-44 pr-3 ant-form-item-required"
                           >
-                            Thời gian làm việc
+                            Thời gian học tập
                           </Label>
                           <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
