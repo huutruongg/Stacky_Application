@@ -17,7 +17,7 @@ const SearchJobPage = () => {
 
   // Extract query parameters from the URL
   const queryParams = new URLSearchParams(location.search);
-  const keySearch = queryParams.get("keySearch") || "";
+  const jobTitle = queryParams.get("jobTitle") || "";
   const industry = queryParams.get("industry") || "";
   const locationParam = queryParams.get("location") || "";
 
@@ -27,8 +27,8 @@ const SearchJobPage = () => {
       setIsLoading(true);
       try {
         const result = await fetchData(
-          `job-post/find-job-posts?keySearch=${encodeURIComponent(
-            keySearch
+          `job-post/find-job-posts?jobTitle=${encodeURIComponent(
+            jobTitle
           )}&industry=${encodeURIComponent(
             industry
           )}&location=${encodeURIComponent(locationParam)}`
@@ -42,7 +42,7 @@ const SearchJobPage = () => {
     };
 
     fetchJobs();
-  }, [keySearch, industry, locationParam]); // Trigger fetch when search parameters change
+  }, [jobTitle, industry, locationParam]); // Trigger fetch when search parameters change
 
   // Pagination logic
   const indexOfLastItem = currentPage * newsPerPage;

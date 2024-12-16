@@ -22,7 +22,7 @@ const CompanyInfoPage = () => {
     resolver: zodResolver(companyInfoSchema),
     defaultValues: {
       orgImages: [], // Thêm giá trị mặc định
-    }
+    },
   });
 
   useEffect(() => {
@@ -33,10 +33,13 @@ const CompanyInfoPage = () => {
         );
         console.log(result);
         // Đảm bảo orgImages luôn là một mảng
-        const orgImages = Array.isArray(result.orgImages) ? result.orgImages : [];
+        const orgImages = Array.isArray(result.orgImages)
+          ? result.orgImages
+          : [];
         form.reset({
           orgImage: result.orgImage || "",
           orgName: result.orgName || "",
+          orgEmail: result.orgEmail || "",
           orgScale: result.orgScale || "",
           orgIntroduction: result.orgIntroduction || "",
           orgField: result.orgField || "",
@@ -66,10 +69,10 @@ const CompanyInfoPage = () => {
         ...data,
         orgImages: Array.isArray(data.orgImages) ? data.orgImages : [],
       };
-      
+
       await axiosInstance.put("/recruiter/update-company-info", formData);
       console.log(formData);
-      
+
       toast.success("Công ty đã được lưu thành công!");
     } catch (error) {
       console.error("Error submitting form:", error);

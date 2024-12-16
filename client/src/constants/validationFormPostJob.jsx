@@ -38,10 +38,11 @@ export const postJobSchema = z.object({
     ),
   jobSalary: z
     .string()
-    .transform((value) => Number(value))
-    .refine((value) => Number.isInteger(value) && value > 0, {
-      message: "Mức lương phải là số nguyên dương",
-    }),
+    .min(1, "Mức lương là bắt buộc")
+    .refine(
+      (data) => data.trim() === data,
+      "Mức lương không được chứa khoảng trắng đầu và cuối"
+    ),
   candidatesLimit: z
     .string()
     .transform((value) => Number(value))
@@ -93,8 +94,8 @@ export const postJobSchema = z.object({
   languagesRequired: z
     .array(
       z.object({
-        language: z.string().optional(),
-        level: z.string().optional(),
+        language: z.string().min(1, "Ngôn ngữ là bắt buộc"),
+        level: z.string().min(1, "Trình độ ngôn ngữ là bắt buộc"),
       })
     )
     .optional(),

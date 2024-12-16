@@ -34,8 +34,8 @@ const SearchJob = () => {
     // Prepare search parameters
     const params = new URLSearchParams({
       jobTitle: searchInput.trim(),
-      location: selectedProvince.trim(),
       industry: selectedMajor.trim(),
+      location: selectedProvince.trim(),
     }).toString();
 
     // Navigate to the search-job page with query parameters

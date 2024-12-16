@@ -80,6 +80,14 @@ const FormCompanyBasicInfo = ({ form }) => {
               { value: "Hơn 20000", label: "Hơn 20000" },
             ]}
           />
+          <InputField
+            control={form.control}
+            name="orgEmail"
+            placeholder="Email"
+            labelName="Email công ty"
+            id="orgEmail"
+            {...commonInputProps}
+          />
         </div>
       </div>
     </div>

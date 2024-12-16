@@ -21,7 +21,14 @@ import IconPlusMath from "@/components/icons/IconPlusMath";
 import { useFieldArray } from "react-hook-form"; // Import this to manage dynamic fields
 import Buttonchild from "@/components/button/Buttonchild";
 
-const SelectField = ({ control, name, placeholder, options, labelName }) => {
+const SelectField = ({
+  control,
+  name,
+  placeholder,
+  options,
+  labelName,
+  classNameLabel,
+}) => {
   return (
     <FormField
       control={control}
@@ -32,7 +39,7 @@ const SelectField = ({ control, name, placeholder, options, labelName }) => {
             <div className="flex">
               <Label
                 htmlFor={name}
-                className="flex items-center w-36 leading-5"
+                className={`flex items-center min-w-32 leading-5 ant-form-item-required ${classNameLabel}`}
               >
                 {labelName}
               </Label>
@@ -79,7 +86,7 @@ const FormLanguageAbility = ({ form }) => {
   return (
     <div className="bg-secondary p-5 rounded-xl">
       <TitleField children={"Khả năng ngoại ngữ"} />
-      <div className="py-10 px-20">
+      <div className="py-10 px-10">
         <div className="flex flex-col w-full gap-5 mt-5">
           {fields.map((language, index) => (
             <div
@@ -105,6 +112,7 @@ const FormLanguageAbility = ({ form }) => {
                 control={form.control}
                 name={`languagesRequired.${index}.level`} // Adjust field name structure
                 labelName={"Mức độ thông thạo"}
+                classNameLabel="min-w-48"
                 placeholder="Chọn mức độ"
                 options={[
                   { value: "beginner", label: "Sơ cấp" },

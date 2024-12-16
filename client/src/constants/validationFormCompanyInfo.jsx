@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { baseSchemas } from "./baseShemas";
 
 export const companyInfoSchema = z.object({
   orgImage: z
@@ -13,6 +14,9 @@ export const companyInfoSchema = z.object({
       (data) => data.trim() === data,
       "Tên công ty không được chứa khoảng trắng đầu và cuối"
     ),
+  orgEmail: baseSchemas
+    .requiredEmail()
+    .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
   orgScale: z
     .string()
     .min(1, "Quy mô công ty là bắt buộc")

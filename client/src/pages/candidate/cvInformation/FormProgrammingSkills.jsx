@@ -1,6 +1,6 @@
 import React from "react";
 import TitleField from "@/components/titleField/TitleField";
-import InputField from "@/components/fieldForm/InputField";
+import TextareaField from "@/components/fieldForm/TextareaField";
 
 const FormProgrammingSkills = ({ form }) => {
   return (
@@ -9,7 +9,7 @@ const FormProgrammingSkills = ({ form }) => {
       <TitleField children={"Kỹ năng chuyên môn"} />
       <div className="grid grid-cols-12 py-10 px-20">
         <div className="grid col-start-1 col-end-10 w-full gap-5">
-          <InputField
+          <TextareaField
             control={form.control}
             name={`professionalSkills`}
             labelName={"Các kỹ năng chuyên môn"}
