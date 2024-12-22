@@ -5,6 +5,7 @@ import { authenticateJWT } from '../middlewares/Authenticate';
 import { BaseRoutes } from './BaseRoutes';
 import { Request, Response } from 'express';
 import path from 'path';
+import { authorize } from '../middlewares/Authorize';
 
 export default class PaymentRoutes extends BaseRoutes {
     private paymentController: PaymentController;
@@ -22,9 +23,9 @@ export default class PaymentRoutes extends BaseRoutes {
         this.router.post('/create-transaction', this.paymentController.createTransaction);
         this.router.post('/callback', this.paymentController.handleCallback);
         this.router.post('/check-status-transaction', this.paymentController.checkTransactionStatus);
-        this.router.patch('/deposit-funds', authenticateJWT, this.paymentController.deposit);
-        this.router.patch('/pay-for-job-post', authenticateJWT, this.paymentController.payForJobPost);
-        this.router.get('/get-payment-info', authenticateJWT, this.paymentController.getPaymentInfo);
+        this.router.patch('/deposit-funds', authenticateJWT, authorize(['deposit']), this.paymentController.deposit);
+        this.router.patch('/pay-for-job-post', authenticateJWT, authorize(['payForJobPost']), this.paymentController.payForJobPost);
+        this.router.get('/get-payment-info', authenticateJWT, authorize(['getPaymentInfo']), this.paymentController.getPaymentInfo);
     }
 
     private serveDepositPage(req: Request, res: Response): void {

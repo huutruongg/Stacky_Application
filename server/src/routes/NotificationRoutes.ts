@@ -25,21 +25,21 @@ export default class NotificationRoutes extends BaseRoutes {
         this.router.get(
             '/get-all-notifications',
             authenticateJWT,
-            // authorize(['notification:read']),
+            authorize(['getAllNotifications']),
             this.notificationController.getAllNotifications
         );
 
         this.router.get(
             '/unread',
             authenticateJWT,
-            // authorize(['notification:read']),
+            authorize(['getUnreadCount']),
             this.notificationController.getUnreadCount
         );
 
         this.router.put(
             '/mark-all-as-read',
             authenticateJWT,
-            // authorize(['notification:update']),
+            authorize(['markAllAsRead']),
             this.notificationController.markAllAsRead
         );
 
@@ -47,7 +47,7 @@ export default class NotificationRoutes extends BaseRoutes {
         this.router.post(
             '/create-notification',
             authenticateJWT,
-            // authorize(['notification:write']),
+            authorize(['createNotification']),
             socketMiddleware,
             this.notificationController.createNotification
         );

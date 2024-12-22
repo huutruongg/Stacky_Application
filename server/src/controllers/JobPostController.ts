@@ -201,14 +201,14 @@ export default class JobPostController extends BaseController {
             const transformedCV = transformCV(cvData);
             const transformedJD = transformCV(jdData);
             const input = {
-                professionalSkillsCV: cv.professionalSkills,
-                educationsCV: JSON.stringify(transformedCV.educations),
-                languagesCV: JSON.stringify(transformedCV.languages),
-                certificationsCV: JSON.stringify(transformedCV.certifications),
-                professionalSkillsJob: jd.professionalSkills,
-                educationsJob: jd.educationRequired,
-                languagesJob: JSON.stringify(transformedJD.languages),
-                certificationsJob: jd.certificateRequired,
+                professionalSkillsCV: cv.professionalSkills != null ? JSON.stringify(cv.professionalSkills) : "",
+                educationsCV: cv.educations != null ? JSON.stringify(transformedCV.educations) : "[]",
+                languagesCV: cv.languages != null ? JSON.stringify(transformedCV.languages) : "[]",
+                certificationsCV: cv.certifications != null ? JSON.stringify(transformedCV.certifications) : "[]",
+                professionalSkillsJob: jd.professionalSkills != null ? JSON.stringify(jd.professionalSkills) : "",
+                educationsJob: jd.educationRequired != null ? jd.educationRequired : "",
+                languagesJob: jd.languagesRequired != null ? JSON.stringify(transformedJD.languages) : "[]",
+                certificationsJob: jd.certificateRequired != null ? jd.certificateRequired : "",
             };
 
             log('input', input);

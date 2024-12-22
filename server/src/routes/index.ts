@@ -38,8 +38,6 @@ import NotificationController from "../controllers/NotificationController";
 import NotificationRoutes from "./NotificationRoutes";
 import NotificationRepository from "../repositories/NotificationRepository";
 import NotificationService from "../services/NotificationService";
-import AIController from "../controllers/AIController";
-import AIRouter from "./AIRouter";
 import GithubRoutes from "./GithubRoutes";
 import AdminController from "../controllers/AdminController";
 import AdminService from "../services/AdminService";
@@ -86,7 +84,6 @@ class Routes {
         this.router.use('/payment', this.lazyLoadPaymentRoutes());
         this.router.use('/notification', this.lazyLoadNotificationRoutes());
         this.router.use('/github', this.lazyLoadGithubRoutes());
-        this.router.use('/ai', this.lazyLoadAIRoutes());
     }
     private lazyLoadAuthRoutes() {
         return (req: Request, res: Response, next: NextFunction) => {
@@ -153,14 +150,6 @@ class Routes {
             const notificationController = new NotificationController(notificationService);
             const notificationRoutes = new NotificationRoutes(notificationController);
             notificationRoutes.getRouter()(req, res, next);
-        }
-    }
-
-    private lazyLoadAIRoutes() {
-        return (req: Request, res: Response, next: NextFunction) => {
-            const aiController = new AIController();
-            const aiRouter = new AIRouter(aiController);
-            aiRouter.getRouter()(req, res, next);
         }
     }
 

@@ -28,73 +28,77 @@ export default class JobPostRoutes extends BaseRoutes {
         this.router.get(
             '/get-all-by-candidate',
             authenticateJWT,
-            // authorize(['job-post:read']),
+            authorize(['getJobsByCandidate']),
             this.jobPostController.getJobsByCandidate
         );
         this.router.get(
             '/get-job-detail-by-candidate/:jobPostId',
             authenticateJWT,
-            // authorize(['job-post:read']),
+            authorize(['getJobDetailByCandidate']),
             // cacheMiddleware,
             this.jobPostController.getJobDetailByCandidate
         );
         this.router.get(
             '/get-job-saved',
             authenticateJWT,
-            // authorize(['job-post:read']),
+            authorize(['getSavedJobs']),
             this.jobPostController.getSavedJobs
         );
         this.router.get(
             '/get-job-applied',
             authenticateJWT,
-            // authorize(['job-post:read']),
+            authorize(['getAppliedJobs']),
             this.jobPostController.getAppliedJobs
         );
         this.router.post(
             '/save-job-post/:jobPostId',
             authenticateJWT,
-            // authorize(['job-post:write']),
+            authorize(['saveJobPost']),
             this.jobPostController.saveJobPost
         );
         this.router.delete(
             '/unsave-job-post/:jobPostId',
             authenticateJWT,
-            // authorize(['job-post:write']),
+            authorize(['unSaveJobPost']),
             this.jobPostController.unSaveJobPost
         );
 
         this.router.post(
             '/create-application/:jobPostId',
             authenticateJWT,
-            // authorize(['job-post:apply']),
+            authorize(['createApplication']),
             this.jobPostController.createApplication
         );
 
-        this.router.delete("/delete-application/:jobPostId/:candidateId", authenticateJWT, this.jobPostController.deleteApplication);
+        this.router.delete("/delete-application/:jobPostId/:candidateId",
+            authenticateJWT,
+            authorize(['deleteApplication']),
+            this.jobPostController.deleteApplication
+        );
 
         // Recruiter/Admin-specific routes
         this.router.post(
             '/create-job-post',
             authenticateJWT,
-            // authorize(['job-post:write']),
+            authorize(['createJobPost']),
             this.jobPostController.createJobPost
         );
         this.router.delete(
             '/delete-job-post/:jobPostId',
             authenticateJWT,
-            // authorize(['job-post:delete']),
+            authorize(['deleteJobPost']),
             this.jobPostController.deleteJobPost
         );
         this.router.post(
             '/set-apply-status',
             authenticateJWT,
-            // authorize(['job-post:update']),
+            authorize(['setApplyStatus']),
             this.jobPostController.setApplyStatus
         );
         this.router.get(
             '/get-job-posts-by-recruiter',
             authenticateJWT,
-            // authorize(['job-post:owner-read']),
+            authorize(['getJobPostsByRecruiter']),
             this.jobPostController.getJobPostsByRecruiter
         );
     }

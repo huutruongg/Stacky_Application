@@ -255,32 +255,31 @@ export default class JobPostService {
 
             // Lấy thông tin ứng viên
             const candidate = await this.candidateRepository.findByUserId(userId);
-            if (!candidate || candidate.languages?.length === 0 || candidate.projects?.length === 0 || candidate.educations?.length === 0 || candidate.certifications?.length === 0) {
+            if (!candidate) {
                 console.warn(`Candidate with ID ${userId} not found.`);
                 return false;
             }
 
             const newApplicant = {
-                jobPostId: jobPostId,
-                userId: candidate.userId,
-                professionalSkills: candidate.professionalSkills,
-                fullName: candidate.fullName,
-                jobPosition: candidate.jobPosition,
-                publicEmail: candidate.publicEmail,
-                avatarUrl: candidate.avatarUrl,
-                phoneNumber: candidate.phoneNumber,
-                address: candidate.address,
-                birthDate: candidate.birthDate,
-                linkedinUrl: candidate.linkedinUrl,
-                githubUrl: candidate.githubUrl,
-                personalDescription: candidate.personalDescription,
+                jobPostId: jobPostId || '',
+                userId: candidate.userId != null ? candidate.userId : '',
+                professionalSkills: candidate.professionalSkills || '',
+                fullName: candidate.fullName || '',
+                jobPosition: candidate.jobPosition || '',
+                publicEmail: candidate.publicEmail || '',
+                avatarUrl: candidate.avatarUrl || '',
+                phoneNumber: candidate.phoneNumber || '',
+                address: candidate.address || '',
+                birthDate: candidate.birthDate || null,
+                linkedinUrl: candidate.linkedinUrl || '',
+                githubUrl: candidate.githubUrl || '',
+                personalDescription: candidate.personalDescription || '',
                 languages: candidate.languages || [],
                 projects: candidate.projects || [],
                 educations: candidate.educations || [],
                 experiences: candidate.experiences || [],
                 certifications: candidate.certifications || [],
                 status: ApplyStatus.PENDING,
-                githubScore: 0,
                 appliedAt: new Date(),
             };
             await this.candidateRepository.addJobApplied(userId, jobPostId);

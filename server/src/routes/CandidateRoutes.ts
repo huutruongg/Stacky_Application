@@ -23,44 +23,44 @@ export default class CandidateRoutes extends BaseRoutes {
         this.router.get(
             '/get-candidate',
             authenticateJWT,
-            // authorize(['candidate:read']),
+            authorize(['getCandidate']),
             this.candidateController.getCandidate
         );
 
-        this.router.get("/get-applied-jobs", authenticateJWT, this.candidateController.getAppliedJobs);
+        this.router.get("/get-applied-jobs", authenticateJWT, authorize(['getAppliedJobs']), this.candidateController.getAppliedJobs);
 
         this.router.get(
             '/get-profile',
             authenticateJWT,
-            // authorize(['candidate:read']),
+            authorize(['getCandidateProfile']),
             this.candidateController.getCandidateProfile
         );
 
         this.router.put(
             '/update-profile',
             authenticateJWT,
-            // authorize(['candidate:update']),
+            authorize(['updateCandidateProfile']),
             this.candidateController.updateCandidateProfile
         );
 
         this.router.put(
             '/update-info',
             authenticateJWT,
-            // authorize(['candidate:update']),
+            authorize(['updateCandidate']),
             this.candidateController.updateCandidate
         );
 
         this.router.delete(
             '/delete-candidate/:userId',
             authenticateJWT,
-            // authorize(['candidate:delete']),
+            authorize(['deleteCandidate']),
             this.candidateController.deleteCandidate
         );
 
         this.router.post(
             '/get-github-score',
             authenticateJWT,
-            // authorize(['candidate:read']),
+            authorize(['getGithubScore']),
             this.githubController.getGithubScore
         );
     }
