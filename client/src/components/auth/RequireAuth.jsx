@@ -1,4 +1,5 @@
 import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
 import { Navigate, Outlet } from "react-router-dom";
 
 function RequireAuth({ allowedRoles }) {
@@ -12,9 +13,11 @@ function RequireAuth({ allowedRoles }) {
     if (allowedRoles.includes(user.role)) {
       return <Outlet />; // User is authenticated and has an allowed role
     } else {
+      toast.error("Bạn không có quyền truy cập trang này!");
       return <Navigate to="/" replace />; // User is authenticated but doesn't have permission
     }
   } else {
+    toast.error("Bạn cần đăng nhập để truy cập trang này!");
     return <Navigate to="/account.stacky.vn" replace />; // User is not authenticated
   }
 }

@@ -6,10 +6,7 @@ export const profileCVSchema = (hasExperience) =>
       .string()
       .nonempty("Họ và Tên không được để trống")
       .refine(
-        (data) =>
-          /^[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*(?: [A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ][a-zàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]*){1,50}$/.test(
-            data
-          ),
+        (data) => /^[A-ZÀ-ỹ][a-zà-ỹ]*(?: [A-ZÀ-ỹ][a-zà-ỹ]*){1,50}$/.test(data),
         "Họ và Tên không hợp lệ"
       ),
     jobPosition: z
@@ -103,37 +100,8 @@ export const profileCVSchema = (hasExperience) =>
     languages: z
       .array(
         z.object({
-          language: z.string().optional(),
-          level: z.string().optional(),
-        })
-      )
-      .optional(),
-
-    // Projects
-    projects: z
-      .array(
-        z.object({
-          projectName: z.string().optional(),
-          projectTime: z.string().optional(),
-          urlRepo: z.string().optional(),
-          projectDescription: z.string().optional(),
-        })
-      )
-      .optional(),
-
-    // Certifications
-    certifications: z
-      .array(
-        z.object({
-          certificateName: z.string().optional(),
-          dateOfReceipt: z
-            .date()
-            .nullable()
-            .refine((date) => !date || date <= new Date(), {
-              message: "Ngày cấp chứng chỉ không được là ngày trong tương lai",
-            })
-            .optional(),
-          certificateDetail: z.string().optional(),
+          language: z.string().min(1, "Ngôn ngữ là bắt buộc"),
+          level: z.string().min(1, "Trình độ ngôn ngữ là bắt buộc"),
         })
       )
       .optional(),
@@ -223,4 +191,60 @@ export const profileCVSchema = (hasExperience) =>
           })
         )
       : z.array(z.any()).optional(),
+    certifications: z
+      .array(
+        z.object({
+          certificateName: z
+            .string()
+            .nonempty("Tên chứng chỉ không được để trống")
+            .min(3, "Tên chứng chỉ phải có ít nhất 3 ký tự")
+            .max(100, "Tên chứng chỉ không được quá 100 ký tự"),
+          dateOfReceipt: z
+            .date()
+            .nullable()
+            .refine((date) => !date || date <= new Date(), {
+              message: "Ngày cấp chứng chỉ không được là ngày trong tương lai",
+            })
+            .refine((date) => date !== null, {
+              message: "Ngày cấp chứng chỉ không được để trống",
+            }),
+          certificateDetail: z
+            .string()
+            .nonempty("Thông tin chi tiết không được để trống")
+            .min(10, "Thông tin chi tiết phải có ít nhất 10 ký tự"),
+        })
+      )
+      .optional(),
+
+    projects: z
+      .array(
+        z.object({
+          projectName: z
+            .string()
+            .nonempty("Tên dự án không được để trống")
+            .min(3, "Tên dự án phải có ít nhất 3 ký tự")
+            .max(100, "Tên dự án không được quá 100 ký tự"),
+          projectTime: z
+            .string()
+            .nonempty("Thời gian dự án không được để trống")
+            .regex(
+              /^\d{1,2}\/\d{4}-\d{1,2}\/\d{4}$/,
+              "Thời gian dự án phải có định dạng hợp lệ (MM/YYYY-MM/YYYY)"
+            )
+            .refine((date) => date !== null, {
+              message: "Thời gian dự án không được để trống",
+            }),
+          urlRepo: z
+            .string()
+            .nonempty("URL GitHub không được để trống")
+            .refine((value) => !value || value.startsWith("https://"), {
+              message: "URL GitHub phải bắt đầu với https://",
+            }),
+          projectDescription: z
+            .string()
+            .nonempty("Mô tả dự án không được để trống")
+            .min(10, "Mô tả dự án phải có ít nhất 10 ký tự"),
+        })
+      )
+      .optional(),
   });

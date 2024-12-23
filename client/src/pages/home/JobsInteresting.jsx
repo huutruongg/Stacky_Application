@@ -7,7 +7,7 @@ import JobSkeleton from "@/components/skeleton/JobSkeleton";
 import useAuth from "@/hooks/useAuth";
 
 const JobsInteresting = () => {
-  const { user } = useAuth();
+  const { user } = useAuth(); // user sẽ là null nếu chưa đăng nhập
   const [jobData, setJobData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,37 +17,36 @@ const JobsInteresting = () => {
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
 
-  console.log(jobData);
+  console.log("User:", user);
 
   useEffect(() => {
     const getData = async () => {
       try {
-        // Gọi API với type là 'job-postings' và phân trang
-        if (user) {
-          if (user.role === "CANDIDATE") {
-            const result = await fetchData(`job-post/get-all-by-candidate`);
-            setJobData(result); // Giả sử API trả về dữ liệu trong result.data
-          } else {
-            const result = await fetchData(`job-post/get-all`);
-            setJobData(result); // Giả sử API trả về dữ liệu trong result.data
-          }
+        let result;
+        if (!user) {
+          // Khi chưa đăng nhập
+          result = await fetchData(`job-post/get-all`);
+        } else if (user.role === "CANDIDATE") {
+          // Khi đăng nhập và role là CANDIDATE
+          result = await fetchData(`job-post/get-all-by-candidate`);
         } else {
-          const result = await fetchData(`job-post/get-all`);
-          setJobData(result); // Giả sử API trả về dữ liệu trong result.data
+          // Khi đăng nhập và role khác
+          result = await fetchData(`job-post/get-all`);
         }
+        setJobData(result); // Cập nhật dữ liệu công việc
         setIsLoading(false);
       } catch (error) {
         console.error("Error while fetching jobs data:", error);
-        setError(error); // Cập nhật lỗi
+        setError(error);
         setIsLoading(false);
       }
     };
+
     getData();
-  }, [currentPage]); // Thêm currentPage vào mảng phụ thuộc
-  // console.log(jobData);
+  }, [currentPage, user]);
 
   const handlePageChange = (page) => {
-    setCurrentPage(page); // Cập nhật trang hiện tại
+    setCurrentPage(page);
   };
 
   if (error) return <div>Error: {error.message}</div>;
@@ -60,7 +59,7 @@ const JobsInteresting = () => {
           [...Array(newsPerPage)].map((_, index) => <JobSkeleton key={index} />)
         ) : currentJobData.length > 0 ? (
           currentJobData.map((item, index) => (
-            <ItemJobSuggest jobData={item} key={index}></ItemJobSuggest>
+            <ItemJobSuggest logined={user} jobData={item} key={index}></ItemJobSuggest>
           ))
         ) : (
           <div>Không có dữ liệu</div>

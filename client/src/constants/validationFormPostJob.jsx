@@ -17,6 +17,10 @@ export const postJobSchema = z.object({
   jobTitle: z
     .string()
     .min(1, "Tên công việc là bắt buộc")
+    .regex(
+      /^[a-zA-ZÀ-ỹ\s]{2,50}$/,
+      "Tên công việc phải có từ 2 đến 50 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
+    )
     .refine(
       (data) => data.trim() === data,
       "Tên công việc không được chứa khoảng trắng đầu và cuối"
@@ -32,6 +36,10 @@ export const postJobSchema = z.object({
   location: z
     .string()
     .min(1, "Địa điểm làm việc là bắt buộc")
+    .regex(
+      /^[a-zA-ZÀ-ỹ\s]{2,100}$/,
+      "Địa điểm làm việc phải có từ 2 đến 100 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
+    )
     .refine(
       (data) => data.trim() === data,
       "Địa điểm không được chứa khoảng trắng đầu và cuối"
@@ -66,6 +74,10 @@ export const postJobSchema = z.object({
   typeOfIndustry: z
     .string()
     .min(1, "Ngành nghề yêu cầu là bắt buộc")
+    .regex(
+      /^[a-zA-ZÀ-ỹ\s]{2,100}$/,
+      "Ngành nghề yêu cầu phải có từ 2 đến 100 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
+    )
     .refine(
       (data) => data.trim() === data,
       "Ngành nghề không được chứa khoảng trắng đầu và cuối"
@@ -73,6 +85,10 @@ export const postJobSchema = z.object({
   staffLevel: z
     .string()
     .min(1, "Vị trí tuyển dụng là bắt buộc")
+    .regex(
+      /^[a-zA-ZÀ-ỹ\s]{2,50}$/,
+      "Vị trí tuyển dụng phải có từ 2 đến 50 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
+    )
     .refine(
       (data) => data.trim() === data,
       "Vị trí không được chứa khoảng trắng đầu và cuối"

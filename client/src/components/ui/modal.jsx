@@ -32,7 +32,7 @@ export const Modal = ({
           </DialogTitle>
           <div className="flex justify-center items-center gap-5 leading-6 w-96">
             {icon}
-            <DialogDescription className="w-fit text-primary">
+            <DialogDescription className="w-fit text-primary text-center">
               {description}
             </DialogDescription>
           </div>

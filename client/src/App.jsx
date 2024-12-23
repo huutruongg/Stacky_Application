@@ -11,7 +11,6 @@ import LayoutEmployer from "./components/shared/LayoutEmployer";
 import ResetPasswordPage from "./pages/employer/resetPassword/ResetPasswordPage";
 import JobPostPage from "./pages/employer/jobPost/JobPostPage";
 import JobPostManagerPage from "./pages/employer/jobPostManager/JobPostManagerPage";
-import useAuth from "./hooks/useAuth";
 import NotFoundPage from "./pages/errorPage/NotFoundPage";
 import HomePage from "./pages/home/HomePage";
 import JobDetailPage from "./pages/jobDetail/JobDetailPage";
@@ -50,9 +49,9 @@ function App() {
               element={<ForgotPassword />}
             />
             <Route path="/company/:companyId" element={<CompanyDetailPage />} />
+            <Route path="/company" element={<CompanyListsPage />} />
+            <Route path="/company-top" element={<TopCompanyListsPage />} />
             <Route element={<RequireAuth allowedRoles={["CANDIDATE"]} />}>
-              <Route path="/company" element={<CompanyListsPage />} />
-              <Route path="/company-top" element={<TopCompanyListsPage />} />
               <Route path="/job-save" element={<JobSavePage />} />
               <Route path="/profile-cv" element={<CvInformationPage />} />
               <Route path="/uploaded-cv" element={<CvUploadedPage />} />

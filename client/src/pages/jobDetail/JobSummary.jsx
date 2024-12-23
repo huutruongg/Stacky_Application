@@ -10,20 +10,22 @@ import toast from "react-hot-toast";
 import { AlertModal } from "@/components/shared/AlertModal";
 import { Modal } from "@/components/ui/modal";
 import ViewApply from "./ViewApply";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FormatDate from "@/components/format/FormatDate";
 import { useJobSave } from "@/components/context/JobSaveProvider";
 import axiosInstance from "@/lib/authorizedAxios";
 import IconHeartActive from "@/components/icons/IconHeartActive";
+import useAuth from "@/hooks/useAuth";
 
 const JobSummary = ({ jobData, isliked }) => {
   const { id } = useParams();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
   const [liked, setLiked] = useState(isliked);
   const [isLoading, setIsLoading] = useState(false);
   const { removeJob, refreshSavedJobs } = useJobSave();
-
+  const [alertModalOpen, setAlertModalOpen] = useState(false);
   useEffect(() => {
     setLiked(isliked);
   }, [isliked]);
@@ -144,9 +146,13 @@ const JobSummary = ({ jobData, isliked }) => {
       </div>
       <div className="flex items-center justify-end w-full">
         <AlertModal
-          isOpen={open}
-          onClose={() => setOpen(false)}
+          isOpen={alertModalOpen}
+          onClose={() => setAlertModalOpen(false)}
           isLoading={isLoading}
+          onConfirm={() => {
+            handleApplyJob();
+            setAlertModalOpen(false);
+          }}
         />
         <Modal
           isOpen={openReview}
@@ -155,27 +161,45 @@ const JobSummary = ({ jobData, isliked }) => {
           title={`Ứng tuyển ${jobData?.jobTitle}`}
           description={`Nếu ngành bạn là Công Nghệ Thông Tin, hãy chia sẻ quyền truy cập Github của bạn để chúng tôi tính điểm số của bạn với bài viết này!`}
         >
-          <ViewApply id={jobData?._id} />
-          <div className="flex justify-center gap-5 py-5">
-            <Button
-              kind="secondary"
-              className="text-center px-10 disabled:opacity-50"
-              type="button"
-              isLoading={isLoading}
-              onClick={onCloseReview}
-            >
-              Hủy
-            </Button>
-            <Button
-              kind="primary"
-              className="text-center px-10 disabled:opacity-50"
-              type="submit"
-              isLoading={isLoading}
-              onClick={handleApplyJob}
-            >
-              ứng tuyển
-            </Button>
-          </div>
+          {user ? (
+            <>
+              <ViewApply id={jobData?._id} />
+              <div className="flex justify-center gap-5 py-5">
+                <Button
+                  kind="secondary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="button"
+                  isLoading={isLoading}
+                  onClick={onCloseReview}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  kind="primary"
+                  className="text-center px-10 disabled:opacity-50"
+                  type="submit"
+                  isLoading={isLoading}
+                  onClick={() => {
+                    setAlertModalOpen(true);
+                    onCloseReview();
+                  }}
+                >
+                  ứng tuyển
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-center gap-1 py-20">
+              Vui lòng{" "}
+              <Link
+                to="/account.stacky.vn"
+                className="text-primary font-semibold hover:underline"
+              >
+                đăng nhập
+              </Link>{" "}
+              để ứng tuyển
+            </div>
+          )}
         </Modal>
       </div>
     </div>

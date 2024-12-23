@@ -3,17 +3,30 @@ import axiosInstance from "@/lib/authorizedAxios";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
+import ModalViewCV from "./ModalViewCV";
+import { Modal } from "@/components/ui/modal";
+import useAuth from "@/hooks/useAuth";
 
 const ViewApply = ({ id }) => {
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const token = searchParams.get("token");
   const [isGithubLoggedIn, setIsGithubLoggedIn] = useState(false);
   const [accessToken, setAccessToken] = useState(token ? token : "");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [githubScore, setGithubScore] = useState(0);
+  const [openReview, setOpenReview] = useState(false);
 
-  console.log(isGithubLoggedIn);
+  const handleOpenReview = () => {
+    setOpenReview(true);
+  };
+
+  const handleCloseReview = () => {
+    setOpenReview(false);
+  };
+
+  console.log(user);
 
   useEffect(() => {
     const getGithubScore = async () => {
@@ -83,6 +96,31 @@ const ViewApply = ({ id }) => {
             Cho quyền truy cập Github
           </Button>
         )}
+      </div>
+      <div className="flex justify-end text-primary text-sm font-medium pt-5 hover:underline cursor-pointer">
+        <span onClick={handleOpenReview}>Xem CV của bạn</span>
+      </div>
+      <div className="flex items-center justify-end w-full">
+        <Modal
+          isOpen={openReview}
+          onClose={handleCloseReview}
+          className="bg-white min-w-[900px] max-w-[1170px]"
+          title={`CV của bạn`}
+          description={`Nội dung CV của bạn. Nếu bạn chưa có CV, hãy tạo CV trước khi xem CV của bạn!`}
+        >
+          <ModalViewCV jobId={id} userId={user?.userId} />
+          <div className="flex justify-center gap-5 py-5">
+            <Button
+              kind="secondary"
+              className="text-center px-10 disabled:opacity-50"
+              type="button"
+              isLoading={isLoading}
+              onClick={handleCloseReview}
+            >
+              Trở về
+            </Button>
+          </div>
+        </Modal>
       </div>
     </div>
   );

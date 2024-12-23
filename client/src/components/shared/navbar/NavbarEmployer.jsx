@@ -16,12 +16,12 @@ const NavbarEmployer = () => {
       path: "/company-profile",
     },
     { icon: IconBag, label: "Quản lý công việc", path: "/job-management" },
-    { icon: IconInfoApply, label: "Quản lý ứng viên", path: "/apply-info" },
-    {
-      icon: IconSearchCandidates,
-      label: "Tìm kiếm ứng viên",
-      path: "/search-candidates",
-    },
+    // { icon: IconInfoApply, label: "Quản lý ứng viên", path: "/apply-info" },
+    // {
+    //   icon: IconSearchCandidates,
+    //   label: "Tìm kiếm ứng viên",
+    //   path: "/search-candidates",
+    // },
     { icon: IconManager, label: "Ví điện tử", path: "/payment" },
   ];
 

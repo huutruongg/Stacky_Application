@@ -6,15 +6,19 @@ import toast from "react-hot-toast";
 import { useJobSave } from "../context/JobSaveProvider";
 import IconHeartActive from "../icons/IconHeartActive";
 
-const ItemJobSuggest = ({ jobData }) => {
+const ItemJobSuggest = ({ jobData, logined }) => {
   const [liked, setLiked] = useState(jobData.isLiked);
   const { refreshSavedJobs } = useJobSave();
 
   const handleHeartClick = () => {
-    if (liked) {
-      handleDeleteSaveJob();
+    if (logined) {
+      if (liked) {
+        handleDeleteSaveJob();
+      } else {
+        handleSaveJob();
+      }
     } else {
-      handleSaveJob();
+      toast.error("Vui lòng đăng nhập để lưu bài viết");
     }
   };
   const handleSaveJob = async () => {
@@ -86,7 +90,7 @@ const ItemJobSuggest = ({ jobData }) => {
               href={`/company/${jobData?.orgId}`}
               className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
-              {/* {jobData.orgName.toUpperCase()} */}
+              {jobData?.orgName?.toUpperCase()}
             </a>
           </div>
           <div className="flex items-center gap-2">

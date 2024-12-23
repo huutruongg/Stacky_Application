@@ -30,6 +30,7 @@ import toast from "react-hot-toast";
 import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
 import io from "socket.io-client";
 import ModalSendNotification from "./ModalSendNotification";
+import IconMail from "@/components/icons/IconMail";
 
 const schema = z.object({
   text: z.string(),
@@ -118,6 +119,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   // Gửi thông báo khi nhấn nút
   const handleSendNotification = (formData) => {
     createNotification(formData);
+    form.reset();
   };
 
   const onSubmit = async (formData) => {
@@ -232,6 +234,8 @@ const CandidateLists = ({ data, candidatesLimit }) => {
                   }}
                   handleSelectCandidate={handleSelectCandidate}
                   publicEmail={item.publicEmail}
+                  statutNotification={item.status}
+                  statutSendGmail={item.isSent}
                 />
               ))
             ) : (
@@ -356,6 +360,8 @@ const ItemCandidate = ({
   handleSelectCandidate,
   publicEmail,
   userId,
+  statutNotification,
+  statutSendGmail,
 }) => {
   const navigate = useNavigate();
 
@@ -363,7 +369,13 @@ const ItemCandidate = ({
     <div className="relative flex flex-col gap-5 text-sm bg-white rounded-lg border hover:border-primary">
       {/* Candidate Info Card */}
       <div className="absolute">
-        <div className="relative w-10 h-10 border-l-[20px] border-l-primary border-t-[20px] border-t-primary border-r-[20px] border-r-transparent border-b-[20px] border-b-transparent rounded-tl-lg">
+        <div
+          className={`relative w-10 h-10 border-l-[20px] border-t-[20px] ${
+            candidatesLimit
+              ? "border-l-primary border-t-primary"
+              : "border-l-text3 border-t-text3"
+          } border-r-[20px] border-r-transparent border-b-[20px] border-b-transparent rounded-tl-lg`}
+        >
           <div className="absolute w-7 h-5 z-10 text-center text-white top-[-19px] left-[-22px] rounded-sm">
             {index + 1}
           </div>
@@ -380,9 +392,13 @@ const ItemCandidate = ({
         <div className="flex flex-col justify-around gap-1 w-full">
           <div className="flex gap-10 items-center justify-between">
             <div className="flex gap-10 items-center">
-              <div className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium">
+              <div className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium w-44">
                 {name}
               </div>
+              <IconMail
+                className={"w-6 h-6"}
+                color={`${statutSendGmail ? "#22C55E" : "#B2B3BD"}`}
+              ></IconMail>
               {candidatesLimit ? (
                 <IconAccept className="w-6 h-6" color="#22C55E" />
               ) : (

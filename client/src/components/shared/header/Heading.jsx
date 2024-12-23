@@ -60,7 +60,7 @@ const Heading = () => {
           <ItemMain url={"/"}>Trang chủ</ItemMain>
           <ItemMain url={"/company"}>Công ty</ItemMain>
           <ItemMain url={"/profile-cv"}>Hồ sơ & CV</ItemMain>
-          <ItemMain url={"/tools"}>Công cụ hỗ trợ</ItemMain>
+          {/* <ItemMain url={"/tools"}>Công cụ hỗ trợ</ItemMain> */}
         </div>
         <div className="flex justify-between items-center gap-5">
           {user ? (
