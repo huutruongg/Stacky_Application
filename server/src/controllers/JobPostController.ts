@@ -238,7 +238,7 @@ export default class JobPostController extends BaseController {
             const isUpdated = this.jobPostService.saveAIResult(userInfo.userId, jobPostId, scaledResult);
             // 4. Return response
             if (!isCreated || !isUpdated) {
-                return this.sendError(res, 400, 'Failed to create application!');
+                return this.sendResponse(res, 406, { success: false, message: 'Maybe has been applied in this job!' });
             }
             return this.sendResponse(res, 201, { success: true, message: 'Application created successfully!' });
         } catch (error) {

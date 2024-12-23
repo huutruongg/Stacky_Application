@@ -55,14 +55,14 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
         accessToken: string
     ): Promise<ICandidate | null> {
         log("userId", userId);
-    
+
         return await this.model.findOneAndUpdate(
             { userId: new Types.ObjectId(userId) },
             { $set: { oauthToken: { provider, accessToken } } },
             { new: true } // Trả về document đã cập nhật
         ).exec();
     }
-    
+
 
     async updateCandidate(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {
         const result = await this.model.findOneAndUpdate(
