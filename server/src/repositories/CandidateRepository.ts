@@ -20,7 +20,8 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
 
     async findCandidateByUserId(userId: string): Promise<ICandidate | null> {
         if (!Types.ObjectId.isValid(userId)) return null;
-        return await this.model.findOne({ userId: new Types.ObjectId(userId) }).exec();
+        return await this.model.findOne({ userId: new Types.ObjectId(userId) })
+            .select("userId fullName languages projects educations experiences certifications address avatarUrl birthDate gender githubUrl jobPosition linkedinUrl personalDescription phoneNumber publicEmail professionalSkills").exec();
     }
 
     async findAppliedJobs(userId: string): Promise<any[] | null> {

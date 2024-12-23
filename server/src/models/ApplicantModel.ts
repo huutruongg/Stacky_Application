@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { CertificationSchema, EducationSchema, ExperienceSchema, LanguageSchema, ProjectSchema } from "./CandidateModel";
 import { IApplicant } from "../interfaces/ICandidate";
+import { ApplyStatus } from "../enums/EApplySatus";
 
 const ApplicantSchema = new Schema({
     jobPostId: { type: Schema.Types.ObjectId, ref: 'JobPost', required: true },
@@ -29,7 +30,8 @@ const ApplicantSchema = new Schema({
     },
     githubScore: { type: Number, default: 0 },
     appliedAt: { type: Date, default: Date.now },
-    isSent: { type: Boolean, default: false }
+    isSent: { type: Boolean, default: false },
+    status: { type: String, default: ApplyStatus.PENDING }
 });
 
 const ApplicantModel = mongoose.model<IApplicant>('Applicant', ApplicantSchema);

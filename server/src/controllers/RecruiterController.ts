@@ -153,4 +153,22 @@ export default class RecruiterController extends BaseController {
             return this.sendError(res, 500, "An error occurred while fetching the potential candidates.");
         }
     }
+
+    async updateCandidatesStatus(req: Request, res: Response) {
+        try {
+            const { jobPostId, candidateIds, status } = req.body;
+            const data = req.body;
+            if (!jobPostId || !data) {
+                return this.sendError(res, 400, new Error("Job Post ID and data are required.").message);
+            }
+            const updatedCandidates = await this.applicantService.updateCandidatesStatus(jobPostId, candidateIds, status);
+            if (!updatedCandidates) {
+                return this.sendError(res, 404, new Error("Candidates not found.").message);
+            }
+            return this.sendResponse(res, 200, { success: true, message: "Candidates status updated successfully!" });
+        } catch (error) {
+            log("Error updating candidates status:", error);
+            return this.sendError(res, 500, "An error occurred while updating the candidates status.");
+        }
+    }
 }

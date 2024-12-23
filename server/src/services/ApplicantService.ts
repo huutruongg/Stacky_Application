@@ -3,6 +3,8 @@ import ApplicantRepository from "../repositories/ApplicantRepository";
 import { IApplicant } from "../interfaces/ICandidate";
 import ApplicantDTO from "../dtos/ApplicantDTO";
 import { log } from "console";
+import ApplicantModel from "../models/ApplicantModel";
+import CandidateModel from "../models/CandidateModel";
 
 export default class ApplicantService {
     private applicantRepository: ApplicantRepository;
@@ -43,4 +45,35 @@ export default class ApplicantService {
         }
         return data;
     }
+
+    public updateCandidatesStatus = async (jobPostId: string, userIds: string[], status: string) => {
+        try {
+            // Chuyển đổi userIds và jobPostId sang ObjectId
+            const objectIds = userIds.map((id) => new Types.ObjectId(id));
+            const jobPostObjectId = new Types.ObjectId(jobPostId);
+    
+            // Cập nhật trạng thái trong ApplicantModel
+            const updatedApplicants = await ApplicantModel.updateMany(
+                { jobPostId: jobPostObjectId, userId: { $in: objectIds } },
+                { $set: { status } }
+            );
+    
+            // Cập nhật trạng thái trong CandidateModel -> JobAppliedSchema
+            const updatedCandidates = await CandidateModel.updateMany(
+                { userId: { $in: objectIds }, "jobApplied.jobPostId": jobPostObjectId },
+                { $set: { "jobApplied.$.status": status } } // Chỉ cập nhật jobApplied tương ứng với jobPostId
+            );
+    
+            // Kiểm tra nếu không có bản ghi nào được cập nhật
+            if (updatedApplicants.modifiedCount === 0 && updatedCandidates.modifiedCount === 0) {
+                return false;
+            }
+    
+            return true;
+        } catch (error) {
+            console.error("Error updating candidate status:", error);
+            return false;
+        }
+    };
+    
 }

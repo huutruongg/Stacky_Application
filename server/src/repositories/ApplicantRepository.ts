@@ -4,6 +4,7 @@ import ApplicantModel from "../models/ApplicantModel";
 import { BaseRepository } from "./BaseRepository";
 import ApplicantDTO from "../dtos/ApplicantDTO";
 import { log } from "console";
+import { stat } from "fs";
 
 export default class ApplicantRepository extends BaseRepository<IApplicant> {
     constructor() {
@@ -75,7 +76,8 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
                         githubScore: 1,
                         totalScore: 1,
                         appliedAt: 1,
-                        isSent: 1
+                        isSent: 1,
+                        status: 1
                     }
                 }
             ]);

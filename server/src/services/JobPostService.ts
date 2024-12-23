@@ -41,13 +41,13 @@ export default class JobPostService {
     }
 
     private toJobAppliedDTO(job: IJobPost & Partial<{ status: ApplyStatus }>): JobAppliedDTO {
-        const { _id, jobTitle, orgName, jobImage, location, status = ApplyStatus.PENDING, applicationDeadline, userId } = job;
+        const { _id, jobTitle, orgName, jobImage, location, status , applicationDeadline, userId } = job;
         return new JobAppliedDTO(
             new Types.ObjectId(_id as string),
             jobTitle,
             jobImage,
             orgName,
-            status,
+            status || ApplyStatus.PENDING,
             location,
             applicationDeadline,
             String(userId)
