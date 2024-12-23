@@ -38,12 +38,15 @@ const FormRegisterEmployer = () => {
   const termsAccepted = form.watch("termsAccepted");
 
   const onSubmit = async (data) => {
+    console.log(data);
+
     try {
       registerEmployerSchema.parse(data); // Validate the form data
       const { confirmPassword, ...formData } = data; // Extract fields to exclude
       const response = await axiosInstance.post(`/auth/register`, formData);
       toast.success("Đăng kí thành công!!!");
       // console.log("Response Data:", response.data); // Log the successful response
+      form.reset();
     } catch (error) {
       // Handle error
       if (error.response) {

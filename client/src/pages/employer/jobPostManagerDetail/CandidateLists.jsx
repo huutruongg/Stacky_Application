@@ -399,7 +399,7 @@ const ItemCandidate = ({
                 className={"w-6 h-6"}
                 color={`${statutSendGmail ? "#22C55E" : "#B2B3BD"}`}
               ></IconMail>
-              {candidatesLimit ? (
+              {statutNotification ==="APPROVED"  ? (
                 <IconAccept className="w-6 h-6" color="#22C55E" />
               ) : (
                 <IconClose className="w-6 h-6" color="#EB5757" />
