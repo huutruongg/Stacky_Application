@@ -1,13 +1,13 @@
 import FormatDate from "@/components/format/FormatDate";
 import React from "react";
+import imgCompany from "@/components/image/imgCompany.png";
 
 const ViewAccount = ({ candidateData }) => {
-  
   return (
     <div className="py-5 px-10">
       <div className="flex items-center justify-around gap-10">
         <img
-          src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
+          src={candidateData?.avatarUrl || imgCompany}
           alt=""
           className="overflow-hidden object-cover min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
         />

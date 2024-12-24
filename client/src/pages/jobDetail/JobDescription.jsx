@@ -43,7 +43,7 @@ const JobDescription = ({ jobData }) => {
             Mô tả công việc
           </h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobDescription.split("\\n").map((line, index) => (
+            {jobData.jobDescription.split("\n").map((line, index) => (
               <li key={index}>
                 {line.replace(/^-/, "").trim()}{" "}
                 {/* Loại bỏ ký tự '-' và khoảng trắng */}
@@ -100,7 +100,7 @@ const JobDescription = ({ jobData }) => {
           <div className="text-text1 text-sm px-5">
             {jobData.jobBenefit !== "" ? (
               <div>
-                {jobData.jobBenefit.split("\\n").map((line, index) => (
+                {jobData.jobBenefit.split("\n").map((line, index) => (
                   <li key={index}>
                     {line.replace(/^-/, "").trim()}{" "}
                     {/* Loại bỏ ký tự '-' và khoảng trắng */}

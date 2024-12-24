@@ -75,12 +75,28 @@ const JobSummary = ({ jobData, isliked }) => {
   const handleApplyJob = async () => {
     try {
       setIsLoading(true);
-      await axiosInstance.post(`/job-post/create-application/${jobData._id}`);
-      toast.success("Ứng tuyển thành công");
-      setOpenReview(false);
-      setIsLoading(false);
+
+      // Gửi yêu cầu ứng tuyển
+      const response = await axiosInstance.post(
+        `/job-post/create-application/${jobData._id}`
+      );
+
+      // Kiểm tra trạng thái phản hồi
+      if (response.status === 406) {
+        toast.error("Bạn đã ứng tuyển bài viết này");
+      } else {
+        toast.success("Ứng tuyển thành công");
+        setOpenReview(false);
+      }
     } catch (error) {
-      toast.error("Ứng tuyển thất bại");
+      // Xử lý lỗi từ API
+      if (error.response && error.response.status === 406) {
+        toast.error("Bạn đã ứng tuyển bài viết này");
+      } else {
+        toast.error("Ứng tuyển thất bại");
+      }
+    } finally {
+      // Đảm bảo trạng thái tải luôn được cập nhật
       setIsLoading(false);
     }
   };
@@ -212,9 +228,7 @@ const ItemInfoJob = ({ icon, title, children, className }) => {
     <div className="flex items-center gap-3">
       <div className="p-3 rounded-full bg-primary">{icon}</div>
       <div className="flex flex-col font-medium">
-        <span className="text-text3">
-          {title}
-        </span>
+        <span className="text-text3">{title}</span>
         <span className={className} title={children}>
           {children}
         </span>

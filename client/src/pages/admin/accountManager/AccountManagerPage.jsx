@@ -20,7 +20,7 @@ import FormatDate from "@/components/format/FormatDate";
 import IconSearch from "@/components/icons/IconSearch";
 import IconClose from "@/components/icons/IconClose";
 import toast from "react-hot-toast";
-
+import imgAvatar from "@/components/image/avatarImg.png";
 const AccountManagerPage = () => {
   const [open, setOpen] = useState(false);
   const [openReview, setOpenReview] = useState(false);
@@ -46,6 +46,7 @@ const AccountManagerPage = () => {
     indexOfLastItem
   );
 
+  console.log(currentCandidateData);
   const handleClearInput = () => setSearchInput("");
 
   const onCloseReview = () => {
@@ -84,7 +85,7 @@ const AccountManagerPage = () => {
       // Render lại dữ liệu sau khi xóa thành công
       const result = await axiosInstance.get("/admin/get-all-candidates");
       setCandidateData(result.data.candidates);
-      setOpenReview(false)
+      setOpenReview(false);
     } catch (error) {
       toast.error("Xoá công ty thất bại");
     }
@@ -143,7 +144,7 @@ const AccountManagerPage = () => {
                 <TableCell className="text-center line-clamp-1 overflow-hidden leading-10">
                   <div className="flex items-center gap-2">
                     <img
-                      src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
+                      src={candidate.avatarUrl || imgAvatar}
                       alt=""
                       className="overflow-hidden object-cover min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
                     />

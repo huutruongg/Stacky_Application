@@ -90,7 +90,7 @@ const ItemJobSuggest = ({ jobData, logined }) => {
           </div>
           <div>
             <a
-              href={`/company/${jobData?.orgId}`}
+              href={`/company/${jobData?.userId}`}
               className="w-fit line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
               title={jobData?.orgName}
             >

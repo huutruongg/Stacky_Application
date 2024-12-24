@@ -5,8 +5,6 @@ import IconDropdown from "@/components/icons/IconDropdown";
 import Logo from "@/components/icons/Logo";
 import useAuth from "@/hooks/useAuth";
 import IconSignUp from "@/components/icons/IconSignUp";
-import IconUpload from "@/components/icons/IconUpload";
-import IconProfile from "@/components/icons/IconProfile";
 import axiosInstance from "@/lib/authorizedAxios";
 import IconMenu from "@/components/icons/IconMenu";
 

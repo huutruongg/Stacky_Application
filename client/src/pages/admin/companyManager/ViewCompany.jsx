@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/authorizedAxios";
 import React, { useEffect, useState } from "react";
+import imgCompany from "@/components/image/imgCompany.png";
 
 const ViewCompany = ({ companyData }) => {
   const [companyDetailData, setCompanyDetailData] = useState([]);
@@ -28,7 +29,7 @@ const ViewCompany = ({ companyData }) => {
     <div className="p-5">
       <div className="flex items-center justify-around gap-5">
         <img
-          src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
+          src={companyDetailData?.orgImage || imgCompany}
           alt=""
           className="overflow-hidden object-cover min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
         />
@@ -53,7 +54,6 @@ const ViewCompany = ({ companyData }) => {
           <span>{companyDetailData?.orgWebsiteUrl}</span>
         </div>
         <div className="flex items-center gap-2">
-          
           <span className="font-medium">Email Liên Hệ:</span>
           <span>{companyDetailData?.orgEmail}</span>
         </div>
