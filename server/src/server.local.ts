@@ -1,14 +1,16 @@
-import cron from 'node-cron'; // Import node-cron
+import cron from 'node-cron';
 import { log } from 'console';
 import app from './app';
 import { connectDB, disconnectDB } from './config/Database';
 import { Server } from 'socket.io';
 import http from 'http';
 import { connectedUsers } from './utils/connectedSocket';
+
 const PORT = process.env.PORT || 5050;
 
 // Initialize the HTTP server
 const server = http.createServer(app);
+
 // Initialize Socket.IO
 export const io = new Server(server, {
     cors: {
@@ -22,20 +24,43 @@ export const io = new Server(server, {
     },
 });
 
-// Connect to the database
-connectDB()
-    .then(async () => {
+// Function to handle the daily cron job
+const runDailyTask = async () => {
+    log('Running daily task at midnight...');
+    try {
+        const db = await connectDB();
+        const jobPostCollection = db.collection('jobposts');
+        const currentDate = new Date();
+
+        // Update all job posts that have passed the application deadline
+        const result = await jobPostCollection.updateMany(
+            { invisible: false, applicationDeadline: { $lt: currentDate } },
+            { $set: { invisible: true } }
+        );
+
+        log(`${result.modifiedCount} job posts marked as invisible.`);
+    } catch (error) {
+        console.error('Error running daily task:', error);
+    }
+};
+
+// Connect to the database and start the server
+const startServer = async () => {
+    try {
+        await connectDB();
         log('Database connection established.');
+
         // Listen for incoming socket.io connections
         io.on('connection', (socket) => {
-            console.log(`User connected: ${socket.id}`);
+            log(`User connected: ${socket.id}`);
+
             socket.on('register', (userId) => {
                 connectedUsers[userId] = socket.id;
-                console.log(`User registered: ${userId}`);
+                log(`User registered: ${userId}`);
             });
 
             socket.on('disconnect', () => {
-                console.log(`User disconnected: ${socket.id}`);
+                log(`User disconnected: ${socket.id}`);
                 for (const userId in connectedUsers) {
                     if (connectedUsers[userId] === socket.id) {
                         delete connectedUsers[userId];
@@ -44,34 +69,17 @@ connectDB()
             });
         });
 
-        // Run a daily task at midnight
-        cron.schedule('0 0 * * *', async () => {
-            log('Running daily task at midnight...');
-            try {
-                const db = await connectDB(); // Đảm bảo DB đã kết nối
-                const jobPostCollection = db.collection('jobposts');
+        // Schedule the daily task
+        cron.schedule('0 0 * * *', runDailyTask);
 
-                const currentDate = new Date();
-
-                // Update all job posts that have passed the application deadline
-                const result = await jobPostCollection.updateMany(
-                    { invisible: false, applicationDeadline: { $lt: currentDate } }, // The application deadline has passed
-                    { $set: { invisible: true } } // Mark the job post as invisible
-                );
-
-                log(`${result.modifiedCount} job posts marked as invisible.`);
-            } catch (error) {
-                console.error('Error running daily task:', error);
-            }
-        });
         // Start the server
         server.listen(PORT, () => {
             log(`[server]: Server is running at http://localhost:${PORT}`);
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         console.error('Failed to connect to the database:', error);
-    });
+    }
+};
 
 // Handle graceful shutdown
 process.on('SIGINT', async () => {
@@ -81,3 +89,6 @@ process.on('SIGINT', async () => {
         process.exit(0);
     });
 });
+
+// Start the server
+startServer();

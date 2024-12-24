@@ -7,7 +7,6 @@ export default class EmailRoutes extends BaseRoutes {
     constructor(emailController: EmailController) {
         super();
         this.emailController = emailController;
-        this.autoBindControllerMethods(this.emailController);
         this.initializeRoutes();
     }
 

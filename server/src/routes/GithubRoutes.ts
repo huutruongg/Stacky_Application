@@ -13,7 +13,6 @@ export default class GithubRoutes extends BaseRoutes {
     constructor(githubController: GithubController) {
         super();
         this.githubController = githubController;
-        this.autoBindControllerMethods(this.githubController);
         this.initializeRoutes();
     }
 

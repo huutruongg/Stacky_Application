@@ -14,17 +14,15 @@ export default class RecruiterService {
     this.recruiterRepository = recruiterRepository;
   }
 
-  async getRecruiterById(id: string) {
+  public getRecruiterById = async (id: string) => {
     return this.recruiterRepository.findById(id);
-  }
+  };
 
-  async getRecruiterByUserId(userId: string) {
+  public getRecruiterByUserId = async (userId: string) => {
     const data: IRecruiter | null = await this.recruiterRepository.findOne({ userId: new Types.ObjectId(userId) });
-    if (!data) {
-      return null;
-    }
-    
-    const recruiterDTO = new RecruiterDTO(
+    if (!data) return null;
+
+    return new RecruiterDTO(
       data._id as ObjectId,
       data.orgEmail,
       data.orgName,
@@ -40,106 +38,93 @@ export default class RecruiterService {
       data.orgBenefits,
       data.orgImage,
       data.orgCoverImage,
-      data.orgImages as String[]
+      data.orgImages as string[]
     );
-    return recruiterDTO;
-  }
+  };
 
-  async getRecruiterByEmail(email: string) {
+  public getRecruiterByEmail = async (email: string) => {
     return this.recruiterRepository.findOne({ email });
-  }
+  };
 
-  async updateCompanyInfo(userId: string, recruiter: RecruiterDTO) {
+  public updateCompanyInfo = async (userId: string, recruiter: RecruiterDTO) => {
     const data = await this.recruiterRepository.findOne({ userId });
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
 
     const updatedRecruiter = await this.recruiterRepository.updateOne(userId, recruiter);
     return !!updatedRecruiter;
-  }
+  };
 
-  async updateCompanyAccount(userId: string, recruiter: any) {
+  public updateCompanyAccount = async (userId: string, recruiter: any) => {
     const dataToUpdate = {
       orgName: recruiter.orgName,
       orgEmail: recruiter.orgEmail
-    }
+    };
     const updatedRecruiter = await this.recruiterRepository.updateCompanyAccount(userId, dataToUpdate);
     return !!updatedRecruiter;
-  }
+  };
 
-  async deposit(userId: string, amount: number) {
+  public deposit = async (userId: string, amount: number) => {
     const data = await this.recruiterRepository.findOne({ userId });
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
+
     const updatedRecruiter = await this.recruiterRepository.updateBalance(userId, amount);
     return !!updatedRecruiter;
-  }
+  };
 
-  async payFor(userId: string, amount: number) {
+  public payFor = async (userId: string, amount: number) => {
     const data = await this.recruiterRepository.findOne({ userId });
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
+
     const updatedRecruiter = await this.recruiterRepository.updateBalance(userId, amount);
     return !!updatedRecruiter;
-  }
+  };
 
-  async addPayment(userId: string, payment: IPayment) {
+  public addPayment = async (userId: string, payment: IPayment) => {
     const data = await this.recruiterRepository.findOne({ userId });
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
+
     const updatedRecruiter = await this.recruiterRepository.addPayment(userId, payment);
     return !!updatedRecruiter;
+  };
 
-  }
-
-  async getPaymentInfo(userId: string) {
+  public getPaymentInfo = async (userId: string) => {
     const data = await this.recruiterRepository.getPaymentInfo(userId);
-    if (!data) {
-      return null;
-    }
+    if (!data) return null;
+
     log("data", data);
     const historyPayments = data.payments.filter((payment) => !payment.isDeposit);
     const historyDeposit = data.payments.filter((payment) => payment.isDeposit);
-    const resData = {
+    return {
       orgName: data.orgName,
       balance: data.balance,
       historyPayments,
       historyDeposit
-    }
-    return resData;
-  }
+    };
+  };
 
-  async getListCompany() {
+  public getListCompany = async () => {
     const companies = await this.recruiterRepository.getAllRecruiters();
-    if (!companies) {
-      return null;
-    }
-    return companies.map((company : IRecruiter) => new RecruiterListDTO(
+    if (!companies) return null;
+
+    return companies.map((company: IRecruiter) => new RecruiterListDTO(
       company.userId as ObjectId,
       company.orgName,
       company.orgImage,
       company.orgCoverImage,
       company.orgIntroduction,
     ));
-  }
+  };
 
-  async getListCompanyByPage(search: string, page: number, pageSize: number) {
+  public getListCompanyByPage = async (search: string, page: number, pageSize: number) => {
     const companies = await this.recruiterRepository.getAllRecruitersByPage(search, page, pageSize);
-    if (!companies) {
-      return null;
-    }
-    return companies.map((company : IRecruiter) => new RecruiterListDTO(
+    if (!companies) return null;
+
+    return companies.map((company: IRecruiter) => new RecruiterListDTO(
       company.userId as ObjectId,
       company.orgName,
       company.orgImage,
       company.orgCoverImage,
       company.orgIntroduction,
     ));
-  }
-
-  
+  };
 }

@@ -5,15 +5,17 @@ export abstract class BaseRoutes {
 
     constructor() {
         this.router = Router();
+        this.autoBindControllerMethods();
     }
 
     // Automatically bind all controller methods to the instance
-    protected autoBindControllerMethods(controller: any): void {
-        Object.getOwnPropertyNames(Object.getPrototypeOf(controller)).forEach(methodName => {
-            const method = controller[methodName];
-            if (typeof method === 'function') {
-                controller[methodName] = method.bind(controller);
-            }
+    protected autoBindControllerMethods() {
+        const prototype = Object.getPrototypeOf(this);
+        const methodNames = Object.getOwnPropertyNames(prototype)
+            .filter(name => typeof (this as any)[name] === 'function' && name !== 'constructor');
+
+        methodNames.forEach(name => {
+            (this as any)[name] = (this as any)[name].bind(this);
         });
     }
 

@@ -15,15 +15,15 @@ export default class AdminService {
     private candidateRepository: CandidateRepository;
     private recruiterRepository: RecruiterRepository;
     private jobPostRepository: JobPostRepository;
+
     constructor(candidateRepository: CandidateRepository, recruiterRepository: RecruiterRepository, jobPostRepository: JobPostRepository) {
         this.candidateRepository = candidateRepository;
         this.recruiterRepository = recruiterRepository;
         this.jobPostRepository = jobPostRepository;
-
     }
 
-    public async getAllCandidates(includeDetails = false) {
-        const result = await CandidateModel.aggregate([
+    public getAllCandidates = async (includeDetails = false) => {
+        return await CandidateModel.aggregate([
             {
                 $lookup: {
                     from: 'users',
@@ -43,21 +43,18 @@ export default class AdminService {
                     avatarUrl: 1,
                     createdAt: { $arrayElemAt: ['$user.createdAt', 0] },
                     loginWith: {
-                            $concat: [
-                                { $ifNull: ['$oauthToken.provider', 'Unknown Provider'] },
-                                ' - ',
-                                { $ifNull: [{ $arrayElemAt: ['$user.privateEmail', 0] }, 'No Email'] } 
-                            ]
-                        }
-
+                        $concat: [
+                            { $ifNull: ['$oauthToken.provider', 'Unknown Provider'] },
+                            ' - ',
+                            { $ifNull: [{ $arrayElemAt: ['$user.privateEmail', 0] }, 'No Email'] }
+                        ]
+                    }
                 }
             }
         ]);
-
-        return result;
     }
 
-    public async getDetailCandidate(candidateId: string) {
+    public getDetailCandidate = async (candidateId: string) => {
         const data = await CandidateModel.findOne({ userId: new Types.ObjectId(candidateId) })
             .select("userId fullName publicEmail avatarUrl createdAt oauthToken")
             .lean()
@@ -67,7 +64,7 @@ export default class AdminService {
         const userData = await UserModel.findById({ _id: new Types.ObjectId(candidateId) }).select("privateEmail createdAt").lean().exec();
         if (!userData) return null;
 
-        const result = {
+        return {
             userId: data.userId,
             fullName: data.fullName,
             publicEmail: data.publicEmail,
@@ -75,11 +72,10 @@ export default class AdminService {
             createdAt: userData.createdAt,
             loginWith: `${data.oauthToken.provider} - ${userData.privateEmail}`
         };
-        return result;
     }
 
-    public async getAllRecruiters() {
-        const result = await RecruiterModel.aggregate([
+    public getAllRecruiters = async () => {
+        return await RecruiterModel.aggregate([
             {
                 $lookup: {
                     from: 'users',
@@ -97,11 +93,10 @@ export default class AdminService {
                 }
             }
         ]);
-        return result;
     }
 
-    public async getAllJobs() {
-        const result = await JobPostModel.aggregate([
+    public getAllJobs = async () => {
+        return await JobPostModel.aggregate([
             {
                 $project: {
                     _id: 1,
@@ -118,10 +113,9 @@ export default class AdminService {
                 $sort: { postedAt: -1 }
             }
         ]);
-        return result;
     }
 
-    public async getDetailCompany(userId: string) {
+    public getDetailCompany = async (userId: string) => {
         const result = await RecruiterModel.aggregate([
             {
                 $match: {
@@ -161,7 +155,7 @@ export default class AdminService {
         return result.length > 0 ? result[0] : null;
     }
 
-    public async countJobsByMonth(year: string) {
+    public countJobsByMonth = async (year: string) => {
         const selectedYear = parseInt(year, 10);
         log("selectedYear", selectedYear);
         const monthNames = [
@@ -170,29 +164,28 @@ export default class AdminService {
             "november", "december"
         ];
 
-        // Initialize months array with default values for the selected year
         const months = Array.from({ length: 12 }, (_, i) => ({
-            month: i + 1, // 1 for January, 2 for February, etc.
+            month: i + 1,
             postCount: 0,
         }));
 
         const result = await JobPostModel.aggregate([
             {
                 $addFields: {
-                    postedAt: { $toDate: "$postedAt" }, // Ensure postedAt is a Date
+                    postedAt: { $toDate: "$postedAt" },
                 },
             },
             {
                 $match: {
                     $expr: {
-                        $eq: [{ $year: "$postedAt" }, selectedYear], // Match only the selected year
+                        $eq: [{ $year: "$postedAt" }, selectedYear],
                     },
                 },
             },
             {
                 $group: {
-                    _id: { $month: "$postedAt" }, // Group by month
-                    postCount: { $sum: 1 }, // Count posts in each month
+                    _id: { $month: "$postedAt" },
+                    postCount: { $sum: 1 },
                 },
             },
             {
@@ -204,13 +197,11 @@ export default class AdminService {
             },
         ]);
 
-        // Merge with default months
         const mergedResult = months.map((month) => {
             const found = result.find((r) => r.month === month.month);
             return found || month;
         });
 
-        // Map result to named format
         const namedResult: Record<string, number> = {};
         mergedResult.forEach(({ month, postCount }) => {
             const monthName = monthNames[month - 1];
@@ -220,8 +211,7 @@ export default class AdminService {
         return namedResult;
     }
 
-
-    private async getTotalDepositRevenue() {
+    private getTotalDepositRevenue = async () => {
         const totalDeposit = await RevenueReport.aggregate([
             {
                 $group: {
@@ -230,116 +220,108 @@ export default class AdminService {
                 }
             }
         ]);
-        if (totalDeposit.length === 0) {
-            return 0;
-        }
-        return totalDeposit[0].total || 0;
+        return totalDeposit.length === 0 ? 0 : totalDeposit[0].total || 0;
     }
 
-    private async getJobs() {
+    private getJobs = async () => {
         return await JobPostModel.countDocuments();
     }
 
-    private async getCompanies() {
+    private getCompanies = async () => {
         return await RecruiterModel.countDocuments().lean().exec();
     }
 
-    private async getCandidates() {
+    private getCandidates = async () => {
         return await CandidateModel.countDocuments().lean().exec();
     }
 
-    public async getTotalCards() {
+    public getTotalCards = async () => {
         const totalRevenue = await this.getTotalDepositRevenue();
-        const totalCards = {
+        return {
             totalRevenue: totalRevenue,
             totalJobs: await this.getJobs(),
             totalCompanies: await this.getCompanies(),
             totalCandidates: await this.getCandidates()
-        }
-        return totalCards;
+        };
     }
 
-    public async getTop5PostedJobs() {
+    public getTop5PostedJobs = async () => {
         const topRecruiters = await JobPostModel.aggregate([
             {
                 $group: {
-                    _id: "$userId",  // Group by recruiter (userId)
-                    numberOfPost: { $sum: 1 },  // Count the number of posts for each recruiter
-                    typeOfIndustry: { $first: "$typeOfIndustry" }  // Get the type of industry for each recruiter
+                    _id: "$userId",
+                    numberOfPost: { $sum: 1 },
+                    typeOfIndustry: { $first: "$typeOfIndustry" }
                 }
             },
             {
                 $lookup: {
-                    from: 'recruiters',  // Name of the Recruiter collection
-                    localField: '_id',    // The userId from JobPost
-                    foreignField: 'userId',  // The userId in the Recruiter collection
+                    from: 'recruiters',
+                    localField: '_id',
+                    foreignField: 'userId',
                     as: 'recruiterDetails'
                 }
             },
             {
-                $unwind: "$recruiterDetails"  // Flatten the recruiterDetails array
+                $unwind: "$recruiterDetails"
             },
             {
                 $project: {
                     orgImage: "$recruiterDetails.orgImage",
                     orgName: "$recruiterDetails.orgName",
                     typeOfIndustry: 1,
-                    numberOfPost: 1  // Include the number of posts
+                    numberOfPost: 1
                 }
             },
             {
-                $sort: { numberOfPost: -1 }  // Sort by number of posts in descending order
+                $sort: { numberOfPost: -1 }
             },
             {
-                $limit: 5  // Limit to top 5 recruiters
+                $limit: 5
             }
         ]);
         log("topRecruiters", topRecruiters);
         return topRecruiters;
     }
 
-    public async getRevenueReport(year: string) {
-        // find all revenue report by year
-        const revenue = await RevenueReport.find({ year: year }).sort({ month: 1 }); // sort by month ascending
-        // Month names
+    public getRevenueReport = async (year: string) => {
+        const revenue = await RevenueReport.find({ year: year }).sort({ month: 1 });
         const monthNames = [
             "january", "february", "march", "april", "may", "june",
             "july", "august", "september", "october", "november", "december"
         ];
 
-        // Map revenue data to month names
-        const monthlyRevenue = monthNames.reduce((result: any, monthName: string, index: any) => {
-            const month = index + 1; // Tháng từ 1 đến 12
+        return monthNames.reduce((result: any, monthName: string, index: any) => {
+            const month = index + 1;
             const monthData = revenue.find(item => String(item.month) === month.toString());
-            // If monthData is not found, set depositRevenue and paymentRevenue to 0
             result[monthName] = {
                 depositRevenue: monthData ? monthData.depositRevenue : 0,
                 paymentRevenue: monthData ? monthData.paymentRevenue : 0,
             };
             return result;
         }, {});
-
-        return monthlyRevenue;
     }
 
-    public async deleteJob(jobId: string) {
+    public deleteJob = async (jobId: string) => {
         await JobPostModel.deleteOne({ _id: jobId }).exec();
     }
 
-    public async deleteCandidate(candidateId: string) {
-        await CandidateModel.deleteOne({ userId: new Types.ObjectId(candidateId) }).exec();
-        await UserModel.deleteOne({ _id: new Types.ObjectId(candidateId) }).exec();
-        await ApplicantModel.deleteMany({ userId: new Types.ObjectId(candidateId) }).exec();
+    public deleteCandidate = async (candidateId: string) => {
+        const objectId = new Types.ObjectId(candidateId);
+        await CandidateModel.deleteOne({ userId: objectId }).exec();
+        await UserModel.deleteOne({ _id: objectId }).exec();
+        await ApplicantModel.deleteMany({ userId: objectId }).exec();
     }
 
-    public async deleteCompany(recruiterId: string) {
-        await RecruiterModel.deleteOne({ userId: new Types.ObjectId(recruiterId) }).exec();
-        await UserModel.deleteOne({ _id: new Types.ObjectId(recruiterId) }).exec();
-        await JobPostModel.deleteMany({ userId: new Types.ObjectId(recruiterId) }).exec();
+    public deleteCompany = async (recruiterId: string) => {
+        const objectId = new Types.ObjectId(recruiterId);
+        await RecruiterModel.deleteOne({ userId: objectId }).exec();
+        await UserModel.deleteOne({ _id: objectId }).exec();
+        await JobPostModel.deleteMany({ userId: objectId }).exec();
     }
 
-    public async searchJobs(query: string) {
-        const result = await JobPostModel.aggregate([
+    public searchJobs = async (query: string) => {
+        return await JobPostModel.aggregate([
             {
                 $match: {
                     $or: [
@@ -361,11 +343,10 @@ export default class AdminService {
                 }
             }
         ]);
-        return result;
     }
 
-    public async searchCandidates(query: string) {
-        const result = await CandidateModel.aggregate([
+    public searchCandidates = async (query: string) => {
+        return await CandidateModel.aggregate([
             {
                 $match: {
                     $or: [
@@ -384,11 +365,10 @@ export default class AdminService {
                 }
             }
         ]);
-        return result
     }
 
-    public async searchCompanies(query: string) {
-        const result = await RecruiterModel.aggregate([
+    public searchCompanies = async (query: string) => {
+        return await RecruiterModel.aggregate([
             {
                 $match: {
                     $or: [
@@ -406,6 +386,5 @@ export default class AdminService {
                 }
             }
         ]);
-        return result;
     }
 }

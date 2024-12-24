@@ -7,10 +7,10 @@ import path from 'path';
 import session from 'express-session';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
-const envFile = process.env.NODE_ENV === 'development' ? '.env.local' : '.env';
-import routes from "./routes/index"
-dotenv.config({ path: path.resolve(__dirname, envFile) });
+import routes from './routes/index';
 
+const envFile = process.env.NODE_ENV === 'development' ? '.env.local' : '.env';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 class App {
   public app: Application;
@@ -22,15 +22,18 @@ class App {
   }
 
   private initializeMiddleware(): void {
-    // Enable trust proxy
     this.app.set('trust proxy', 1);
-
-    // Middleware for logging
     this.app.use(morgan('dev'));
-
     this.app.use(cookieParser());
+    this.configureHelmet();
+    this.configureRateLimit();
+    this.configureCors();
+    this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.configureSession();
+  }
 
-    // Middleware for security headers
+  private configureHelmet(): void {
     this.app.use(
       helmet({
         contentSecurityPolicy: {
@@ -52,48 +55,50 @@ class App {
         xssFilter: true,
       })
     );
+  }
 
-    // Apply rate limiting to all requests
+  private configureRateLimit(): void {
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 500, // Limit each IP to 100 requests per `window` (15 minutes)
+      max: 500, // Limit each IP to 500 requests per `window` (15 minutes)
       message: 'Too many requests from this IP, please try again later.',
     });
     this.app.use(limiter);
+  }
 
-    // Middleware for enabling CORS (Cross-Origin Resource Sharing)
-    this.app.use(cors({
-      origin: [process.env.URL_CLIENT as string, 'https://happily-novel-chamois.ngrok-free.app', process.env.URL_SERVER as string],
-      credentials: true,
-      optionsSuccessStatus: 200,
-    }));
+  private configureCors(): void {
+    this.app.use(
+      cors({
+        origin: [
+          process.env.URL_CLIENT || 'http://localhost:3000',
+          'https://happily-novel-chamois.ngrok-free.app',
+          process.env.URL_SERVER || 'http://localhost:5000',
+        ],
+        credentials: true,
+        optionsSuccessStatus: 200,
+      })
+    );
+  }
 
-    // Middleware for parsing JSON and URL encoded form data
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
-
-    // Session middleware
+  private configureSession(): void {
     this.app.use(
       session({
-        secret: String(process.env.SESSION_SECRET),
+        secret: process.env.SESSION_SECRET || 'default_secret',
         resave: false,
         saveUninitialized: true,
         cookie: {
           secure: false,
-          maxAge: 7 * 24 * 60 * 60 * 1000
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
         },
       })
     );
   }
 
-  // Initialize routes
   private initializeRoutes(): void {
     this.app.use('/', routes);
-
     this.app.use('/home', (req, res) => {
       res.send('Welcome to the home page');
-    }
-    )
+    });
   }
 
   public getApp(): Application {

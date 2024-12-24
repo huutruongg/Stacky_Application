@@ -13,15 +13,9 @@ export default class PaymentService {
     this.config = config;
   }
 
-  async createTransaction(urlRedirect: string, packageName: string, amount: number) {
-    const embedData = {
-      redirectUrl: urlRedirect,
-    };
-
-    const items: Item[] = [
-      { name: packageName, price: amount, quantity: 1 },
-    ];
-
+  public createTransaction = async (urlRedirect: string, packageName: string, amount: number) => {
+    const embedData = { redirectUrl: urlRedirect };
+    const items: Item[] = [{ name: packageName, price: amount, quantity: 1 }];
     const transactionId = Math.floor(Math.random() * 1000000);
 
     const transaction: Transaction = {
@@ -31,7 +25,6 @@ export default class PaymentService {
       app_time: Date.now(),
       item: JSON.stringify(items),
       embed_data: JSON.stringify(embedData),
-      // amount: items.reduce((total, item) => total + item.price * item.quantity, 0),
       amount: items[0].price,
       callback_url: 'http://5050/home/callback',
       description: packageName,
@@ -47,9 +40,9 @@ export default class PaymentService {
     } catch (error) {
       throw new Error('Error creating order');
     }
-  }
+  };
 
-  async checkTransactionStatus(appTransId: string) {
+  public checkTransactionStatus = async (appTransId: string) => {
     const postData: PostData = {
       app_id: this.config.app_id,
       app_trans_id: appTransId,
@@ -66,13 +59,13 @@ export default class PaymentService {
     } catch (error) {
       throw new Error('Error checking order status');
     }
-  }
+  };
 
-  verifyCallback(data: any): boolean {
+  public verifyCallback = (data: any): boolean => {
     const dataStr = data.data;
     const reqMac = data.mac;
     const mac = CryptoJS.HmacSHA256(dataStr, this.config.key2).toString();
 
     return reqMac === mac;
-  }
+  };
 }

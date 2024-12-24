@@ -1,6 +1,6 @@
 import path from 'path';
 import { Request, Response } from 'express';
-import { cacheMiddleware } from '../middlewares/CacheRedis';
+import { redisCache } from '../middlewares/redisCache';
 import NotificationController from '../controllers/NotificationController';
 import { BaseRoutes } from './BaseRoutes';
 import { socketMiddleware } from '../middlewares/socket';
@@ -15,7 +15,6 @@ export default class NotificationRoutes extends BaseRoutes {
     constructor(notificationController: NotificationController) {
         super();
         this.notificationController = notificationController;
-        this.autoBindControllerMethods(this.notificationController);
         this.initializeRoutes();
     }
 

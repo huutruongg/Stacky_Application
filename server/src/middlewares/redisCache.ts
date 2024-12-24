@@ -1,22 +1,16 @@
 import { redisClient } from '../config/Redis';
 import { Request, Response, NextFunction } from 'express';
 
-
-
-export const cacheMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const redisCache = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     console.log("Cache middleware");
 
-    let cacheKey: string;
-    if (Object.keys(req.params).length > 0) {
-        cacheKey = `${req.originalUrl}:${JSON.stringify(req.params)}`; // Cache key for params
-    } else if (Object.keys(req.query).length > 0) {
-        cacheKey = `${req.originalUrl}:${JSON.stringify(req.query)}`; // Cache key for query
-    } else {
-        cacheKey = req.originalUrl;
-    }
+    const cacheKey = Object.keys(req.params).length > 0 
+        ? `${req.originalUrl}:${JSON.stringify(req.params)}` 
+        : Object.keys(req.query).length > 0 
+        ? `${req.originalUrl}:${JSON.stringify(req.query)}` 
+        : req.originalUrl;
 
     try {
-        // Kiểm tra cache trước trong Redis
         const cachedData = await redisClient.get(cacheKey);
 
         if (cachedData) {
@@ -25,21 +19,17 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
             return;
         }
 
-        // Middleware tiếp theo xử lý việc lưu dữ liệu vào cache sau khi response hoàn thành
         const originalJson = res.json;
         res.json = (body: any): Response => {
-            // Lưu dữ liệu vào res.locals.data
             res.locals.data = body;
 
-            // Lưu dữ liệu vào Redis sau khi response hoàn tất
-            const ttl = 120; // 2 phút
             if (body) {
+                const ttl = 120; // 2 minutes
                 redisClient.setEx(cacheKey, ttl, JSON.stringify(body));
             } else {
                 console.warn('Warning: responseData is undefined');
             }
 
-            // Gọi lại phương thức .json() của res
             return originalJson.call(res, body);
         };
 

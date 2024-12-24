@@ -1,5 +1,5 @@
 import NotificationRepository from "../repositories/NotificationRepository";
-import { log } from "console";
+
 export default class NotificationService {
     private notificationRepository: NotificationRepository;
 
@@ -7,32 +7,29 @@ export default class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    sendNotification = async (io: any, connectedUsers: any, message: string, userIds: string[]) => {
+    public sendNotification = async (io: any, connectedUsers: any, message: string, userIds: string[]): Promise<void> => {
         await Promise.all(
             userIds.map(async (userId) => {
                 await this.notificationRepository.createNotification({ userId, message });
                 const socketId = connectedUsers[userId];
                 if (socketId) {
                     const unreadCount = await this.getUnreadCount(userId);
-
-                    io.to(socketId).emit("notification", {
-                        message,
-                        unreadCount,
-                    });
+                    io.to(socketId).emit("notification", { message, unreadCount });
                 }
             })
         );
     }
 
-    getAllNotifications = async (userId: string) => {
+    public getAllNotifications = async (userId: string): Promise<any[]> => {
         return await this.notificationRepository.getNotifications(userId);
     }
 
-    getUnreadCount = async (userId: string) => {
-        return (await this.notificationRepository.getNotifications(userId)).filter(notification => notification.unread).length;
+    public getUnreadCount = async (userId: string): Promise<number> => {
+        const notifications = await this.notificationRepository.getNotifications(userId);
+        return notifications.filter(notification => notification.unread).length;
     }
 
-    markAllAsRead = async (userId: string) => {
+    public markAllAsRead = async (userId: string): Promise<void> => {
         await this.notificationRepository.markAllAsRead(userId);
     }
 }

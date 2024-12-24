@@ -15,7 +15,6 @@ export default class PaymentRoutes extends BaseRoutes {
     constructor(paymentController: PaymentController) {
         super();
         this.paymentController = paymentController;
-        this.autoBindControllerMethods(this.paymentController);
         this.initializeRoutes();
     }
 

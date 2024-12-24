@@ -1,5 +1,4 @@
 import { IJobPost } from './../interfaces/IJobPost';
-
 import { log } from "console";
 import { IJobPostMin } from "../interfaces/IJobPost";
 import JobPostModel from "../models/JobPostModel";
@@ -13,20 +12,19 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         super(JobPostModel);
     }
 
-    async findAllByCondition(query: object): Promise<IJobPost[]> {
+    public findAllByCondition = async (query: object): Promise<IJobPost[]> => {
         return await this.model.find(query).exec();
     }
 
-    async findById(id: string): Promise<IJobPost | null> {
+    public findById = async (id: string): Promise<IJobPost | null> => {
         return await this.model.findById(new Types.ObjectId(id)).exec();
     }
 
-    async findJobPostByUserId(userId: string): Promise<IJobPostMin | null> {
-        const data = await this.model.findOne({ userId: new Types.ObjectId(userId) }).lean<IJobPostMin>().exec();
-        return data;
+    public findJobPostByUserId = async (userId: string): Promise<IJobPostMin | null> => {
+        return await this.model.findOne({ userId: new Types.ObjectId(userId) }).lean<IJobPostMin>().exec();
     }
 
-    async findAllMinData(): Promise<IJobPostMin[] | null> {
+    public findAllMinData = async (): Promise<IJobPostMin[] | null> => {
         return await this.model
             .find()
             .select("_id jobTitle jobImage jobSalary location userId")
@@ -34,80 +32,58 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
             .exec();
     }
 
-
-    async createJobPost(orgName: string, data: IJobPost): Promise<IJobPost> {
+    public createJobPost = async (orgName: string, data: IJobPost): Promise<IJobPost> => {
         log('data', data);
         const newJobPost = await this.model.create({
-            userId: data.userId,
-            jobTitle: data.jobTitle,
-            jobImage: data.jobImage,
-            orgName: orgName,
-            typeOfWork: data.typeOfWork,
-            location: data.location,
-            jobSalary: data.jobSalary,
+            ...data,
+            orgName,
             candidatesLimit: Number(data.candidatesLimit),
-            educationRequired: data.educationRequired,
-            yearsOfExperience: data.yearsOfExperience,
-            typeOfIndustry: data.typeOfIndustry,
-            professionalSkills: data.professionalSkills,
-            certificateRequired: data.certificateRequired,
-            languagesRequired: data.languagesRequired,
-            jobBenefit: data.jobBenefit,
-            leavePolicy: data.leavePolicy,
-            jobDescription: data.jobDescription,
-            workEnvironment: data.workEnvironment,
             applicationDeadline: new Date(data.applicationDeadline),
             jobSchedule: new Date(data.jobSchedule),
-            staffLevel: data.staffLevel,
-            genderRequired: data.genderRequired,
             postedAt: new Date(),
             invisible: false
         });
         return newJobPost;
     }
 
-    async updateJobPost(id: string, data: Partial<IJobPost>): Promise<IJobPost | null> {
+    public updateJobPost = async (id: string, data: Partial<IJobPost>): Promise<IJobPost | null> => {
         return await this.model
             .findByIdAndUpdate(new Types.ObjectId(id), data, { new: true })
             .exec();
     }
 
-    async deleteJobPost(id: string): Promise<boolean | null> {
+    public deleteJobPost = async (id: string): Promise<boolean> => {
         const data = await this.model.findByIdAndDelete(new Types.ObjectId(id)).exec();
         return !!data;
     }
 
-    async findJobPostsByUserId(userId: string): Promise<IJobPost[]> {
+    public findJobPostsByUserId = async (userId: string): Promise<IJobPost[]> => {
         return await this.model.find({ userId: new Types.ObjectId(userId) }).exec();
     }
 
-    async getAllJobPosts(): Promise<IJobPost[]> {
+    public getAllJobPosts = async (): Promise<IJobPost[]> => {
         return await this.model.find({ invisible: false }).exec();
     }
 
-    async getJobPostsByPage(page: number, pageSize: number): Promise<IJobPost[]> {
+    public getJobPostsByPage = async (page: number, pageSize: number): Promise<IJobPost[]> => {
         return await this.model.find({ invisible: false }).skip(page * pageSize).limit(pageSize).exec();
     }
 
-    async getJobPostByIds(ids: string[]): Promise<any[]> {
+    public getJobPostByIds = async (ids: string[]): Promise<any[]> => {
         try {
-            // log('ids', ids.map(id => new Types.ObjectId(id)) );
             const data = await this.model
-                .find({ _id: { $in: ids.map(id => new Types.ObjectId(id)) } }).select(
-                    "jobTitle orgName jobImage jobSalary location typeOfWork applicationDeadline postStatus postedAt userId"
-                ).lean().exec();
-            // log('data', data);
-            if (!data) {
-                return [];
-            }
-            return data;
+                .find({ _id: { $in: ids.map(id => new Types.ObjectId(id)) } })
+                .select("jobTitle orgName jobImage jobSalary location typeOfWork applicationDeadline postStatus postedAt userId")
+                .lean()
+                .exec();
+            return data || [];
         } catch (error) {
             console.error('Error fetching job posts:', error);
             throw new Error('Failed to retrieve job posts');
         }
     }
 
-    async addApplicantToJobPost(jobPostId: string, newApplicant: IApplicant): Promise<boolean> {
+    public addApplicantToJobPost = async (jobPostId: string, newApplicant: IApplicant): Promise<boolean> => {
         const result = await this.model.updateOne(
             { _id: jobPostId },
             { $push: { applicants: newApplicant } }
@@ -115,77 +91,68 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
         return result.modifiedCount > 0;
     }
 
-    async exists(jobPostId: string): Promise<boolean> {
+    public exists = async (jobPostId: string): Promise<boolean> => {
         const result = await this.model.exists({ _id: jobPostId });
         return result !== null;
     }
 
-    async isJobOwner(userId: string, jobPostId: string): Promise<boolean> {
-        const jobPost = await this.model.findOne({ _id: jobPostId, userId: userId }).lean();
+    public isJobOwner = async (userId: string, jobPostId: string): Promise<boolean> => {
+        const jobPost = await this.model.findOne({ _id: jobPostId, userId }).lean();
         return !!jobPost;
     }
 
-    async getJobPostsByRecruiter(userId: string) {
+    public getJobPostsByRecruiter = async (userId: string) => {
         log("recruiterId", userId);
         const data = await this.model.find({ userId: new Types.ObjectId(userId) }).lean().exec();
         log("data", data);
         return data;
     }
 
-    async getJobPostedByRecruiter(userId: string): Promise<IJobPost[]> {
-        return await this.model.find({ userId: new Types.ObjectId(userId), invisible: false }).select("_id userId jobTitle orgName typeOfIndustry candidatesLimit postedAt applicationDeadline").lean().exec();
+    public getJobPostedByRecruiter = async (userId: string): Promise<IJobPost[]> => {
+        return await this.model.find({ userId: new Types.ObjectId(userId), invisible: false })
+            .select("_id userId jobTitle orgName typeOfIndustry candidatesLimit postedAt applicationDeadline")
+            .lean()
+            .exec();
     }
 
-    async getTopRecruiters(): Promise<any[]> {
+    public getTopRecruiters = async (): Promise<any[]> => {
         const topRecruiters = await this.model.aggregate([
             {
                 $group: {
-                    _id: "$userId",  // Group by recruiter (userId)
-                    numberOfPost: { $sum: 1 },  // Count the number of posts for each recruiter
-                    typeOfIndustry: { $first: "$typeOfIndustry" }  // Get the type of industry for each recruiter
+                    _id: "$userId",
+                    numberOfPost: { $sum: 1 },
+                    typeOfIndustry: { $first: "$typeOfIndustry" }
                 }
             },
             {
                 $lookup: {
-                    from: 'recruiters',  // Name of the Recruiter collection
-                    localField: '_id',    // The userId from JobPost
-                    foreignField: 'userId',  // The userId in the Recruiter collection
+                    from: 'recruiters',
+                    localField: '_id',
+                    foreignField: 'userId',
                     as: 'recruiterDetails'
                 }
             },
-            {
-                $unwind: "$recruiterDetails"  // Flatten the recruiterDetails array
-            },
+            { $unwind: "$recruiterDetails" },
             {
                 $project: {
                     orgImage: "$recruiterDetails.orgImage",
                     orgName: "$recruiterDetails.orgName",
                     typeOfIndustry: 1,
-                    numberOfPost: 1  // Include the number of posts
+                    numberOfPost: 1
                 }
             },
-            {
-                $sort: { numberOfPost: -1 }  // Sort by number of posts in descending order
-            },
-            {
-                $limit: 10  // Limit to top 10 recruiters
-            }
+            { $sort: { numberOfPost: -1 } },
+            { $limit: 10 }
         ]);
         log("topRecruiters", topRecruiters);
         return topRecruiters;
     }
 
-    async getTopJobSalaries(): Promise<any[]> {
+    public getTopJobSalaries = async (): Promise<any[]> => {
         const topJobSalaries = await this.model.aggregate([
-            {
-                $match: { invisible: false }  // Only consider visible job posts
-            },
-            {
-                $sort: { jobSalary: -1 }  // Sort by job salary in descending order
-            },
-            {
-                $limit: 10  // Limit to top 10 job salaries
-            },
+            { $match: { invisible: false } },
+            { $sort: { jobSalary: -1 } },
+            { $limit: 10 },
             {
                 $project: {
                     jobTitle: 1,

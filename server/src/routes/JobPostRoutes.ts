@@ -1,6 +1,6 @@
 import { BaseRoutes } from './BaseRoutes';
 import JobPostController from '../../src/controllers/JobPostController';
-import { cacheMiddleware } from '../middlewares/CacheRedis';
+import { redisCache } from '../middlewares/redisCache';
 import authenticate from '../middlewares/authenticate';
 import authorize from '../middlewares/authorize';
 import verifyToken from '../middlewares/verifyToken';
@@ -12,19 +12,18 @@ export default class JobPostRoutes extends BaseRoutes {
     constructor(jobPostController: JobPostController) {
         super();
         this.jobPostController = jobPostController;
-        this.autoBindControllerMethods(this.jobPostController);
         this.initializeRoutes();
     }
 
     private initializeRoutes(): void {
         // Public routes
-        this.router.get('/get-all', cacheMiddleware, this.jobPostController.getAllJobPosts);
-        this.router.get('/find-job-posts', cacheMiddleware, this.jobPostController.findByCondition);
-        this.router.get('/get-job-detail/:jobPostId', cacheMiddleware, this.jobPostController.getJobDetail);
-        this.router.get('/get-related-job-posts', cacheMiddleware, this.jobPostController.getRelatedJobPosts);
-        this.router.get('/get-top-recruiters', cacheMiddleware, this.jobPostController.getTopRecruiters);
-        this.router.get('/get-top-job-salaries', cacheMiddleware, this.jobPostController.getTopJobSalaries);
-        this.router.get('/get-job-posted-by-recruiter/:recruiterId', cacheMiddleware, this.jobPostController.getJobPostedByRecruiter);
+        this.router.get('/get-all', redisCache, this.jobPostController.getAllJobPosts);
+        this.router.get('/find-job-posts', redisCache, this.jobPostController.findByCondition);
+        this.router.get('/get-job-detail/:jobPostId', redisCache, this.jobPostController.getJobDetail);
+        this.router.get('/get-related-job-posts', redisCache, this.jobPostController.getRelatedJobPosts);
+        this.router.get('/get-top-recruiters', redisCache, this.jobPostController.getTopRecruiters);
+        this.router.get('/get-top-job-salaries', redisCache, this.jobPostController.getTopJobSalaries);
+        this.router.get('/get-job-posted-by-recruiter/:recruiterId', redisCache, this.jobPostController.getJobPostedByRecruiter);
 
         // Candidate-specific routes
         this.router.get(

@@ -10,7 +10,6 @@ export default class AdminRoutes extends BaseRoutes {
     constructor(adminController: AdminController) {
         super();
         this.adminController = adminController;
-        this.autoBindControllerMethods(this.adminController);
         this.initializeRoutes();
     }
 

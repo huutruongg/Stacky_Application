@@ -42,6 +42,7 @@ export const RolePermissions: Record<UserRoles, string[]> = {
     ],
     [UserRoles.CANDIDATE]: [
         'getAppliedJobs',
+        'getSavedJobs',
         'getCandidate',
         'updateCandidate',
         'getCandidateProfile',

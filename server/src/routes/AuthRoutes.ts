@@ -9,7 +9,6 @@ export default class AuthRoutes extends BaseRoutes {
     constructor(authController: AuthController) {
         super();
         this.authController = authController;
-        this.autoBindControllerMethods(this.authController);
         this.initializeRoutes();
     }
 

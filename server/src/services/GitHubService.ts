@@ -3,31 +3,28 @@ import { log } from "console";
 import JobPostRepository from "../repositories/JobPostRepository";
 import { IContributor, IRepo } from "../interfaces/IGithub";
 
-
 export default class GithubService {
     private jobPostRepository: JobPostRepository;
+
     constructor() {
         this.jobPostRepository = new JobPostRepository();
     }
 
     private getAllRepos = async (token: string): Promise<IRepo[]> => {
-        const headers = {
-            Authorization: `token ${token}`,
-        };
+        const headers = { Authorization: `token ${token}` };
         const repos: IRepo[] = [];
         let page = 1;
-        const perPage = 100; // GitHub API supports pagination with a max of 100 items per page
+        const perPage = 100;
+
         try {
             while (true) {
-                // Fetch repositories (including private and collaboration repos)
                 const response = await axios.get(
                     `https://api.github.com/user/repos?per_page=${perPage}&page=${page}`,
                     { headers }
                 );
                 const repoData = response.data;
-                // If no more repos, exit the loop
                 if (repoData.length === 0) break;
-                // Add repo URL, language, and additional metadata to the array
+
                 repoData.forEach((repo: any) => {
                     repos.push({
                         url: repo.url,
@@ -51,22 +48,18 @@ export default class GithubService {
         JD_languages: string,
         token: string
     ): Promise<number> => {
-        const headers = {
-            Authorization: `token ${token}`,
-        };
+        const headers = { Authorization: `token ${token}` };
         const userResponse = await axios.get("https://api.github.com/user", { headers });
         const username = userResponse.data.login;
 
-        let totalWeightedScore = 0; // Tổng điểm có trọng số
-        let validRepoCount = 0; // Số repo hợp lệ
-        let maxRepoScore = 0; // Điểm cao nhất trong các repo
-        const personalRepoPenalty = repos.every(repo => repo.isPersonal) ? 0.8 : 1.0; // Phạt nếu chỉ có repo cá nhân
+        let totalWeightedScore = 0;
+        let validRepoCount = 0;
+        let maxRepoScore = 0;
+        const personalRepoPenalty = repos.every(repo => repo.isPersonal) ? 0.8 : 1.0;
 
-        // Lọc các repo theo JD_languages
         const filteredRepos = repos.filter(repo => JD_languages.includes(repo.language));
         for (const repo of filteredRepos) {
             try {
-                // Lấy danh sách contributors
                 const response = await axios.get<IContributor[]>(`${repo.url}/contributors`, { headers });
                 const contributors = response.data;
 
@@ -75,15 +68,12 @@ export default class GithubService {
 
                 if (totalContributions > 0) {
                     const contributionPercentage = (userContributions / totalContributions) * 100;
-
-                    const complexityWeight =
-                        1 + (repo.stars > 100 ? 0.2 : 0) + (repo.forks > 50 ? 0.2 : 0) + (repo.watchers > 20 ? 0.1 : 0);
-
+                    const complexityWeight = 1 + (repo.stars > 100 ? 0.2 : 0) + (repo.forks > 50 ? 0.2 : 0) + (repo.watchers > 20 ? 0.1 : 0);
                     const typeWeight = repo.isPersonal ? 0.5 : 1.0;
 
                     const repoScore = contributionPercentage * complexityWeight * typeWeight;
                     totalWeightedScore += repoScore;
-                    maxRepoScore = Math.max(maxRepoScore, repoScore); // Cập nhật điểm cao nhất
+                    maxRepoScore = Math.max(maxRepoScore, repoScore);
                     validRepoCount++;
                 }
             } catch (error: any) {
@@ -91,18 +81,14 @@ export default class GithubService {
             }
         }
 
-        // Trung bình điểm và áp dụng phạt nếu cần
         const averageScore = validRepoCount > 0 ? totalWeightedScore / validRepoCount : 0;
-
-        // Quy về thang điểm 100
         const normalizedScore = maxRepoScore > 0 ? (averageScore / maxRepoScore) * 100 : 0;
 
         return normalizedScore * personalRepoPenalty;
     };
 
-
     public getGitHubScore = async (jobPostId: string, githubToken: string): Promise<number> => {
-        const repos = await this.getAllRepos(githubToken as string);
+        const repos = await this.getAllRepos(githubToken);
         log("repos", repos);
         const jobPost = await this.jobPostRepository.findById(jobPostId);
         const jDLanguages = jobPost?.professionalSkills;
@@ -111,7 +97,7 @@ export default class GithubService {
             log("No job description languages found for job post: " + jobPostId);
             return 0;
         }
-        const score = await this.calculateGitHubScore(repos, jDLanguages, githubToken as string);
+        const score = await this.calculateGitHubScore(repos, jDLanguages, githubToken);
         return score;
     };
 }

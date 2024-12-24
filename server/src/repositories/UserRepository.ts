@@ -10,48 +10,48 @@ export default class UserRepository extends BaseRepository<IUser> {
         super(UserModel);
     }
 
-    async findById(id: string): Promise<IUser | null> {
-        return await this.model.findById(id).exec();
+    public findById = async (id: string): Promise<IUser | null> => {
+        return this.model.findById(id).exec();
     }
 
-    async findByEmail(privateEmail: string): Promise<IUser | null> {
+    public findByEmail = async (privateEmail: string): Promise<IUser | null> => {
         log("privateEmail", privateEmail);
         const data = await this.model.findOne({ privateEmail }).lean().exec();
         log("data", data);
         return data;
     }
     
-    async changePassword(id: string, password: string): Promise<IUser | null> {
-        const hashedPassword = await bcrypt.hash(password, 10);
+    public changePassword = async (id: string, password: string): Promise<IUser | null> => {
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         return this.model.findByIdAndUpdate(id, { password: hashedPassword }, { new: true }).exec();
     }
 
-    async createUser(data: Partial<IUser>): Promise<IUser> {
+    public createUser = async (data: Partial<IUser>): Promise<IUser> => {
         log("data", data);
         if (data.password && (data.role === "ADMIN" || data.role === "RECRUITER")) {
             const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-            return await this.model.create({ ...data, password: hashedPassword });
+            return this.model.create({ ...data, password: hashedPassword });
         } else if (!data.password && data.role === "CANDIDATE") {
-            return await this.model.create(data);
+            return this.model.create(data);
         } else {
             throw new Error("Invalid data");
         }
     }
 
-    async findOneAndUpdate(query: any, data: any): Promise<IUser | null> {
-        return await this.model.findOneAndUpdate({ query }, { data }, { new: true }).exec();
+    public findOneAndUpdate = async (query: any, data: any): Promise<IUser | null> => {
+        return this.model.findOneAndUpdate(query, data, { new: true }).exec();
     }
 
-    async updateUser(userId: string, data: Partial<IUser>): Promise<IUser | null> {
-        return await this.model.findByIdAndUpdate(userId, data, { new: true }).exec();
+    public updateUser = async (userId: string, data: Partial<IUser>): Promise<IUser | null> => {
+        return this.model.findByIdAndUpdate(userId, data, { new: true }).exec();
     }
 
-    async isAdmin(userId: string): Promise<boolean> {
+    public isAdmin = async (userId: string): Promise<boolean> => {
         const user = await this.model.findOne({ _id: userId, role: 'ADMIN' }).lean();
         return !!user; 
     }
 
-    async isRefreshTokenValid(refreshToken: string): Promise<boolean> {
+    public isRefreshTokenValid = async (refreshToken: string): Promise<boolean> => {
         const user = await this.model.findOne({ refreshToken }).lean();
         return !!user;
     }

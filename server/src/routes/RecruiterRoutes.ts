@@ -1,7 +1,7 @@
 
 import RecruiterController from "../../src/controllers/RecruiterController";
 import { BaseRoutes } from "./BaseRoutes";
-import { cacheMiddleware } from '../middlewares/CacheRedis';
+import { redisCache } from '../middlewares/redisCache';
 import authenticate from "../middlewares/authenticate";
 import authorize from "../middlewares/authorize";
 import verifyToken from "../middlewares/verifyToken";
@@ -12,7 +12,6 @@ export default class RecruiterRoutes extends BaseRoutes {
     constructor(recruiterController: RecruiterController) {
         super();
         this.recruiterController = recruiterController;
-        this.autoBindControllerMethods(this.recruiterController);
         this.initializeRoutes();
     }
 
@@ -27,11 +26,11 @@ export default class RecruiterRoutes extends BaseRoutes {
             this.recruiterController.updateCandidatesStatus);
         this.router.get('/get-potential-candidate/:jobPostId/:candidateId', this.recruiterController.getPotentialCandidate);
         this.router.put('/update-company-account', verifyToken, refreshToken, authenticate, authorize(['updateComapanyAccount']),
-            this.recruiterController.updateComapanyAccount);
+            this.recruiterController.updateCompanyAccount);
         this.router.put('/update-company-info', verifyToken, refreshToken, authenticate, authorize(['updateComapanyInfo']),
-            this.recruiterController.updateComapanyInfo);
+            this.recruiterController.updateCompanyInfo);
         this.router.get('/get-company-info/:userId', this.recruiterController.getCompanyInfo);
-        this.router.get('/get-list-company', cacheMiddleware, this.recruiterController.getListCompany);
+        this.router.get('/get-list-company', redisCache, this.recruiterController.getListCompany);
 
     }
 }

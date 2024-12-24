@@ -11,77 +11,66 @@ const dnsCache = new Map();
 dns.setDefaultResultOrder("ipv4first");
 
 export class EmailService {
-    private transporter;
+  private transporter;
 
-    constructor() {
-        this.transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE,
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-            pool: true,
-            dnsCache,
-        } as SMTPTransport.Options); // Use type assertion
+  constructor() {
+    this.transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE,
+      auth: {
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+      pool: true,
+      dnsCache,
+    } as SMTPTransport.Options);
+  }
+
+  public sendEmail = async (to: string | string[], subject: string, text: string, html: string = ""): Promise<boolean> => {
+    try {
+      await this.transporter.sendMail({
+        from: process.env.EMAIL_ADDRESS,
+        to,
+        subject,
+        text,
+        html,
+      });
+      log("Email sent successfully to:", to);
+      return true;
+    } catch (error) {
+      log("Error sending email:", error);
+      return false;
     }
+  };
 
-    async sendEmail(to: string | string[], subject: string, text: string, html: string = ""): Promise<boolean> {
-        try {
-            await this.transporter.sendMail({
-                from: process.env.EMAIL_ADDRESS,
-                to,
-                subject,
-                text,
-                html,
-            });
-            log("Email sent successfully to:", to);
-            return true;
-        } catch (error) {
-            log("Error sending email:", error);
-            return false;
-        }
-    }
+  public filterAndSendEmails = async (
+    emails: string[],
+    jobPostId: string,
+    subject: string,
+    text: string,
+    html: string = ""
+  ) => {
+    const candidates = await ApplicantModel.find({
+      publicEmail: { $in: emails },
+      jobPostId: new Types.ObjectId(jobPostId),
+    });
 
-    async filterAndSendEmails(
-        emails: string[],
-        jobPostId: string,
-        subject: string,
-        text: string,
-        html: string = ""
-      ) {
-        // Truy vấn ứng viên theo email và jobPostId
-        const candidates = await ApplicantModel.find({
-          publicEmail: { $in: emails },
-          jobPostId: new Types.ObjectId(jobPostId),
-        });
-      
-        // // Lọc danh sách ứng viên chưa được gửi email
-        // const candidatesToSend = candidates.filter(candidate => !candidate.isSent);
-      
-        // if (candidatesToSend.length === 0) {
-        //   console.log("All selected candidates have already received emails for this job post.");
-        //   return;
-        // }
-      
-        // Gửi email từng ứng viên và đánh dấu trạng thái đã gửi
-        for (const candidate of candidates) {
-            if (!candidate.publicEmail) {
-                console.log(`No public email found for ${candidate.publicEmail}`);
-                continue;
-            }
-          const emailSent = await this.sendEmail(candidate.publicEmail, subject, text, html);
-      
-          if (emailSent) {
-            candidate.isSent = true; // Đánh dấu trạng thái đã gửi
-            candidate.jobPostId = jobPostId; // Đảm bảo liên kết với JobPostId
-            await candidate.save(); // Cập nhật vào DB ngay lập tức
-            console.log(`Email sent successfully to ${candidate.publicEmail} for job post ${jobPostId}`);
-          } else {
-            console.log(`Failed to send email to ${candidate.publicEmail} for job post ${jobPostId}`);
-          }
-        }
+    for (const candidate of candidates) {
+      if (!candidate.publicEmail) {
+        console.log(`No public email found for ${candidate.publicEmail}`);
+        continue;
       }
-      
+      const emailSent = await this.sendEmail(candidate.publicEmail, subject, text, html);
+
+      if (emailSent) {
+        candidate.isSent = true;
+        candidate.jobPostId = jobPostId;
+        await candidate.save();
+        console.log(`Email sent successfully to ${candidate.publicEmail} for job post ${jobPostId}`);
+      } else {
+        console.log(`Failed to send email to ${candidate.publicEmail} for job post ${jobPostId}`);
+      }
+    }
+  };
 }
 
 export default new EmailService();

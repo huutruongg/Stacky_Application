@@ -20,7 +20,7 @@ export default class CandidateController extends BaseController {
         this.userService = userService;
     }
 
-    async getCandidate(req: Request, res: Response) {
+    public getCandidate = async (req: Request, res: Response) => {
         try {
             const userInfo = await (req as any).userData;
             const userId = userInfo.userId;
@@ -33,9 +33,9 @@ export default class CandidateController extends BaseController {
         } catch (error) {
             return this.sendError(res, 500, "Failed to get candidate");
         }
-    }
+    };
 
-    async getAppliedJobs(req: Request, res: Response) {
+    public getAppliedJobs = async (req: Request, res: Response) => {
         try {
             const userInfo = await (req as any).userData;
             const userId = userInfo.userId;
@@ -47,30 +47,24 @@ export default class CandidateController extends BaseController {
         } catch (error) {
             return this.sendError(res, 500, "Failed to get applied jobs");
         }
-    }
+    };
 
-    async updateCandidate(req: Request, res: Response) {
+    public updateCandidate = async (req: Request, res: Response) => {
         try {
             const data = req.body;
             const userInfo = await (req as any).userData;
-            // const { error } = UpdateCandidateInfoSchema.validate(req.body, { abortEarly: false });
-            // if (error) {
-            //     return this.sendError(res, 400, error.message);
-            // }
             const isProfileUpdated = await this.candidateService.updateProfile(userInfo.userId, data);
             const isProfessionalInfoUpdated = await this.candidateService.updateProfessionalInfo(userInfo.userId, data);
-            // log("isProfileUpdated", isProfileUpdated);
-            // log("isProfessionalInfoUpdated", isProfessionalInfoUpdated);
             if (!isProfileUpdated || !isProfessionalInfoUpdated) {
                 return this.sendError(res, 500, "Failed to update candidate");
             }
             return this.sendResponse(res, 200, { success: true, message: "Candidate updated successfully" });
         } catch (error) {
-            return this.sendError(res, 500, "Failed to get candidate");
+            return this.sendError(res, 500, "Failed to update candidate");
         }
-    }
+    };
 
-    async deleteCandidate(req: Request, res: Response) {
+    public deleteCandidate = async (req: Request, res: Response) => {
         try {
             const { error } = DeleteCandidateSchema.validate(req.params.userId, { abortEarly: false });
             if (error) {
@@ -90,9 +84,9 @@ export default class CandidateController extends BaseController {
         } catch (error) {
             return this.sendError(res, 500, "Failed to delete candidate");
         }
-    }
+    };
 
-    async getCandidateProfile(req: Request, res: Response) {
+    public getCandidateProfile = async (req: Request, res: Response) => {
         try {
             const userInfo = await (req as any).userData;
             const userId = userInfo.userId;
@@ -109,11 +103,11 @@ export default class CandidateController extends BaseController {
             } as IProfile;
             return this.sendResponse(res, 200, { success: true, result: data });
         } catch (error) {
-            return this.sendError(res, 500, "Failed to get candidate");
+            return this.sendError(res, 500, "Failed to get candidate profile");
         }
-    }
+    };
 
-    async updateCandidateProfile(req: Request, res: Response) {
+    public updateCandidateProfile = async (req: Request, res: Response) => {
         try {
             const { error } = UpdateCandidateProfileSchema.validate(req.body, { abortEarly: false });
             if (error) {
@@ -130,5 +124,5 @@ export default class CandidateController extends BaseController {
         } catch (error) {
             return this.sendError(res, 500, "Failed to update candidate profile");
         }
-    }
+    };
 }

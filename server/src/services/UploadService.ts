@@ -16,7 +16,7 @@ export default class UploadService {
         this.bucket = admin.storage().bucket();
     }
 
-    public async getPublicUrlImages(files: Express.Multer.File[], folderName: string): Promise<string[]> {
+    public getPublicUrlImages = async (files: Express.Multer.File[], folderName: string): Promise<string[]> => {
         const uploadedFileUrls: string[] = [];
 
         for (const file of files) {
@@ -35,11 +35,11 @@ export default class UploadService {
         }
 
         return uploadedFileUrls;
-    }
+    };
 
-    public async deleteImages(fileIds: string[], folderPath: string): Promise<boolean> {
+    public deleteImages = async (fileIds: string[], folderPath: string): Promise<boolean> => {
         try {
-            for (const fileId of fileIds) {
+            const deletePromises = fileIds.map(async (fileId) => {
                 const fileName = fileId.split('/').pop();
                 const filePath = `${folderPath}/${fileName}`;
                 const file = this.bucket.file(filePath);
@@ -47,7 +47,7 @@ export default class UploadService {
 
                 if (!exists) {
                     console.error(`Error: File does not exist: ${filePath}`);
-                    continue; // Skip to the next file
+                    return;
                 }
 
                 try {
@@ -56,13 +56,14 @@ export default class UploadService {
                 } catch (err) {
                     console.error('Error deleting image:', err);
                 }
-            }
+            });
 
+            await Promise.all(deletePromises);
             console.log('All file deletion attempts completed.');
             return true;
         } catch (error) {
             console.error('Error during image deletion process:', error);
             return false;
         }
-    }
+    };
 }

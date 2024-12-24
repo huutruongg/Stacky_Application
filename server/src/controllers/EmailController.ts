@@ -11,11 +11,11 @@ export default class EmailController extends BaseController {
         this.emailService = new EmailService();
     }
 
-    public async sendEmail(req: Request, res: Response): Promise<void> {
+    public sendEmail = async (req: Request, res: Response): Promise<void> => {
         const { to, subject, text } = req.body;
 
         if (!to || !subject || !text) {
-           return this.sendError(res, 400, "Missing required fields: 'to', 'subject', and 'text'.");
+            return this.sendError(res, 400, "Missing required fields: 'to', 'subject', and 'text'.");
         }
 
         try {
@@ -32,7 +32,7 @@ export default class EmailController extends BaseController {
         }
     }
 
-    public async sendEmailToCandidates(req: Request, res: Response): Promise<void> {
+    public sendEmailToCandidates = async (req: Request, res: Response): Promise<void> => {
         const { emails, jobPostId, subject, text } = req.body;
 
         if (!emails || !jobPostId || !subject || !text) {

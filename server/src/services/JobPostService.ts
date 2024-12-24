@@ -13,12 +13,11 @@ import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
 
 export default class JobPostService {
-
-
     private jobPostRepository: JobPostRepository;
     private candidateRepository: CandidateRepository;
     private recruiterRepository: RecruiterRepository;
     private applicantRepository: ApplicantRepository;
+
     constructor(jobPostRepository: JobPostRepository, candidateRepository: CandidateRepository, recruiterRepository: RecruiterRepository, applicantRepository: ApplicantRepository) {
         this.jobPostRepository = jobPostRepository;
         this.candidateRepository = candidateRepository;
@@ -26,7 +25,7 @@ export default class JobPostService {
         this.applicantRepository = applicantRepository;
     }
 
-    private toJobPostDTO(job: IJobPost): JobPostDTO {
+    private toJobPostDTO = (job: IJobPost): JobPostDTO => {
         const { _id, jobTitle, orgName, jobImage, location, jobSalary, applicationDeadline, userId } = job;
         return new JobPostDTO(
             new Types.ObjectId(_id as string),
@@ -40,8 +39,8 @@ export default class JobPostService {
         );
     }
 
-    private toJobAppliedDTO(job: IJobPost & Partial<{ status: ApplyStatus }>): JobAppliedDTO {
-        const { _id, jobTitle, orgName, jobImage, location, status , applicationDeadline, userId } = job;
+    private toJobAppliedDTO = (job: IJobPost & Partial<{ status: ApplyStatus }>): JobAppliedDTO => {
+        const { _id, jobTitle, orgName, jobImage, location, status, applicationDeadline, userId } = job;
         return new JobAppliedDTO(
             new Types.ObjectId(_id as string),
             jobTitle,
@@ -54,14 +53,14 @@ export default class JobPostService {
         );
     }
 
-    async findByJobPostId(jobPostId: string): Promise<IJobPost | null> {
+    public findByJobPostId = async (jobPostId: string): Promise<IJobPost | null> => {
         if (!Types.ObjectId.isValid(jobPostId)) {
             throw new Error("Invalid job post ID format.");
         }
         return await this.jobPostRepository.findById(jobPostId);
     }
 
-    async createJobPost(userId: string, data: any): Promise<IJobPost | null> {
+    public createJobPost = async (userId: string, data: any): Promise<IJobPost | null> => {
         try {
             log("userId", userId);
             const recruiter = await this.recruiterRepository.findRecruiterByUserId(userId);
@@ -70,7 +69,7 @@ export default class JobPostService {
                 console.warn(`Recruiter with ID ${userId} not found.`);
                 return null;
             }
-            const createdJobPost = await this.jobPostRepository.createJobPost(recruiter.orgName, {...data, userId: userId} as IJobPost);
+            const createdJobPost = await this.jobPostRepository.createJobPost(recruiter.orgName, { ...data, userId: userId } as IJobPost);
             log("Job posting created successfully");
             return createdJobPost;
         } catch (error) {
@@ -79,7 +78,7 @@ export default class JobPostService {
         }
     }
 
-    async updateJobPost(id: string, data: Partial<IJobPost>): Promise<IJobPost | null> {
+    public updateJobPost = async (id: string, data: Partial<IJobPost>): Promise<IJobPost | null> => {
         if (!Types.ObjectId.isValid(id)) {
             throw new Error("Invalid job post ID.");
         }
@@ -92,7 +91,7 @@ export default class JobPostService {
         return updatedJobPost;
     }
 
-    async deleteJobPost(user: IUserDataType, jobPostId: string): Promise<boolean | null> {
+    public deleteJobPost = async (user: IUserDataType, jobPostId: string): Promise<boolean | null> => {
         if (!Types.ObjectId.isValid(jobPostId)) {
             throw new Error("Invalid job post ID.");
         }
@@ -108,9 +107,8 @@ export default class JobPostService {
         return deletedJobPost;
     }
 
-    async getJobPostsByUserId(userId: string): Promise<any[]> {
+    public getJobPostsByUserId = async (userId: string): Promise<any[]> => {
         try {
-            // Fetch job posts, recruiters, and candidate data in parallel
             const [jobPosts, savedJobIds] = await Promise.all([
                 this.jobPostRepository.findAllMinData(),
                 this.candidateRepository.getJobIdsSaved(new Types.ObjectId(userId)),
@@ -120,33 +118,28 @@ export default class JobPostService {
                 console.warn("No job posts found");
                 return [];
             }
-            // Map through job posts and attach orgName and isLiked flag
-            const jobsWithDetails = jobPosts.map((job) => {
-                // Handle cases where job.userId or recruiter.userId might be undefined
 
-                return {
-                    ...job,
-                    isLiked: savedJobIds.includes(String(job._id)),
-                };
-            });
-            return jobsWithDetails;
+            return jobPosts.map((job) => ({
+                ...job,
+                isLiked: savedJobIds.includes(String(job._id)),
+            }));
         } catch (error) {
             console.error("Error fetching job postings:", error);
             return [];
         }
     }
 
-    async getAllJobPosts(): Promise<JobPostDTO[]> {
+    public getAllJobPosts = async (): Promise<JobPostDTO[]> => {
         const jobPosts = await this.jobPostRepository.getAllJobPosts();
         return jobPosts.map((job) => this.toJobPostDTO(job));
     }
 
-    async getJobPostsByPage(page: number, pageSize: number): Promise<JobPostDTO[]> {
+    public getJobPostsByPage = async (page: number, pageSize: number): Promise<JobPostDTO[]> => {
         const jobPosts = await this.jobPostRepository.getJobPostsByPage(page, pageSize);
         return jobPosts.map((job) => this.toJobPostDTO(job));
     }
 
-    async isSavedJobPost(userId: string, jobPostId: string): Promise<boolean> {
+    public isSavedJobPost = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
             const candidate = await this.candidateRepository.findCandidateByUserId(userId);
             if (!candidate) {
@@ -162,20 +155,20 @@ export default class JobPostService {
         }
     }
 
-    async getSavedJobs(userId: string): Promise<JobPostDTO[] | null> {
+    public getSavedJobs = async (userId: string): Promise<JobPostDTO[] | null> => {
         try {
             const savedJobIds = await this.candidateRepository.getJobIdsSaved(new Types.ObjectId(userId));
             if (!savedJobIds || savedJobIds.length === 0) {
                 console.warn(`No saved jobs found for user: ${userId}`);
                 return [];
             }
-            // log("savedJobIds", savedJobIds);
+
             const jobPosts = await this.jobPostRepository.getJobPostByIds(savedJobIds as string[]);
             if (!jobPosts || jobPosts.length === 0) {
                 console.warn(`No job posts found for saved jobs: ${savedJobIds}`);
                 return [];
             }
-            // log(jobPosts.map((job) => this.toJobPostDTO(job)))
+
             return jobPosts.map((job) => this.toJobPostDTO(job));
         } catch (error) {
             console.error('Error fetching job posts with orgName:', error);
@@ -183,7 +176,7 @@ export default class JobPostService {
         }
     }
 
-    async getJobApplied(userId: string): Promise<JobAppliedDTO[] | null> {
+    public getJobApplied = async (userId: string): Promise<JobAppliedDTO[] | null> => {
         try {
             const jobApplications = await this.candidateRepository.findAppliedJobs(userId);
 
@@ -207,7 +200,7 @@ export default class JobPostService {
         }
     }
 
-    async findByCondition(queryParams: { [key: string]: string }): Promise<JobPostDTO[]> {
+    public findByCondition = async (queryParams: { [key: string]: string }): Promise<JobPostDTO[]> => {
         try {
             const query: any = {};
             if (queryParams.jobTitle) {
@@ -225,9 +218,7 @@ export default class JobPostService {
 
             log("Query: ", query);
 
-            // Find job posts by condition
             const jobPosts = await this.jobPostRepository.findAllByCondition(query);
-            // Convert to DTO
             return jobPosts.map((job) => this.toJobPostDTO(job));
         } catch (error) {
             console.error('Error finding jobs by condition:', error);
@@ -235,17 +226,14 @@ export default class JobPostService {
         }
     }
 
-
-    async createApplication(userId: string, jobPostId: string): Promise<boolean> {
+    public createApplication = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
-            // Kiểm tra nếu ứng viên đã ứng tuyển trước đó
             const hasApplied = await this.candidateRepository.hasApplied(userId, jobPostId);
             if (hasApplied) {
                 console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
                 return false;
             }
 
-            // Lấy thông tin người dùng
             const user = await this.candidateRepository.findCandidateByUserId(userId);
             log("User: ", user);
             if (!user) {
@@ -253,7 +241,6 @@ export default class JobPostService {
                 return false;
             }
 
-            // Lấy thông tin ứng viên
             const candidate = await this.candidateRepository.findByUserId(userId);
             if (!candidate) {
                 console.warn(`Candidate with ID ${userId} not found.`);
@@ -299,7 +286,7 @@ export default class JobPostService {
         }
     }
 
-    async deleteApplication(candidateId: string, jobPostId: string): Promise<boolean> {
+    public deleteApplication = async (candidateId: string, jobPostId: string): Promise<boolean> => {
         try {
             const applicationDeleted = await this.applicantRepository.deleteApplication(candidateId, jobPostId);
             const candidateDeleted = await this.candidateRepository.updateApplyStatus(candidateId, jobPostId, ApplyStatus.REJECTED);
@@ -316,7 +303,7 @@ export default class JobPostService {
         }
     }
 
-    async saveJobPost(userId: string, jobSavedId: string): Promise<boolean> {
+    public saveJobPost = async (userId: string, jobSavedId: string): Promise<boolean> => {
         try {
             const jobExists = await this.jobPostRepository.exists(jobSavedId);
             if (!jobExists) {
@@ -338,9 +325,8 @@ export default class JobPostService {
         }
     }
 
-    async unSaveJobPost(userId: string, jobPostId: string): Promise<boolean> {
+    public unSaveJobPost = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
-            // Gọi hàm xóa trong CandidateRepository
             const removed = await this.candidateRepository.removeSavedJob(userId, jobPostId);
 
             if (!removed) {
@@ -356,8 +342,7 @@ export default class JobPostService {
         }
     }
 
-    async setApplyStatus(userId: string, jobPostId: string, candidateId: string, status: ApplyStatus
-    ): Promise<boolean> {
+    public setApplyStatus = async (userId: string, jobPostId: string, candidateId: string, status: ApplyStatus): Promise<boolean> => {
         try {
             const isOwner = await this.jobPostRepository.isJobOwner(userId, jobPostId);
 
@@ -384,7 +369,7 @@ export default class JobPostService {
         }
     }
 
-    async getJobPostsByRecruiter(recruiterId: string) {
+    public getJobPostsByRecruiter = async (recruiterId: string) => {
         try {
             const jobPosts = await this.jobPostRepository.getJobPostsByRecruiter(recruiterId);
             log("jobPosts", jobPosts);
@@ -397,11 +382,10 @@ export default class JobPostService {
         } catch (error) {
             console.error('Error fetching job posts by recruiter:', error);
             throw new Error('Could not fetch job posts by recruiter');
-
         }
     }
 
-    async getJobPostedByRecruiter(recruiterId: string): Promise<IJobPost[]> {
+    public getJobPostedByRecruiter = async (recruiterId: string): Promise<IJobPost[]> => {
         try {
             const jobPosts = await this.jobPostRepository.getJobPostedByRecruiter(recruiterId);
             if (!jobPosts) {
@@ -415,7 +399,7 @@ export default class JobPostService {
         }
     }
 
-    saveAIResult(userId: string, jobPostId: string, aiResult: IAIResult) {
+    public saveAIResult = (userId: string, jobPostId: string, aiResult: IAIResult) => {
         try {
             const isExisting = this.applicantRepository.isExistingApplicant(userId, jobPostId);
             if (!isExisting) {
@@ -433,7 +417,7 @@ export default class JobPostService {
         }
     }
 
-    async getTopRecruiters(): Promise<any[]> {
+    public getTopRecruiters = async (): Promise<any[]> => {
         try {
             const topRecruiters = await this.jobPostRepository.getTopRecruiters();
             if (!topRecruiters) {
@@ -447,7 +431,7 @@ export default class JobPostService {
         }
     }
 
-    async getTopJobSalaries(): Promise<any[]> {
+    public getTopJobSalaries = async (): Promise<any[]> => {
         try {
             const topSalaries = await this.jobPostRepository.getTopJobSalaries();
             if (!topSalaries) {

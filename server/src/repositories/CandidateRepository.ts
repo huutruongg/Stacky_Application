@@ -13,20 +13,19 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
         super(CandidateModel);
     }
 
-    async findById(id: string): Promise<ICandidate | null> {
+    public findById = async (id: string): Promise<ICandidate | null> => {
         if (!Types.ObjectId.isValid(id)) return null;
         return await this.model.findById(new Types.ObjectId(id)).exec();
-    }
+    };
 
-    async findCandidateByUserId(userId: string): Promise<ICandidate | null> {
+    public findCandidateByUserId = async (userId: string): Promise<ICandidate | null> => {
         if (!Types.ObjectId.isValid(userId)) return null;
         return await this.model.findOne({ userId: new Types.ObjectId(userId) })
             .select("userId fullName languages projects educations experiences certifications address avatarUrl birthDate gender githubUrl jobPosition linkedinUrl personalDescription phoneNumber publicEmail professionalSkills").exec();
-    }
+    };
 
-    async findAppliedJobs(userId: string): Promise<any[] | null> {
+    public findAppliedJobs = async (userId: string): Promise<any[] | null> => {
         try {
-            // Tìm tài liệu với userId cụ thể và chỉ lấy trường "jobApplied"
             const result = await this.model
                 .findOne({ userId: new Types.ObjectId(userId) })
                 .select("jobApplied")
@@ -42,48 +41,45 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             console.error('Error fetching applied jobs:', error);
             return null;
         }
-    }
+    };
 
-
-    async createCandidate(data: Partial<ICandidate>): Promise<ICandidate> {
+    public createCandidate = async (data: Partial<ICandidate>): Promise<ICandidate> => {
         const newCandidate = new this.model(data);
         return await newCandidate.save();
-    }
+    };
 
-    async updateOauth(
+    public updateOauth = async (
         userId: string,
         provider: string,
         accessToken: string
-    ): Promise<ICandidate | null> {
+    ): Promise<ICandidate | null> => {
         log("userId", userId);
 
         return await this.model.findOneAndUpdate(
             { userId: new Types.ObjectId(userId) },
             { $set: { oauthToken: { provider, accessToken } } },
-            { new: true } // Trả về document đã cập nhật
+            { new: true }
         ).exec();
-    }
+    };
 
-
-    async updateCandidate(userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> {
-        const result = await this.model.findOneAndUpdate(
+    public updateCandidate = async (userId: string, data: Partial<ICandidate>): Promise<ICandidate | null> => {
+        return await this.model.findOneAndUpdate(
             { userId: new Types.ObjectId(userId) },
             data,
             { new: true }
         ).exec();
-        return result;
-    }
+    };
 
-    async deleteCandidate(userId: string): Promise<boolean> {
+    public deleteCandidate = async (userId: string): Promise<boolean> => {
         const result = await this.model.findOneAndDelete({ userId: new Types.ObjectId(userId) }).exec();
         return result !== null;
-    }
+    };
 
-    async bulkUpdate(bulkOps: any[]): Promise<void> {
+    public bulkUpdate = async (bulkOps: any[]): Promise<void> => {
         await this.model.bulkWrite(bulkOps);
-    }
+    };
 
-    async checkExistingUserInJobSaved(userId: string, jobPostId: string): Promise<boolean> {
+    public checkExistingUserInJobSaved = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
             const isExisting = await this.model.findOne({
                 userId: new Types.ObjectId(userId),
@@ -94,42 +90,40 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             console.error('Error checking job saved:', error);
             return false;
         }
-    }
+    };
 
-    async getJobIdsSaved(userId: Types.ObjectId): Promise<string[] | null> {
+    public getJobIdsSaved = async (userId: Types.ObjectId): Promise<string[] | null> => {
         try {
-            // Query the Candidate model with a proper projection
             const candidate = await this.model.findOne(
                 { userId: userId },
-                { 'jobSaved.jobPostId': 1, _id: 0 } // Projection
+                { 'jobSaved.jobPostId': 1, _id: 0 }
             ).lean<{ jobSaved: IJobSaved[] } | null>();
 
-            // Check if jobSaved exists and map jobPostIds to strings
             if (candidate?.jobSaved) {
-                const jobPostIds: string[] = candidate.jobSaved.map((job: IJobSaved) =>
+                return candidate.jobSaved.map((job: IJobSaved) =>
                     (job.jobPostId as Types.ObjectId).toString()
                 );
-                return jobPostIds;
             }
             return null;
         } catch (error) {
             console.error('Error fetching saved jobs:', error);
             return null;
         }
-    }
-    async hasApplied(userId: string, jobPostId: string): Promise<boolean> {
+    };
+
+    public hasApplied = async (userId: string, jobPostId: string): Promise<boolean> => {
         const candidate = await this.model.findOne({
             userId,
             "jobApplied.jobPostId": jobPostId,
         }).lean();
         return !!candidate;
-    }
+    };
 
-    async findByUserId(userId: string): Promise<ICandidate | null> {
+    public findByUserId = async (userId: string): Promise<ICandidate | null> => {
         return await this.model.findOne({ userId }).lean<ICandidate>().exec();
-    }
+    };
 
-    async addJobApplied(userId: string, jobPostId: string): Promise<void> {
+    public addJobApplied = async (userId: string, jobPostId: string): Promise<void> => {
         await this.model.updateOne(
             { userId },
             {
@@ -142,9 +136,9 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
                 },
             }
         );
-    }
+    };
 
-    async saveJobPost(userId: string, jobSavedId: string): Promise<boolean> {
+    public saveJobPost = async (userId: string, jobSavedId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             {
                 userId,
@@ -153,9 +147,9 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             { $push: { jobSaved: { jobPostId: jobSavedId } } }
         );
         return result.modifiedCount > 0;
-    }
+    };
 
-    async removeSavedJob(userId: string, jobPostId: string): Promise<boolean> {
+    public removeSavedJob = async (userId: string, jobPostId: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             {
                 userId: userId,
@@ -164,9 +158,9 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             { $pull: { jobSaved: { jobPostId: jobPostId } } }
         );
         return result.modifiedCount > 0;
-    }
+    };
 
-    async updateApplyStatus(userId: string, jobPostId: string, status: string): Promise<boolean> {
+    public updateApplyStatus = async (userId: string, jobPostId: string, status: string): Promise<boolean> => {
         const result = await this.model.updateOne(
             {
                 userId,
@@ -175,19 +169,19 @@ export default class CandidateRepository extends BaseRepository<ICandidate> {
             { $set: { "jobApplied.$.status": status } }
         );
         return result.modifiedCount > 0;
-    }
+    };
 
-    async updateAccountProfile(userId: string, data: Partial<IProfile>): Promise<boolean> {
+    public updateAccountProfile = async (userId: string, data: Partial<IProfile>): Promise<boolean> => {
         const result = await this.model.updateOne(
             { userId: new Types.ObjectId(userId) },
             data
         );
         return result.modifiedCount > 0;
-    }
+    };
 
-    async getGithubToken(userId: string): Promise<string | null> {
+    public getGithubToken = async (userId: string): Promise<string | null> => {
         const candidate = await this.model.findOne({ userId: new Types.ObjectId(userId) }).select("oauthToken").lean();
         if (!candidate) return null;
         return candidate.oauthToken?.accessToken as string;
-    }
+    };
 }

@@ -10,10 +10,13 @@ export const redisClient = createClient({
     }
 });
 
-redisClient.connect()
-    .then(() => {
+const connectRedis = async (): Promise<void> => {
+    try {
+        await redisClient.connect();
         console.log("Redis client connected");
-    })
-    .catch((error) => {
+    } catch (error) {
         console.error("Error connecting to Redis:", error);
-    });
+    }
+};
+
+connectRedis();

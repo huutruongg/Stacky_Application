@@ -13,7 +13,6 @@ export default class UploadRouter extends BaseRoutes {
     this.uploadController = uploadController;
     this.storage = multer.memoryStorage();
     this.upload = multer({ storage: this.storage });
-    this.autoBindControllerMethods(this.uploadController);
     this.initializeRoutes();
   }
 

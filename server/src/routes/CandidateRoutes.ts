@@ -14,8 +14,6 @@ export default class CandidateRoutes extends BaseRoutes {
         super();
         this.candidateController = candidateController;
         this.githubController = githubController;
-        this.autoBindControllerMethods(this.candidateController);
-        this.autoBindControllerMethods(this.githubController);
         this.initializeRoutes();
     }
 
