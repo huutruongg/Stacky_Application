@@ -46,7 +46,7 @@ const ViewCandidateDetailPage = () => {
         console.error("Error while fetching job data:", error);
       } finally {
         setIsLoading(false);
-      } 
+      }
     };
     getData();
   }, [jobId, userId]);
@@ -60,7 +60,7 @@ const ViewCandidateDetailPage = () => {
               <img
                 src={dataCandidate.avatarUrl || imgAvatar}
                 alt="Avatar"
-                className="object-contain w-auto min-h-[270px] min-w-[230px] max-h-[270px] max-w-[230px] border rounded-lg"
+                className="overflow-hidden object-cover min-h-[270px] min-w-[230px] max-h-[270px] max-w-[230px] border rounded-lg"
               />
             </div>
             <div className="flex flex-col gap-3 ml-5">

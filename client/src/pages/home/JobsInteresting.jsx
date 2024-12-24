@@ -59,7 +59,7 @@ const JobsInteresting = () => {
           [...Array(newsPerPage)].map((_, index) => <JobSkeleton key={index} />)
         ) : currentJobData.length > 0 ? (
           currentJobData.map((item, index) => (
-            <ItemJobSuggest logined={user} jobData={item} key={index}></ItemJobSuggest>
+            <ItemJobSuggest logined={user ? true : false} jobData={item} key={index}></ItemJobSuggest>
           ))
         ) : (
           <div>Không có dữ liệu</div>

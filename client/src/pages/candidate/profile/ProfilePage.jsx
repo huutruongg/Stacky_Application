@@ -55,7 +55,7 @@ const ProfilePage = () => {
             <img
               src={imgCompany}
               alt=""
-              className="w-28 h-28 object-contain rounded-full"
+              className="overflow-hidden object-cover min-w-[112px] min-h-[112px] max-w-[112px] max-h-[112px] rounded-full"
             />
             <div className="absolute bottom-[3px] right-[2px] bg-primary rounded-full p-[5px]">
               <IconCamera className="w-5 h-5" color="#fff" />

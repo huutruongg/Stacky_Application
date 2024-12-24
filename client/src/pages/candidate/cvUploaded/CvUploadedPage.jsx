@@ -38,7 +38,7 @@ const CvUploadedPage = () => {
     getData();
   }, []);
 
-  // console.log(jobData);
+  console.log(jobData);
 
   return (
     <div className="page-container grid grid-cols-12 gap-7 my-10">

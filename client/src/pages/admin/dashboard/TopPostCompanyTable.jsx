@@ -27,7 +27,7 @@ const TopPostCompanyTable = ({ topPostCompany }) => {
                 <img
                   src={item?.orgImage}
                   alt=""
-                  className="min-w-8 min-h-8 max-w-8 max-h-8 rounded-full border border-gray-200"
+                  className="overflow-hidden object-cover min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
                 />
                 <span className="text-justify">{item?.orgName}</span>
               </div>

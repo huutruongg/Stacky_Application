@@ -416,7 +416,7 @@ const ItemCandidate = ({
         <div className="flex flex-col justify-around gap-1 w-full">
           <div className="flex gap-10 items-center justify-between">
             <div className="flex gap-10 items-center">
-              <div className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium w-44">
+              <div className="cursor-pointer line-clamp-1 text-ellipsis font-medium w-44">
                 {name}
               </div>
               <IconMail
@@ -445,7 +445,7 @@ const ItemCandidate = ({
               />
             </div>
           </div>
-          <span className="w-fit line-clamp-1 overflow-hidden text-xs text-text3 max-w-[400px]">
+          <span className="w-fit line-clamp-1 text-xs text-text3 max-w-[400px]">
             {description}
           </span>
           <div className="flex items-center justify-between">

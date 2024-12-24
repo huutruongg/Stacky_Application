@@ -10,6 +10,8 @@ const ItemJobSuggest = ({ jobData, logined }) => {
   const [liked, setLiked] = useState(jobData.isLiked);
   const { refreshSavedJobs } = useJobSave();
 
+  console.log(jobData);
+
   const handleHeartClick = () => {
     if (logined) {
       if (liked) {
@@ -47,7 +49,7 @@ const ItemJobSuggest = ({ jobData, logined }) => {
     <div className="flex flex-col gap-5 text-sm bg-secondary p-3 rounded-lg border hover:border hover:border-primary hover:bg-white">
       <div className="flex justify-between gap-2">
         <div
-          className="min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] overflow-hidden rounded-md cursor-pointer"
+          className="rounded-md cursor-pointer"
           onClick={() => {
             window.open(`/job-detail/${jobData._id}`, "_blank");
           }}
@@ -55,6 +57,7 @@ const ItemJobSuggest = ({ jobData, logined }) => {
           <img
             src={jobData?.jobImage ? jobData?.jobImage : imgCompany}
             alt=""
+            className="overflow-hidden object-cover min-w-[75px] min-h-[75px] max-w-[75px] max-h-[75px] border rounded-md"
           />
         </div>
         <div className="flex flex-col justify-around gap-1 w-full">
@@ -65,7 +68,7 @@ const ItemJobSuggest = ({ jobData, logined }) => {
               </div>
               <h3>
                 <div
-                  className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
+                  className="cursor-pointer line-clamp-1 text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
                   onClick={() => {
                     window.open(`/job-detail/${jobData?._id}`, "_blank");
                   }}
@@ -88,16 +91,20 @@ const ItemJobSuggest = ({ jobData, logined }) => {
           <div>
             <a
               href={`/company/${jobData?.orgId}`}
-              className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
+              className="w-fit line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
+              title={jobData?.orgName}
             >
               {jobData?.orgName?.toUpperCase()}
             </a>
           </div>
           <div className="flex items-center gap-2">
-            <div className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 overflow-hidden text-xs text-center">
+            <div className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 text-xs text-center">
               <span>{jobData?.jobSalary}</span>
             </div>
-            <div className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 overflow-hidden text-xs text-center">
+            <div
+              className="px-2 py-[2px] max-w-32 text-text5 font-medium text-ellipsis bg-[#EDEAF0] rounded-xl line-clamp-1 text-xs text-center"
+              title={jobData?.location}
+            >
               <span>{jobData?.location}</span>
             </div>
           </div>

@@ -2,13 +2,9 @@ import React, { useEffect, useState } from "react";
 import Buttonchild from "@/components/button/Buttonchild";
 import IconPrice from "@/components/icons/IconPrice";
 import imgCompany from "@/components/image/imgCompany.png";
-import IconHeart from "@/components/icons/IconHeart";
-import toast from "react-hot-toast";
 import axiosInstance from "@/lib/authorizedAxios";
 import useAuth from "@/hooks/useAuth";
 import { useParams } from "react-router-dom";
-import FormatCurrency from "@/components/format/FormatCurrency";
-import IconHeartActive from "@/components/icons/IconHeartActive";
 import PaginationDemo from "@/components/pagination/Pagination";
 
 const SearchJobPosition = () => {
@@ -31,16 +27,10 @@ const SearchJobPosition = () => {
   useEffect(() => {
     const getData = async () => {
       try {
-        let result;
-        if (user) {
-          if (user.role === "CANDIDATE") {
-            result = await axiosInstance.get(`job-post/get-all-by-candidate`);
-          } else {
-            result = await axiosInstance.get(`job-post/get-all`);
-          }
-        } else {
-          result = await axiosInstance.get(`job-post/get-all`);
-        }
+        const result = await axiosInstance.get(
+          `/job-post/get-related-job-posts?jobTitle=&location=&yearsOfExperience=`
+        );
+        console.log(result.data.result);
         setJobData(result.data.result);
         setIsLoading(false);
       } catch (error) {
@@ -51,6 +41,8 @@ const SearchJobPosition = () => {
     };
     getData();
   }, [currentPage]);
+
+  console.log(jobData);
 
   return (
     <div className="">
@@ -76,45 +68,16 @@ const SearchJobPosition = () => {
   );
 };
 
-const JobCard = ({ item, user }) => {
-  const [liked, setLiked] = useState(item.isLiked);
-
-  const handleHeartClick = async (id) => {
-    if (liked) {
-      await handleDeleteSaveJob(id);
-    } else {
-      await handleSaveJob(id);
-    }
-    setLiked(!liked); // Toggle the liked state after action
-  };
-
-  const handleSaveJob = async (id) => {
-    try {
-      await axiosInstance.post(`/job-post/save-job-post/${id}`);
-      toast.success("Lưu bài viết thành công");
-    } catch (error) {
-      toast.error("Lưu bài viết thất bại");
-    }
-  };
-
-  const handleDeleteSaveJob = async (id) => {
-    try {
-      await axiosInstance.delete(`/job-post/unsave-job-post/${id}`);
-      toast.success("Xóa bài viết thành công");
-    } catch (error) {
-      toast.error("Xóa bài viết thất bại");
-    }
-  };
-
+const JobCard = ({ item }) => {
   return (
     <div className="flex flex-col gap-5 bg-white p-5 rounded-lg border hover:border hover:border-primary">
       <div className="flex justify-between items-center gap-4">
-        <div className="flex justify-between items-center w-[100px] h-[100px]">
+        <div className="flex justify-between items-center">
           <a href="">
             <img
               src={item?.jobImage ? item?.jobImage : imgCompany}
               alt=""
-              className="min-w-[100px] min-h-[100px] rounded-md border"
+              className="overflow-hidden object-cover min-w-[100px] min-h-[100px] max-w-[100px] max-h-[100px] border rounded-md"
             />
           </a>
         </div>
@@ -124,9 +87,9 @@ const JobCard = ({ item, user }) => {
               <div className="bg-[#D9BCFF] text-[#6112C9] px-2 rounded-full items-center justify-center">
                 <span className="text-xs font-semibold">HOT</span>
               </div>
-              <h3 className="line-clamp-1 overflow-hidden font-medium text-ellipsis max-w-[330px] hover:text-primary">
-                <a href="" title={item.jobTitle}>
-                  {item.jobTitle}
+              <h3 className="line-clamp-1 font-medium text-ellipsis max-w-[330px] hover:text-primary">
+                <a href="" title={item?.jobTitle}>
+                  {item?.jobTitle}
                 </a>
               </h3>
             </div>
@@ -134,38 +97,34 @@ const JobCard = ({ item, user }) => {
               <div className="bg-primary p-1 rounded-full">
                 <IconPrice className={"w-4 h-4"} color={"#fff"} />
               </div>
-              <span>{FormatCurrency(item.jobSalary)}</span>
+              <span>{item?.jobSalary}</span>
             </div>
           </div>
-          <div className="line-clamp-1 overflow-hidden text-sm text-ellipsis text-text3 hover:decoration-text3 hover:underline">
-            <a href="" title={item.orgName}>
-              {item.orgName}
+          <div className="line-clamp-1 text-sm text-ellipsis text-text3 hover:decoration-text3 hover:underline">
+            <a href="" title={item?.orgName}>
+              {item?.orgName}
             </a>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-5">
-              <div className="text-sm line-clamp-1 overflow-hidden max-w-40 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
-                <span>{item.location}</span>
+              <div
+                className="text-sm line-clamp-1 max-w-36 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl"
+                title={item?.location}
+              >
+                <span>{item?.location}</span>
               </div>
-              <div className="text-sm line-clamp-1 overflow-hidden max-w-60 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
-                <span>{item.jobExpired}</span>
+              <div
+                className="text-sm line-clamp-1 max-w-60 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl"
+                title={item?.location}
+              >
+                <span>{item?.location}</span>
               </div>
             </div>
-            <div className="flex items-center gap-5">
-              <Buttonchild kind="primary" className="px-5 py-1">
+            <a href={`/job-detail/${item?._id}`} className="flex items-center">
+              <Buttonchild kind="primary" className="text-sm px-5 py-1">
                 Ứng tuyển
               </Buttonchild>
-              <div
-                className="z-10 hover:cursor-pointer"
-                onClick={() => handleHeartClick(item._id)}
-              >
-                {liked ? (
-                  <IconHeartActive className="w-6 h-6" />
-                ) : (
-                  <IconHeart className="w-6 h-6" />
-                )}
-              </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>

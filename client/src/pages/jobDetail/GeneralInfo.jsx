@@ -19,22 +19,28 @@ const GeneralInfo = ({ jobData }) => {
         <ItemInfo
           icon={<IconHourglass></IconHourglass>}
           title={"Kinh nghiệm"}
-          children={jobData.yearsOfExperience}
+          children={jobData?.yearsOfExperience}
         ></ItemInfo>
         <ItemInfo
           icon={<IconUSerAcount color={"#FFF"}></IconUSerAcount>}
           title={"Số lượng tuyển"}
-          children={`${jobData.candidatesLimit} Người`}
+          children={`${jobData?.candidatesLimit} Người`}
         ></ItemInfo>
         <ItemInfo
           icon={<IconBag className={"w-6 h-6"} color={"#fff"}></IconBag>}
           title={"Loại công việc"}
-          children={jobData.typeOfWork}
+          children={jobData?.typeOfWork}
         ></ItemInfo>
         <ItemInfo
           icon={<IconGender></IconGender>}
           title={"Giới tính"}
-          children={jobData.genderRequired}
+          children={
+            jobData?.genderRequired === "men"
+              ? "Nam"
+              : jobData?.genderRequired === "women"
+              ? "Nữ"
+              : "Không yêu cầu"
+          }
         ></ItemInfo>
       </div>
     </div>

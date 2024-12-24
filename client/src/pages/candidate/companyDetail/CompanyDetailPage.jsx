@@ -34,14 +34,18 @@ const CompanyDetailPage = () => {
     <div className="page-container">
       <div className="overflow-hidden min-h-[358px] w-full rounded-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
         <div className="overflow-hidden h-[224px]">
-          <img src={companyData?.orgCoverImage || imgCoverImage} alt="" />
+          <img
+            src={companyData?.orgCoverImage || imgCoverImage}
+            alt=""
+            className="object-cover min-w-[100%] min-h-[100%] max-w-[100%] max-h-[100%]"
+          />
         </div>
         <div className="relative">
           <div className="absolute top-[-90px] left-[40px] flex items-center justify-center w-[180px] h-[180px] overflow-hidden rounded-full border-[4.5px] border-primary bg-white">
             <img
               src={companyData?.orgImage || imgCompany}
               alt=""
-              className="h-[100%] w-[100%] object-contain"
+              className="object-cover min-w-[100%] min-h-[100%] max-w-[100%] max-h-[100%]"
             />
           </div>
         </div>

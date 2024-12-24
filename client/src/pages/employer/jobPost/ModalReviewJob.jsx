@@ -14,7 +14,7 @@ const ModalReviewJob = ({ jobData }) => {
             <img
               src={jobData.jobImage}
               alt=""
-              className="w-[400px] bg-cover bg-center h-full object-cover rounded-md"
+              className="overflow-hidden object-cover min-w-[400px] min-h-[220px] max-w-[400px] max-h-[220px] rounded-md"
             />
           </div>
         ) : (

@@ -88,7 +88,7 @@ const JobSummary = ({ jobData, isliked }) => {
   return (
     <div className="bg-secondary p-8 rounded-xl">
       <h2 className="font-semibold text-2xl mb-7">{jobData?.jobTitle}</h2>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between gap-3 mb-5">
         <ItemInfoJob
           icon={<IconPrice className={"w-6 h-6"} color={"#fff"}></IconPrice>}
           title={"Mức lương"}
@@ -98,6 +98,7 @@ const JobSummary = ({ jobData, isliked }) => {
           icon={<IconLocation color={"#FFFF"}></IconLocation>}
           title={"Địa điểm"}
           children={jobData?.location}
+          className={"max-w-80 line-clamp-1"}
         ></ItemInfoJob>
         <ItemInfoJob
           icon={<IconHourglass></IconHourglass>}
@@ -206,13 +207,17 @@ const JobSummary = ({ jobData, isliked }) => {
   );
 };
 
-const ItemInfoJob = ({ icon, title, children }) => {
+const ItemInfoJob = ({ icon, title, children, className }) => {
   return (
     <div className="flex items-center gap-3">
       <div className="p-3 rounded-full bg-primary">{icon}</div>
       <div className="flex flex-col font-medium">
-        <span className="text-text3">{title}</span>
-        <span>{children}</span>
+        <span className="text-text3">
+          {title}
+        </span>
+        <span className={className} title={children}>
+          {children}
+        </span>
       </div>
     </div>
   );

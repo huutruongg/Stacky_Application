@@ -95,6 +95,7 @@ const ImageUploader = forwardRef(({ value, onChange, id }, ref) => {
                 src={tempImage || uploadedImage}
                 alt="Uploaded"
                 className="w-full h-full min-w-48 object-contain rounded-md"
+                
               />
               {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">

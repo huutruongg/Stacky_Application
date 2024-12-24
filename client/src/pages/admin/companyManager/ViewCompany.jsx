@@ -30,7 +30,7 @@ const ViewCompany = ({ companyData }) => {
         <img
           src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
           alt=""
-          className="w-36 h-36 rounded-full border border-gray-200"
+          className="overflow-hidden object-cover min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
         />
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">

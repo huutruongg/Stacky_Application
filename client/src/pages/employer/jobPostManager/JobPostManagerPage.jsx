@@ -5,9 +5,9 @@ import IconDelete from "@/components/icons/IconDelete";
 import IconEye from "@/components/icons/IconEye";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/lib/authorizedAxios";
-import FormatCurrency from "@/components/format/FormatCurrency";
 import toast from "react-hot-toast";
 import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
+import IconPrice from "@/components/icons/IconPrice";
 
 const JobPostManagerPage = () => {
   const [data, setData] = useState([]);
@@ -72,12 +72,12 @@ const JobPostManagerPage = () => {
                 key={index}
               >
                 <div className="flex justify-between gap-5">
-                  <div className="min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] border rounded-lg">
+                  <div className="border rounded-lg">
                     <a href="" className="rounded-lg">
                       <img
                         src={item.jobImage ? item.jobImage : imgCompany}
                         alt=""
-                        className="rounded-lg"
+                        className="overflow-hidden object-cover min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] rounded-lg"
                       />
                     </a>
                   </div>
@@ -86,7 +86,7 @@ const JobPostManagerPage = () => {
                       <h3>
                         <div
                           href=""
-                          className="cursor-pointer line-clamp-1 overflow-hidden text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
+                          className="cursor-pointer line-clamp-1 text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
                           onClick={() => {
                             navigate(`/job-detail/`);
                           }}
@@ -94,21 +94,27 @@ const JobPostManagerPage = () => {
                           {item.jobTitle}
                         </div>
                       </h3>
-                      <span className="text-primary font-semibold mr-5">
-                        {FormatCurrency(item.jobSalary)}
-                      </span>
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="bg-primary p-1 rounded-full">
+                          <IconPrice
+                            className={"w-4 h-4"}
+                            color={"#fff"}
+                          ></IconPrice>
+                        </div>
+                        <span>{item.jobSalary}</span>
+                      </div>
                     </div>
                     <div>
                       <a
                         href="/company"
-                        className="w-fit line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
+                        className="w-fit line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
                       >
                         {item.orgName}
                       </a>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px]">
+                        <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px] max-w-80 line-clamp-1 text-xs text-center">
                           <span>{item.location}</span>
                         </div>
                       </div>

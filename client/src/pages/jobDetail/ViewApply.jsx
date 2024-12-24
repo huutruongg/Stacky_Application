@@ -126,7 +126,8 @@ const ViewApply = ({ id }) => {
               type="button"
               isLoading={isLoading}
               onClick={() => {
-                navigate(`/profile-cv`);
+                window.open(`/profile-cv`, "_blank");
+                handleCloseReview();
               }}
             >
               Chỉnh sửa CV

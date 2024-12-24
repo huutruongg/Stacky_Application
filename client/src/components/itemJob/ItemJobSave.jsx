@@ -7,7 +7,6 @@ import axiosInstance from "@/lib/authorizedAxios";
 import Buttonchild from "../button/Buttonchild";
 import { useJobSave } from "../context/JobSaveProvider";
 import { NavLink } from "react-router-dom";
-import FormatCurrency from "../format/FormatCurrency";
 
 const ItemJobSave = ({ jobData }) => {
   const { removeJob } = useJobSave();
@@ -27,12 +26,12 @@ const ItemJobSave = ({ jobData }) => {
   return (
     <div className="flex flex-col gap-5 bg-white p-5 rounded-lg border hover:border hover:border-primary">
       <div className="flex justify-between items-center gap-4">
-        <div className="flex justify-between items-center w-[100px] h-[100px]">
-          <a href="">
+        <div className="flex justify-between items-center">
+          <a href={`/company/${jobData.userId}`}>
             <img
               src={jobData.jobImage ? jobData.jobImage : imgCompany}
               alt=""
-              className="min-w-[100px] min-h-[100px] rounded-md border"
+              className="overflow-hidden object-cover min-w-[100px] min-h-[100px] max-w-[100px] max-h-[100px] border rounded-md"
             />
           </a>
         </div>
@@ -42,7 +41,7 @@ const ItemJobSave = ({ jobData }) => {
               <div className="bg-[#D9BCFF] text-[#6112C9] px-2 rounded-full items-center justify-center">
                 <span className="text-xs font-semibold">HOT</span>
               </div>
-              <h3 className="line-clamp-1 overflow-hidden font-medium text-ellipsis max-w-[330px] hover:text-primary">
+              <h3 className="line-clamp-1 font-medium text-ellipsis max-w-[330px] hover:text-primary">
                 <a href={`/job-detail/${jobData._id}`} title={jobData.jobTitle}>
                   {jobData.jobTitle}
                 </a>
@@ -52,19 +51,19 @@ const ItemJobSave = ({ jobData }) => {
               <div className="bg-primary p-1 rounded-full">
                 <IconPrice className={"w-4 h-4"} color={"#fff"}></IconPrice>
               </div>
-              <span>{FormatCurrency(jobData.jobSalary)}</span>
+              <span>{jobData.jobSalary}</span>
             </div>
           </div>
-          <div className="line-clamp-1 overflow-hidden text-sm text-ellipsis text-text3 hover:decoration-text3 hover:underline">
-            <a href="" title={jobData.jobTitle}>
-              FPT
+          <div className="line-clamp-1 text-sm text-ellipsis text-text3 uppercase hover:decoration-text3 hover:underline">
+            <a href={`/company/${jobData.userId}`} title={jobData.orgName}>
+              {jobData.orgName}
             </a>
           </div>
-          <div className="line-clamp-1 overflow-hidden text-sm text-ellipsis text-text3">
+          <div className="line-clamp-1 text-sm text-ellipsis text-text3">
             <span>{dayjs(jobData.postedAt).format("DD/MM/YYYY")}</span>
           </div>
           <div className="flex items-center justify-between">
-            <div className="text-sm line-clamp-1 overflow-hidden max-w-72 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
+            <div className="text-sm line-clamp-1 max-w-72 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl">
               <span>{jobData.location}</span>
             </div>
             <div className="flex items-center gap-5">

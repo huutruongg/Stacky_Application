@@ -140,12 +140,12 @@ const AccountManagerPage = () => {
             {currentCandidateData.map((candidate, index) => (
               <TableRow className="font-medium" key={index}>
                 <TableCell className="text-center">{index + 1}</TableCell>
-                <TableCell className="text-center line-clamp-1 leading-10">
+                <TableCell className="text-center line-clamp-1 overflow-hidden leading-10">
                   <div className="flex items-center gap-2">
                     <img
                       src="https://dyl347hiwv3ct.cloudfront.net/app/uploads/2023/09/img-favicon.png"
                       alt=""
-                      className="w-8 h-8 rounded-full border border-gray-200"
+                      className="overflow-hidden object-cover min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
                     />
                     <span>{candidate.fullName}</span>
                   </div>

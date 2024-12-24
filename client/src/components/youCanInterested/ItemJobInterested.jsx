@@ -17,7 +17,7 @@ const ItemJobInterested = () => {
             <h3>
               <a
                 href=""
-                className="line-clamp-1 overflow-hidden text-ellipsis hover:text-primary"
+                className="line-clamp-1 text-ellipsis hover:text-primary"
               >
                 Nhân viên kế toán Nhân viên kế toán Nhân viên kế toán
               </a>
@@ -33,7 +33,7 @@ const ItemJobInterested = () => {
           <div>
             <a
               href=""
-              className="line-clamp-1 overflow-hidden text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
+              className="line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
               CÔNG TY TNHH XÂY DỰNG NAM CÔNG TY TNHH XÂY DỰNG NAM NAM CÔNG TY
               TNHH XÂY DỰNG NAM

@@ -17,7 +17,6 @@ const JobDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isliked, setIsliked] = useState(true);
-
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -63,9 +62,9 @@ const JobDetailPage = () => {
           <JobContact jobData={data} />
         </div>
         <div className="grid col-start-9 col-end-13 gap-7 h-fit">
-          <CompanyInfo />
+          <CompanyInfo data={data} />
           <GeneralInfo jobData={data} />
-          <JobSuggest />
+          <JobSuggest jobData={data} logined={user ? true : false} />
         </div>
       </div>
     </div>
