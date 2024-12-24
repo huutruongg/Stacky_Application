@@ -11,7 +11,7 @@ export default class UploadRouter extends BaseRoutes {
   constructor(uploadController: UploadController) {
     super();
     this.uploadController = uploadController;
-    this.storage =  multer.memoryStorage();
+    this.storage = multer.memoryStorage();
     this.upload = multer({ storage: this.storage });
     this.autoBindControllerMethods(this.uploadController);
     this.initializeRoutes();
@@ -27,5 +27,5 @@ export default class UploadRouter extends BaseRoutes {
 
   private serveUploadPage(req: Request, res: Response): void {
     res.sendFile(path.join(__dirname, '../views/upload.html'));
-}
+  }
 }

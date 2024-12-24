@@ -10,6 +10,7 @@ import { IUser } from '../interfaces/IUser';
 import { IRecruiter } from '../interfaces/IRecruiter';
 import { resetPasswordTemplate } from '../views/resetPasswordTemplate';
 import EmailService from './EmailService';
+import { v4 as uuidv4 } from 'uuid';
 dotenv.config();
 
 const saltRounds = 10;
@@ -119,7 +120,7 @@ export default class AuthService {
 
     async generateAccessToken(userId: string, role: string): Promise<string> {
         try {
-            const payload = { userId, role };
+            const payload = { userId, role, jti: uuidv4() };
             const token = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET as string, {
                 expiresIn: process.env.JWT_ACCESS_EXPIRATION
             });
@@ -133,7 +134,7 @@ export default class AuthService {
     // Generate Refresh Token with error handling and logging
     async generateRefreshToken(userId: string, role: string): Promise<string> {
         try {
-            const payload = { userId, role };
+            const payload = { userId, role, jti: uuidv4() };
             const token = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET as string, {
                 expiresIn: process.env.JWT_REFRESH_EXPIRATION
             });

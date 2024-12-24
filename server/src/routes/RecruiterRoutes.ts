@@ -1,11 +1,11 @@
 
-import { authenticateJWT } from '../middlewares/Authenticate';
-import { Router } from "express";
 import RecruiterController from "../../src/controllers/RecruiterController";
 import { BaseRoutes } from "./BaseRoutes";
-import { UserRoles } from '../utils/roles';
 import { cacheMiddleware } from '../middlewares/CacheRedis';
-import { authorize } from '../middlewares/Authorize';
+import authenticate from "../middlewares/authenticate";
+import authorize from "../middlewares/authorize";
+import verifyToken from "../middlewares/verifyToken";
+import refreshToken from "../middlewares/refreshToken";
 
 export default class RecruiterRoutes extends BaseRoutes {
     private recruiterController: RecruiterController;
@@ -19,14 +19,19 @@ export default class RecruiterRoutes extends BaseRoutes {
     private initializeRoutes(): void {
         this.router.post('/forgot-password', this.recruiterController.forgotPassword);
         this.router.post('/reset-password/:userId', this.recruiterController.resetPassword);
-        this.router.post('/change-password/:userId', authenticateJWT, authorize(['resetPassword']), this.recruiterController.resetPassword);
-        this.router.get('/get-candidates-applied/:jobPostId', this.recruiterController.getApplicants);
-        this.router.patch('/update-candidates-status', authenticateJWT, authorize(['updateCandidatesStatus']), this.recruiterController.updateCandidatesStatus);
+        this.router.post('/change-password/:userId', verifyToken, refreshToken, authenticate, authorize(['resetPassword']),
+            this.recruiterController.resetPassword);
+        this.router.get('/get-candidates-applied/:jobPostId', verifyToken, refreshToken, authenticate, authorize(['getApplicants']),
+            this.recruiterController.getApplicants);
+        this.router.patch('/update-candidates-status', verifyToken, refreshToken, authenticate, authorize(['updateCandidatesStatus']),
+            this.recruiterController.updateCandidatesStatus);
         this.router.get('/get-potential-candidate/:jobPostId/:candidateId', this.recruiterController.getPotentialCandidate);
-        this.router.put('/update-company-account', authenticateJWT, authorize(['updateComapanyAccount']), this.recruiterController.updateComapanyAccount);
-        this.router.put('/update-company-info', authenticateJWT, authorize(['updateComapanyInfo']), this.recruiterController.updateComapanyInfo);
+        this.router.put('/update-company-account', verifyToken, refreshToken, authenticate, authorize(['updateComapanyAccount']),
+            this.recruiterController.updateComapanyAccount);
+        this.router.put('/update-company-info', verifyToken, refreshToken, authenticate, authorize(['updateComapanyInfo']),
+            this.recruiterController.updateComapanyInfo);
         this.router.get('/get-company-info/:userId', this.recruiterController.getCompanyInfo);
         this.router.get('/get-list-company', cacheMiddleware, this.recruiterController.getListCompany);
-        
+
     }
 }

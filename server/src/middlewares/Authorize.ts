@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { RolePermissions, UserRoles } from '../utils/roles';
 import { log } from 'console';
 
-export const authorize = (requiredPermissions: string[]) => {
+const authorize = (requiredPermissions: string[]) => {
     return (req: Request, res: Response, next: NextFunction): void => {
         const userRole = (req as any).userData.role;
         log("userRole", userRole);
@@ -18,3 +18,5 @@ export const authorize = (requiredPermissions: string[]) => {
         next();
     };
 };
+
+export default authorize;

@@ -1,11 +1,13 @@
 import path from 'path';
 import { Request, Response } from 'express';
-import { authenticateJWT } from '../middlewares/Authenticate';
-import { authorize } from '../middlewares/Authorize';
 import { cacheMiddleware } from '../middlewares/CacheRedis';
 import NotificationController from '../controllers/NotificationController';
 import { BaseRoutes } from './BaseRoutes';
 import { socketMiddleware } from '../middlewares/socket';
+import authenticate from '../middlewares/authenticate';
+import authorize from '../middlewares/authorize';
+import verifyToken from '../middlewares/verifyToken';
+import refreshToken from '../middlewares/refreshToken';
 
 export default class NotificationRoutes extends BaseRoutes {
     private notificationController: NotificationController;
@@ -24,31 +26,26 @@ export default class NotificationRoutes extends BaseRoutes {
         // Candidate-specific routes
         this.router.get(
             '/get-all-notifications',
-            authenticateJWT,
-            authorize(['getAllNotifications']),
+            verifyToken, refreshToken, authenticate, authorize(['getAllNotifications']),
             this.notificationController.getAllNotifications
         );
 
         this.router.get(
             '/unread',
-            authenticateJWT,
-            authorize(['getUnreadCount']),
+            verifyToken, refreshToken, authenticate, authorize(['getUnreadCount']),
             this.notificationController.getUnreadCount
         );
 
         this.router.put(
             '/mark-all-as-read',
-            authenticateJWT,
-            authorize(['markAllAsRead']),
+            verifyToken, refreshToken, authenticate, authorize(['markAllAsRead']),
             this.notificationController.markAllAsRead
         );
 
         // Admin or recruiter routes for creating notifications
         this.router.post(
             '/create-notification',
-            authenticateJWT,
-            authorize(['createNotification']),
-            socketMiddleware,
+            verifyToken, refreshToken, authenticate, authorize(['createNotification']), socketMiddleware,
             this.notificationController.createNotification
         );
     }

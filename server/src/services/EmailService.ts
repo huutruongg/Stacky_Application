@@ -55,16 +55,16 @@ export class EmailService {
           jobPostId: new Types.ObjectId(jobPostId),
         });
       
-        // Lọc danh sách ứng viên chưa được gửi email
-        const candidatesToSend = candidates.filter(candidate => !candidate.isSent);
+        // // Lọc danh sách ứng viên chưa được gửi email
+        // const candidatesToSend = candidates.filter(candidate => !candidate.isSent);
       
-        if (candidatesToSend.length === 0) {
-          console.log("All selected candidates have already received emails for this job post.");
-          return;
-        }
+        // if (candidatesToSend.length === 0) {
+        //   console.log("All selected candidates have already received emails for this job post.");
+        //   return;
+        // }
       
         // Gửi email từng ứng viên và đánh dấu trạng thái đã gửi
-        for (const candidate of candidatesToSend) {
+        for (const candidate of candidates) {
             if (!candidate.publicEmail) {
                 console.log(`No public email found for ${candidate.publicEmail}`);
                 continue;

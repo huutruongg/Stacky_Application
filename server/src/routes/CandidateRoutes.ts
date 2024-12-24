@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { authenticateJWT } from "../middlewares/Authenticate";
-import { authorize } from "../middlewares/Authorize";
 import CandidateController from "../../src/controllers/CandidateController";
 import GithubController from "../../src/controllers/GitHubController";
 import { BaseRoutes } from "./BaseRoutes";
-
+import verifyToken from "../middlewares/verifyToken";
+import refreshToken from "../middlewares/refreshToken";
+import authenticate from "../middlewares/authenticate";
+import authorize from "../middlewares/authorize";
 export default class CandidateRoutes extends BaseRoutes {
     private candidateController: CandidateController;
     private githubController: GithubController;
@@ -22,45 +23,40 @@ export default class CandidateRoutes extends BaseRoutes {
         // Candidate-specific routes
         this.router.get(
             '/get-candidate',
-            authenticateJWT,
-            authorize(['getCandidate']),
+            verifyToken, refreshToken, authenticate, authorize(['getCandidate']),
             this.candidateController.getCandidate
         );
 
-        this.router.get("/get-applied-jobs", authenticateJWT, authorize(['getAppliedJobs']), this.candidateController.getAppliedJobs);
+        this.router.get("/get-applied-jobs", verifyToken, refreshToken, authenticate, authorize(['getAppliedJobs']),
+            this.candidateController.getAppliedJobs);
 
         this.router.get(
             '/get-profile',
-            authenticateJWT,
-            authorize(['getCandidateProfile']),
+            verifyToken, refreshToken, authenticate, authorize(['getCandidateProfile']),
             this.candidateController.getCandidateProfile
         );
 
         this.router.put(
             '/update-profile',
-            authenticateJWT,
-            authorize(['updateCandidateProfile']),
+            verifyToken, refreshToken, authenticate, authorize(['updateCandidateProfile']),
             this.candidateController.updateCandidateProfile
         );
 
         this.router.put(
             '/update-info',
-            authenticateJWT,
-            authorize(['updateCandidate']),
+            verifyToken, refreshToken, authenticate, authorize(['updateCandidate']),
             this.candidateController.updateCandidate
         );
 
         this.router.delete(
             '/delete-candidate/:userId',
-            authenticateJWT,
-            authorize(['deleteCandidate']),
+            verifyToken, refreshToken, authenticate, authorize(['deleteCandidate']),
             this.candidateController.deleteCandidate
         );
 
         this.router.post(
             '/get-github-score',
-            authenticateJWT,
-            authorize(['getGithubScore']),
+            verifyToken, refreshToken, authenticate, authorize(['getGithubScore']),
             this.githubController.getGithubScore
         );
     }

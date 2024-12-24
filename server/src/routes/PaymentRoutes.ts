@@ -1,11 +1,13 @@
 
 import PaymentController from '../../src/controllers/PaymentController';
+import authenticate from '../middlewares/authenticate';
+import authorize from '../middlewares/authorize';
+import refreshToken from '../middlewares/refreshToken';
+import verifyToken from '../middlewares/verifyToken';
 import { UserRoles } from '../utils/roles';
-import { authenticateJWT } from '../middlewares/Authenticate';
 import { BaseRoutes } from './BaseRoutes';
 import { Request, Response } from 'express';
 import path from 'path';
-import { authorize } from '../middlewares/Authorize';
 
 export default class PaymentRoutes extends BaseRoutes {
     private paymentController: PaymentController;
@@ -18,14 +20,19 @@ export default class PaymentRoutes extends BaseRoutes {
     }
 
     private initializeRoutes(): void {
+        // Public routes
         this.router.get('/deposit', this.serveDepositPage);
         this.router.get('/pay-for', this.servePaymentPage);
         this.router.post('/create-transaction', this.paymentController.createTransaction);
         this.router.post('/callback', this.paymentController.handleCallback);
         this.router.post('/check-status-transaction', this.paymentController.checkTransactionStatus);
-        this.router.patch('/deposit-funds', authenticateJWT, authorize(['deposit']), this.paymentController.deposit);
-        this.router.patch('/pay-for-job-post', authenticateJWT, authorize(['payForJobPost']), this.paymentController.payForJobPost);
-        this.router.get('/get-payment-info', authenticateJWT, authorize(['getPaymentInfo']), this.paymentController.getPaymentInfo);
+        // Admin or recruiter routes for creating notifications
+        this.router.patch('/deposit-funds', verifyToken, refreshToken, authenticate, authorize(['deposit']),
+            this.paymentController.deposit);
+        this.router.patch('/pay-for-job-post', verifyToken, refreshToken, authenticate, authorize(['payForJobPost']),
+            this.paymentController.payForJobPost);
+        this.router.get('/get-payment-info', verifyToken, refreshToken, authenticate, authorize(['getPaymentInfo']),
+            this.paymentController.getPaymentInfo);
     }
 
     private serveDepositPage(req: Request, res: Response): void {

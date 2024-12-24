@@ -37,7 +37,8 @@ export const RolePermissions: Record<UserRoles, string[]> = {
         'resetPassword',
         'updateComapanyInfo',
         'updateComapanyAccount',
-        'updateCandidatesStatus'
+        'updateCandidatesStatus',
+        'getApplicants'
     ],
     [UserRoles.CANDIDATE]: [
         'getAppliedJobs',
