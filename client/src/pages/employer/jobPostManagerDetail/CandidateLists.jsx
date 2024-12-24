@@ -35,6 +35,7 @@ import IconMail from "@/components/icons/IconMail";
 const schema = z.object({
   text: z.string(),
   notification: z.string(),
+  status: z.string(),
 });
 
 const CandidateLists = ({ data, candidatesLimit }) => {
@@ -52,6 +53,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
     defaultValues: {
       text: "",
       notification: "",
+      status: "",
     },
   });
 
@@ -78,23 +80,39 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   useEffect(() => {
     const socket = io(import.meta.env.VITE_API_URL);
     const userIds = selectedCandidates.map((candidate) => candidate.userId);
+
+    // Register socket for selected candidates
     socket.emit("register", userIds);
+
+    // Listen for incoming notifications
     socket.on("notification", (notification) => {
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        notification,
-      ]);
+      setNotifications((prevNotifications) => {
+        const updatedNotifications = [...prevNotifications];
+
+        // Check if notification already exists for this userId
+        const index = updatedNotifications.findIndex(
+          (notif) => notif.userId === notification.userId
+        );
+
+        if (index !== -1) {
+          // Update the existing notification status
+          updatedNotifications[index].status = notification.status;
+        } else {
+          // Add new notification to the list
+          updatedNotifications.push(notification);
+        }
+
+        return updatedNotifications;
+      });
     });
+
     return () => {
       socket.disconnect();
     };
   }, [selectedCandidates]);
 
   const createNotification = async (formData) => {
-    console.log({
-      userIds: selectedCandidates.map((candidate) => candidate.userId),
-      message: formData.notification,
-    });
+    console.log(formData);
     try {
       const response = await axiosInstance.post(
         `/notification/create-notification`,
@@ -103,10 +121,18 @@ const CandidateLists = ({ data, candidatesLimit }) => {
           message: formData.notification,
         }
       );
+      const responseStatus = await axiosInstance.patch(
+        `/recruiter/update-candidates-status`,
+        {
+          jobPostId: jobId,
+          candidateIds: selectedCandidates.map((candidate) => candidate.userId),
+          status: formData.status,
+        }
+      );
 
-      console.log(response);
+      // console.log(response);
 
-      if (response.status === 200) {
+      if (response.status === 200 || responseStatus.status === 200) {
         toast.success("Gửi thông báo thành công");
       } else {
         toast.error("Gửi thông báo thất bại");
@@ -122,7 +148,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
     form.reset();
   };
 
-  const onSubmit = async (formData) => {
+  const handleSendGmail = async (formData) => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.post(`/email/send-email`, {
@@ -234,8 +260,8 @@ const CandidateLists = ({ data, candidatesLimit }) => {
                   }}
                   handleSelectCandidate={handleSelectCandidate}
                   publicEmail={item.publicEmail}
-                  statutNotification={item.status}
-                  statutSendGmail={item.isSent}
+                  StatusNotification={item.status}
+                  StatusSendGmail={item.isSent}
                 />
               ))
             ) : (
@@ -319,7 +345,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
             title="Gửi email"
             description={"Gửi email cho ứng viên mà bạn ứng tuyển"}
           >
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(handleSendGmail)}>
               <ModalSendEmail form={form} />
               <div className="flex justify-center gap-5 py-5">
                 <Button
@@ -360,11 +386,9 @@ const ItemCandidate = ({
   handleSelectCandidate,
   publicEmail,
   userId,
-  statutNotification,
-  statutSendGmail,
+  StatusNotification,
+  StatusSendGmail,
 }) => {
-  const navigate = useNavigate();
-
   return (
     <div className="relative flex flex-col gap-5 text-sm bg-white rounded-lg border hover:border-primary">
       {/* Candidate Info Card */}
@@ -382,11 +406,11 @@ const ItemCandidate = ({
         </div>
       </div>
       <div className="flex justify-between gap-3 pl-9 pr-3 py-3">
-        <div className="min-w-[80px] max-w-[80px] flex items-center justify-center rounded-md border">
+        <div className="flex items-center justify-center rounded-md border">
           <img
             src={avatarUrl ? avatarUrl : imgAvatar}
             alt=""
-            className="rounded-md object-cover"
+            className="min-w-[80px] max-w-[80px] min-h-[80px] max-h-[80px] rounded-md object-cover"
           />
         </div>
         <div className="flex flex-col justify-around gap-1 w-full">
@@ -397,9 +421,9 @@ const ItemCandidate = ({
               </div>
               <IconMail
                 className={"w-6 h-6"}
-                color={`${statutSendGmail ? "#22C55E" : "#B2B3BD"}`}
+                color={`${StatusSendGmail ? "#22C55E" : "#B2B3BD"}`}
               ></IconMail>
-              {statutNotification ==="APPROVED"  ? (
+              {StatusNotification === "ACCEPTED" ? (
                 <IconAccept className="w-6 h-6" color="#22C55E" />
               ) : (
                 <IconClose className="w-6 h-6" color="#EB5757" />

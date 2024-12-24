@@ -2,7 +2,7 @@ import Button from "@/components/button/Button";
 import axiosInstance from "@/lib/authorizedAxios";
 import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import ModalViewCV from "./ModalViewCV";
 import { Modal } from "@/components/ui/modal";
 import useAuth from "@/hooks/useAuth";
@@ -17,6 +17,7 @@ const ViewApply = ({ id }) => {
   const [success, setSuccess] = useState(false);
   const [githubScore, setGithubScore] = useState(0);
   const [openReview, setOpenReview] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpenReview = () => {
     setOpenReview(true);
@@ -118,6 +119,17 @@ const ViewApply = ({ id }) => {
               onClick={handleCloseReview}
             >
               Trở về
+            </Button>
+            <Button
+              kind="secondary"
+              className="text-center px-10 disabled:opacity-50"
+              type="button"
+              isLoading={isLoading}
+              onClick={() => {
+                navigate(`/profile-cv`);
+              }}
+            >
+              Chỉnh sửa CV
             </Button>
           </div>
         </Modal>

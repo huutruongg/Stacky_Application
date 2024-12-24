@@ -1,5 +1,6 @@
 import InputField from "@/components/fieldForm/InputField";
 import SelectField from "@/components/fieldForm/SelectField";
+import TextareaField from "@/components/fieldForm/TextareaField";
 import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
@@ -74,7 +75,7 @@ const FormRequirement = ({ form }) => {
           id="certificateRequired"
           {...commonInputProps}
         />
-        <InputField
+        <TextareaField
           control={form.control}
           name="professionalSkills"
           placeholder="Kỹ năng chuyên môn"
