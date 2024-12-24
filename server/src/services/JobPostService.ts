@@ -11,6 +11,7 @@ import { IUserDataType } from "../interfaces/IUserData";
 import { JobAppliedDTO } from "../dtos/JobAppliedDTO";
 import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
+import CandidateModel from "../models/CandidateModel";
 
 export default class JobPostService {
     private jobPostRepository: JobPostRepository;
@@ -178,27 +179,43 @@ export default class JobPostService {
 
     public getJobApplied = async (userId: string): Promise<JobAppliedDTO[] | null> => {
         try {
-            const jobApplications = await this.candidateRepository.findAppliedJobs(userId);
-
-            log("jobApplications", jobApplications);
-
-            if (!jobApplications || jobApplications.length === 0) {
+            // Tìm thông tin ứng viên và populate thông tin bài viết
+            const candidate = await CandidateModel
+                .findOne({ userId })
+                .populate({
+                    path: 'jobApplied.jobPostId', // Populate thông tin JobPost
+                    model: 'JobPost',
+                    select: '_id jobTitle orgName jobImage location applicationDeadline userId', // Các trường cần lấy
+                });
+    
+            if (!candidate) {
                 console.warn(`Candidate with ID ${userId} not found or has no applied jobs.`);
                 return [];
             }
-            const jobPostIds = jobApplications.map(application => String(application.jobPostId));
-            const jobsApplied = await this.jobPostRepository.getJobPostByIds(jobPostIds);
-
-            if (!jobsApplied || jobsApplied.length === 0) {
-                console.warn(`No job posts found for applied job IDs: ${jobPostIds}`);
+    
+            // Lấy các bài viết đã apply
+            const jobApplications = candidate.jobApplied;
+            
+            // Chuyển đổi dữ liệu sang DTO
+            if (!jobApplications) {
+                console.warn(`No job applications found for candidate ${userId}.`);
                 return [];
             }
-            return jobsApplied.map((job) => this.toJobAppliedDTO(job));
+            const jobsAppliedDTO = jobApplications.map((application: any) => {
+                const job = application.jobPostId as IJobPost; // JobPost đã populate
+                return this.toJobAppliedDTO({
+                    ...job.toObject(),
+                    status: application.status, // Lấy trạng thái apply
+                });
+            });
+    
+            return jobsAppliedDTO;
         } catch (error) {
-            console.error('Error fetching job posts with orgName:', error);
+            console.error('Error fetching job posts with applied status:', error);
             throw new Error('Could not fetch job posts');
         }
-    }
+    };
+    
 
     public findByCondition = async (queryParams: { [key: string]: string }): Promise<JobPostDTO[]> => {
         try {

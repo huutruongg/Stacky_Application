@@ -40,7 +40,7 @@ export default class EmailController extends BaseController {
         }
 
         try {
-            await this.emailService.filterAndSendEmails(emails, jobPostId, subject, text);
+            await this.emailService.sendEmailToCandidates(emails as string[], jobPostId as string, subject as string, text as string);
 
             return this.sendResponse(res, 200, { success: true, message: "Emails sent successfully!" });
         } catch (error) {

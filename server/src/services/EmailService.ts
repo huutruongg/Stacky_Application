@@ -26,6 +26,10 @@ export class EmailService {
   }
 
   public sendEmail = async (to: string | string[], subject: string, text: string, html: string = ""): Promise<boolean> => {
+    log("Sending email to:", to);
+    log("Subject:", subject);
+    log("Text:", text);
+
     try {
       await this.transporter.sendMail({
         from: process.env.EMAIL_ADDRESS,
@@ -42,7 +46,7 @@ export class EmailService {
     }
   };
 
-  public filterAndSendEmails = async (
+  public sendEmailToCandidates = async (
     emails: string[],
     jobPostId: string,
     subject: string,
@@ -53,7 +57,7 @@ export class EmailService {
       publicEmail: { $in: emails },
       jobPostId: new Types.ObjectId(jobPostId),
     });
-
+    log("Candidates found:", candidates);
     for (const candidate of candidates) {
       if (!candidate.publicEmail) {
         console.log(`No public email found for ${candidate.publicEmail}`);

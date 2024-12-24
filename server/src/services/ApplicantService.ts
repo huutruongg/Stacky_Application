@@ -43,7 +43,8 @@ export default class ApplicantService {
                     { $set: { "jobApplied.$.status": status } }
                 )
             ]);
-
+            log("updatedApplicants", updatedApplicants);
+            log("updatedCandidates", updatedCandidates);
             return updatedApplicants.modifiedCount > 0 || updatedCandidates.modifiedCount > 0;
         } catch (error) {
             console.error("Error updating candidate status:", error);
