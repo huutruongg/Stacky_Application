@@ -12,6 +12,7 @@ import { JobAppliedDTO } from "../dtos/JobAppliedDTO";
 import { IJobPost } from "../interfaces/IJobPost";
 import ApplicantRepository from '../repositories/ApplicantRepository';
 import CandidateModel from "../models/CandidateModel";
+import ApplicantModel from "../models/ApplicantModel";
 
 export default class JobPostService {
     private jobPostRepository: JobPostRepository;
@@ -101,6 +102,8 @@ export default class JobPostService {
         let deletedJobPost: boolean | null = null;
         if (isOwner || user.role === UserRoles.ADMIN) {
             deletedJobPost = await this.jobPostRepository.deleteJobPost(jobPostId);
+            await ApplicantModel.deleteMany({ jobPostId: new Types.ObjectId(jobPostId) });
+            await CandidateModel.updateMany({ "jobApplied.jobPostId": new Types.ObjectId(jobPostId) }, { $pull: { jobApplied: { jobPostId: new Types.ObjectId(jobPostId) } } });
         }
         if (!deletedJobPost) {
             throw new Error("Job post not found.");
@@ -245,11 +248,11 @@ export default class JobPostService {
 
     public createApplication = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
-            // const hasApplied = await this.candidateRepository.hasApplied(userId, jobPostId);
-            // if (hasApplied) {
-            //     console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
-            //     return false;
-            // }
+            const hasApplied = await this.candidateRepository.hasApplied(userId, jobPostId);
+            if (hasApplied) {
+                console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
+                return false;
+            }
 
             const user = await this.candidateRepository.findCandidateByUserId(userId);
             log("User: ", user);

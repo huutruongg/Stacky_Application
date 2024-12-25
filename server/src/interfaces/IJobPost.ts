@@ -1,7 +1,6 @@
 import { Document } from "mongoose";
 import { ILanguage } from "./ILanguage";
 import { IUser } from "./IUser";
-import { PostStatus } from "../enums/EPostStatus";
 import { ApplyStatus } from "../enums/EApplySatus";
 
 export interface IJobPost extends Document {
@@ -24,7 +23,7 @@ export interface IJobPost extends Document {
     jobDescription: string;
     workEnvironment: string;
     applicationDeadline: Date;
-    jobSchedule: Date;
+    jobSchedule: String;
     staffLevel: string;
     genderRequired: string;
     postedAt: Date;

@@ -12,9 +12,8 @@ export default class NotificationController extends BaseController {
 
     public createNotification = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { userIds, message } = req.body;
-            const recruiterId = (req as any).userData.userId;
-            await this.notificationService.sendNotification((req as any).io, (req as any).connectedUsers, message, userIds, String(recruiterId));
+            const { userIds, message, jobTitle } = req.body;
+            await this.notificationService.sendNotification((req as any).io, (req as any).connectedUsers, message, userIds, jobTitle);
             this.sendResponse(res, 200, { success: true, message: 'Notification added successfully' });
         } catch (error: any) {
             this.sendError(res, 500, error.message);

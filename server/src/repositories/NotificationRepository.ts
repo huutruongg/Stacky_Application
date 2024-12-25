@@ -14,8 +14,8 @@ export default class NotificationRepository extends BaseRepository<INotification
         return this.model.find({ userId: new Types.ObjectId(userId) }).lean().exec();
     };
 
-    public createNotification = async (data: Partial<INotification>): Promise<INotification> => {
-        return this.model.create(data);
+    public createNotification = async (userId: string, message: string, jobTitle: string): Promise<INotification> => {
+        return this.model.create({ userId: new Types.ObjectId(userId), message, jobTitle });
     };
 
     public deleteNotification = async (notificationId: string): Promise<INotification | null> => {

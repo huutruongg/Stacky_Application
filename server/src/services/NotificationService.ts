@@ -9,21 +9,17 @@ export default class NotificationService {
         this.notificationRepository = notificationRepository;
     }
 
-    public sendNotification = async (io: any, connectedUsers: any, message: string, userIds: string[], jobPostId: string): Promise<void> => {
-        // const jobTitle = await JobPostModel.findById({ jobPostId }).select("jobTitle").lean().exec();
-        // if (!jobTitle) {
-        //     return;
-        // }
-        // await Promise.all(
-        //     userIds.map(async (userId) => {
-        //         await this.notificationRepository.createNotification({ userId, message, jobTitle });
-        //         const socketId = connectedUsers[userId];
-        //         if (socketId) {
-        //             const unreadCount = await this.getUnreadCount(userId);
-        //             io.to(socketId).emit("notification", { message, unreadCount });
-        //         }
-        //     })
-        // );
+    public sendNotification = async (io: any, connectedUsers: any, message: string, userIds: string[], jobTitle: string): Promise<void> => {
+        await Promise.all(
+            userIds.map(async (userId) => {
+                await this.notificationRepository.createNotification(userId, message, jobTitle);
+                const socketId = connectedUsers[userId];
+                if (socketId) {
+                    const unreadCount = await this.getUnreadCount(userId);
+                    io.to(socketId).emit("notification", { message, jobTitle, unreadCount });
+                }
+            })
+        );
     }
 
     public getAllNotifications = async (userId: string): Promise<any[]> => {
