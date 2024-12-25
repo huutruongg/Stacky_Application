@@ -58,23 +58,34 @@ export class EmailService {
       jobPostId: new Types.ObjectId(jobPostId),
     });
     log("Candidates found:", candidates);
+  
+    const successfulCandidatesIds: Types.ObjectId[] = [];
+  
     for (const candidate of candidates) {
       if (!candidate.publicEmail) {
         console.log(`No public email found for ${candidate.publicEmail}`);
         continue;
       }
       const emailSent = await this.sendEmail(candidate.publicEmail, subject, text, html);
-
+      log("Email sent:", emailSent);
       if (emailSent) {
-        candidate.isSent = true;
-        candidate.jobPostId = jobPostId;
-        await candidate.save();
+        successfulCandidatesIds.push(new Types.ObjectId(candidate._id as string)); 
         console.log(`Email sent successfully to ${candidate.publicEmail} for job post ${jobPostId}`);
       } else {
         console.log(`Failed to send email to ${candidate.publicEmail} for job post ${jobPostId}`);
       }
     }
+    log("Successful candidates:", successfulCandidatesIds);
+    // Cập nhật trạng thái "isSent" cho các candidates đã gửi thành công
+    if (successfulCandidatesIds.length > 0) {
+      await ApplicantModel.updateMany(
+        { _id: { $in: successfulCandidatesIds } },
+        { $set: { isSent: true } }
+      );
+      console.log("Updated isSent status for candidates:", successfulCandidatesIds);
+    }
   };
+  
 }
 
 export default new EmailService();

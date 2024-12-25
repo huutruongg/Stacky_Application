@@ -245,11 +245,11 @@ export default class JobPostService {
 
     public createApplication = async (userId: string, jobPostId: string): Promise<boolean> => {
         try {
-            const hasApplied = await this.candidateRepository.hasApplied(userId, jobPostId);
-            if (hasApplied) {
-                console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
-                return false;
-            }
+            // const hasApplied = await this.candidateRepository.hasApplied(userId, jobPostId);
+            // if (hasApplied) {
+            //     console.warn(`Candidate ${userId} has already applied for job ${jobPostId}`);
+            //     return false;
+            // }
 
             const user = await this.candidateRepository.findCandidateByUserId(userId);
             log("User: ", user);

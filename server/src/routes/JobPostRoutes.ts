@@ -35,7 +35,7 @@ export default class JobPostRoutes extends BaseRoutes {
         this.router.get(
             '/get-job-detail-by-candidate/:jobPostId',
             verifyToken, refreshToken, authenticate, authorize(['getJobDetailByCandidate']),
-            // cacheMiddleware,
+            // redisCache,
             this.jobPostController.getJobDetailByCandidate
         );
         this.router.get(

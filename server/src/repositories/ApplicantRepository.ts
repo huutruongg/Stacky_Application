@@ -13,17 +13,28 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
 
     public findApplicantByUserId = async (userId: string): Promise<IApplicant | null> => this.model.findOne({ userId }).exec();
 
-    public createApplicant = async (data: Partial<IApplicant>): Promise<IApplicant> => this.model.create(data);
+    public createApplicant = async (data: Partial<IApplicant>) => {
+        const application = await this.model.findOne({ userId: new Types.ObjectId(data.userId as string), jobPostId: new Types.ObjectId(data.jobPostId as string) }).lean().exec();
+        if (!application) {
+            const newApplication = new this.model(data);
+            return await newApplication.save();
+        } else {
+            return await this.model.updateOne(
+                { userId: new Types.ObjectId(data.userId as string), jobPostId: new Types.ObjectId(data.jobPostId as string) },
+                { $set: { ...data } }
+            ).exec();
+        }
+    }
 
-    public deleteApplication = async (userId: string, jobPostId: string): Promise<IApplicant | null> => 
+    public deleteApplication = async (userId: string, jobPostId: string): Promise<IApplicant | null> =>
         this.model.findOneAndDelete({ userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId) }).exec();
 
     public findCandidatesApplied = async (jobPostId: string): Promise<IApplicant[] | null> => this.model.find({ jobPostId }).exec();
 
-    public isExistingApplicant = async (userId: string, jobPostId: string): Promise<boolean> => 
+    public isExistingApplicant = async (userId: string, jobPostId: string): Promise<boolean> =>
         (await this.model.findOne({ userId, jobPostId }).exec()) !== null;
 
-    public updateAIResult = async (userId: string, jobPostId: string, aiResult: IAIResult): Promise<boolean | null> => 
+    public updateAIResult = async (userId: string, jobPostId: string, aiResult: IAIResult): Promise<boolean | null> =>
         (await this.model.findOneAndUpdate({ userId, jobPostId }, { aiAnalysistScore: aiResult }).exec()) !== null;
 
     public sortedApplicants = async (jobPostId: string) => {
@@ -43,11 +54,16 @@ export default class ApplicantRepository extends BaseRepository<IApplicant> {
     }
 
     public updateGithubScore = async (userId: string, jobPostId: string, score: number): Promise<boolean> => {
-        const result = await this.model.updateOne(
-            { userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId) },
-            { githubScore: score }
-        );
-        log("result", result);
-        return result.modifiedCount > 0;
+        const application = await this.model.findOne({ userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId) }).lean().exec();
+        let action;
+        if (!application) {
+            action = await this.model.create({ userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId), githubScore: score });
+        } else {
+            action = await this.model.updateOne(
+                { userId: new Types.ObjectId(userId), jobPostId: new Types.ObjectId(jobPostId) },
+                { githubScore: score }
+            );
+        }
+        return !!action;
     }
 }

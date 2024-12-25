@@ -18,19 +18,19 @@ export default class GithubController extends BaseController {
     }
 
     public getGithubScore = async (req: Request, res: Response) => {
-        // try {
-        //     const userInfo = (req as any).userData;
-        //     const { jobPostId, token } = req.query;
-        //     const score = await this.githubService.getGitHubScore(String(jobPostId), String(token));
-        //     const roundedScore = Math.round(score);
-        //     log("roundedScore", roundedScore);
-        //     await this.applicantRepository.updateGithubScore(String(userInfo.userId), String(jobPostId), roundedScore);
-        //     return this.sendResponse(res, 200, { success: true, score: roundedScore });
-        // } catch (error) {
-        //     log(error);
-        //     return this.sendError(res, 500, 'Internal server error');
-        // }
-        res.send({ score: 100 });
+        try {
+            const userInfo = (req as any).userData;
+            const { jobPostId, token } = req.query;
+            const score = await this.githubService.getGitHubScore(String(jobPostId), String(token));
+            const roundedScore = Math.round(score);
+            log("roundedScore", roundedScore);
+            await this.applicantRepository.updateGithubScore(String(userInfo.userId), String(jobPostId), roundedScore);
+            return this.sendResponse(res, 200, { success: true, score: roundedScore });
+        } catch (error) {
+            log(error);
+            return this.sendError(res, 500, 'Internal server error');
+        }
+        // res.send({ score: 100 });
     }
 
     public isLoggedInGithub = async (req: Request, res: Response) => {

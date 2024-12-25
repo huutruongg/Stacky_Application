@@ -27,7 +27,7 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
     public findAllMinData = async (): Promise<IJobPostMin[] | null> => {
         return await this.model
             .find()
-            .select("_id jobTitle jobImage jobSalary location userId")
+            .select("_id jobTitle orgName jobImage jobSalary location userId")
             .lean<IJobPostMin[]>()
             .exec();
     }
