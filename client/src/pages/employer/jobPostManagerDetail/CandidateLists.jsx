@@ -1,7 +1,4 @@
-import IconDelete from "@/components/icons/IconDelete";
-import IconEye from "@/components/icons/IconEye";
-import imgAvatar from "@/components/image/avatarImg.png";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/Checkbox";
 import Button from "@/components/button/Button";
 import {
@@ -30,7 +27,9 @@ import toast from "react-hot-toast";
 import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
 import io from "socket.io-client";
 import ModalSendNotification from "./ModalSendNotification";
-import IconMail from "@/components/icons/IconMail";
+import IconPending from "@/components/icons/IconPending";
+import IconAll from "@/components/icons/IconAll";
+import ItemCandidate from "./ItemCandidate";
 
 const schema = z.object({
   text: z.string(),
@@ -48,6 +47,11 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [isSendingNotification, setIsSendingNotification] = useState(false);
+  const [dataCandidate, setDataCandidate] = useState([]);
+  const [filterStatus, setFilterStatus] = useState([]);
+
+  console.log(selectedCandidates);
+
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -57,10 +61,46 @@ const CandidateLists = ({ data, candidatesLimit }) => {
     },
   });
 
-  const handleSelectAll = () => {
-    setSelectedCandidates(data.map((candidate) => candidate.publicEmail));
-    setSelectedCandidates(data.map((candidate) => candidate.userId));
+  const filteredCandidates = useMemo(() => {
+    switch (filterStatus) {
+      case "ACCEPTED":
+        return dataCandidate.filter((item) => item.status === "ACCEPTED");
+      case "REJECTED":
+        return dataCandidate.filter((item) => item.status === "REJECTED");
+      case "PENDING":
+        return dataCandidate.filter((item) => item.status === "PENDING");
+      default:
+        return dataCandidate;
+    }
+  }, [dataCandidate, filterStatus]);
+
+  const handleFilterStatus = (status) => {
+    setFilterStatus(status.toUpperCase());
   };
+
+  const handleSelectAll = () => {
+    if (selectedCandidates.length === dataCandidate.length) {
+      setSelectedCandidates([]); // Bỏ chọn tất cả
+    } else {
+      setSelectedCandidates(
+        dataCandidate.map((candidate) => ({
+          userId: candidate.userId,
+          email: candidate.publicEmail, // Include both userId and email
+        }))
+      ); // Select all candidates
+    }
+  };
+
+  // const handleSelectAll = () => {
+  //   if (selectedCandidates.length === dataCandidate.length) {
+  //     setSelectedCandidates([]); // Deselect all candidates
+  //   } else {
+  //     setSelectedCandidates(dataCandidate.map((candidate) => ({
+  //       userId: candidate.userId,
+  //       email: candidate.publicEmail // Include both userId and email
+  //     }))); // Select all candidates
+  //   }
+  // };
   const handleSelectCandidate = (email, userId) => {
     setSelectedCandidates((prev) => {
       const isSelected = prev.some(
@@ -112,13 +152,13 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   }, [selectedCandidates]);
 
   const createNotification = async (formData) => {
-    console.log(formData);
     try {
       const response = await axiosInstance.post(
         `/notification/create-notification`,
         {
           userIds: selectedCandidates.map((candidate) => candidate.userId),
           message: formData.notification,
+          jobTitle: data.jobTitle,
         }
       );
       const responseStatus = await axiosInstance.patch(
@@ -146,21 +186,26 @@ const CandidateLists = ({ data, candidatesLimit }) => {
   const handleSendNotification = (formData) => {
     createNotification(formData);
     form.reset();
+    setOpenReview(false);
   };
 
   const handleSendGmail = async (formData) => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.post(`/email/send-email`, {
-        to: selectedCandidates.map((candidate) => candidate.email),
-        subject: "Gửi mail",
-        text: formData.text,
-      });
+      const response = await axiosInstance.post(
+        `/email/send-email-to-candidates`,
+        {
+          emails: selectedCandidates.map((candidate) => candidate.email),
+          subject: "Gửi mail",
+          text: formData.text,
+        }
+      );
       console.log(response);
       setOpenReview(false);
       setSelectedCandidates([]);
       toast.success("Gửi mail thành công");
       form.reset();
+      setTriggerRender((prev) => !prev);
     } catch (error) {
       console.log(error);
       toast.error("Gửi mail thất bại");
@@ -169,11 +214,27 @@ const CandidateLists = ({ data, candidatesLimit }) => {
     }
   };
 
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const resultCandidate = await axiosInstance.get(
+          `/recruiter/get-candidates-applied/${jobId}`
+        );
+        // console.log(result.data.result);
+        setDataCandidate(resultCandidate.data.result);
+        // console.log(resultCandidate.data.result);
+      } catch (error) {
+        console.error("Error while fetching job data:", error);
+      }
+    };
+    getData();
+  }, []);
+
   return (
     <Form {...form}>
       <div className="bg-secondary rounded-xl text-sm">
         <div className="flex justify-between items-center gap-2 py-2 rounded-tl-xl rounded-tr-xl text-transparent bg-gradient-to-r from-[#48038C] to-[#e59fff]">
-          <h3 className="text-xl ml-5 text-white">Thông tin giao dịch</h3>
+          <h3 className="text-xl ml-5 text-white">Danh sách ứng viên</h3>
           <div className="flex items-center justify-center gap-5 mr-10">
             <Buttonchild
               className="px-4 py-1 disabled:opacity-50 disabled:hover:bg-primary"
@@ -199,19 +260,31 @@ const CandidateLists = ({ data, candidatesLimit }) => {
             >
               Gửi gmail
             </Buttonchild>
-            <Select>
+            <Select onValueChange={(value) => handleFilterStatus(value)}>
               <SelectTrigger className="w-[180px] h-8 border-primary text-white rounded-md">
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Chấp nhận">
+                  <SelectItem value="all">
+                    <div className="flex items-center gap-2">
+                      <IconAll className="w-6 h-6" color="#fd0000" />
+                      <span>Tất cả</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="accepted">
                     <div className="flex items-center gap-2">
                       <IconAccept className="w-6 h-6" color="#22C55E" />
                       <span>Chấp nhận</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value="Từ chối">
+                  <SelectItem value="pending">
+                    <div className="flex items-center gap-2">
+                      <IconPending className="w-6 h-6" color="#48038C" />
+                      <span>Đang chờ</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="rejected">
                     <div className="flex items-center gap-2">
                       <IconClose className="w-6 h-6" color="#EB5757" />
                       <span>Từ chối</span>
@@ -220,13 +293,18 @@ const CandidateLists = ({ data, candidatesLimit }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <div className="flex items-center justify-center w-32 gap-2">
+            <div className="flex items-center w-36 gap-2">
               <Checkbox
                 id="terms"
                 className="w-5 h-5"
+                checked={selectedCandidates.length === dataCandidate.length}
                 onClick={handleSelectAll}
               />
-              <span className="text-white font-medium">Chọn tất cả</span>
+              <span className="text-white">
+                {selectedCandidates.length === dataCandidate.length
+                  ? "Bỏ chọn tất cả"
+                  : "Chọn tất cả"}
+              </span>
             </div>
           </div>
         </div>
@@ -242,8 +320,8 @@ const CandidateLists = ({ data, candidatesLimit }) => {
             </div>
           </div>
           {!isLoading ? (
-            data.length > 0 ? (
-              data.map((item, index) => (
+            filteredCandidates.length > 0 ? (
+              filteredCandidates.map((item, index) => (
                 <ItemCandidate
                   index={index}
                   key={index}
@@ -262,6 +340,10 @@ const CandidateLists = ({ data, candidatesLimit }) => {
                   publicEmail={item.publicEmail}
                   StatusNotification={item.status}
                   StatusSendGmail={item.isSent}
+                  checked={selectedCandidates
+                    .map((item) => item.userId)
+                    .includes(item.userId)}
+                  // handleDeleteCandidate={handleDeleteCandidate}
                 />
               ))
             ) : (
@@ -370,109 +452,6 @@ const CandidateLists = ({ data, candidatesLimit }) => {
         </div>
       )}
     </Form>
-  );
-};
-
-const ItemCandidate = ({
-  index,
-  name,
-  aiScore,
-  githubScore,
-  description,
-  date,
-  avatarUrl,
-  candidatesLimit,
-  onClick,
-  handleSelectCandidate,
-  publicEmail,
-  userId,
-  StatusNotification,
-  StatusSendGmail,
-}) => {
-  return (
-    <div className="relative flex flex-col gap-5 text-sm bg-white rounded-lg border hover:border-primary">
-      {/* Candidate Info Card */}
-      <div className="absolute">
-        <div
-          className={`relative w-10 h-10 border-l-[20px] border-t-[20px] ${
-            candidatesLimit
-              ? "border-l-primary border-t-primary"
-              : "border-l-text3 border-t-text3"
-          } border-r-[20px] border-r-transparent border-b-[20px] border-b-transparent rounded-tl-lg`}
-        >
-          <div className="absolute w-7 h-5 z-10 text-center text-white top-[-19px] left-[-22px] rounded-sm">
-            {index + 1}
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-between gap-3 pl-9 pr-3 py-3">
-        <div className="flex items-center justify-center rounded-md border">
-          <img
-            src={avatarUrl ? avatarUrl : imgAvatar}
-            alt=""
-            className="min-w-[80px] max-w-[80px] min-h-[80px] max-h-[80px] rounded-md object-cover"
-          />
-        </div>
-        <div className="flex flex-col justify-around gap-1 w-full">
-          <div className="flex gap-10 items-center justify-between">
-            <div className="flex gap-10 items-center">
-              <div className="cursor-pointer line-clamp-1 text-ellipsis font-medium w-44">
-                {name}
-              </div>
-              <IconMail
-                className={"w-6 h-6"}
-                color={`${StatusSendGmail ? "#22C55E" : "#B2B3BD"}`}
-              ></IconMail>
-              {StatusNotification === "ACCEPTED" ? (
-                <IconAccept className="w-6 h-6" color="#22C55E" />
-              ) : (
-                <IconClose className="w-6 h-6" color="#EB5757" />
-              )}
-            </div>
-            <div className="flex items-center gap-10">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-orange-300 rounded-full"></div>
-                <span>{aiScore}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
-                <span>{githubScore}</span>
-              </div>
-              <Checkbox
-                id="candidate-select"
-                className="w-5 h-5 mr-5"
-                onClick={() => handleSelectCandidate(publicEmail, userId)}
-              />
-            </div>
-          </div>
-          <span className="w-fit line-clamp-1 text-xs text-text3 max-w-[400px]">
-            {description}
-          </span>
-          <div className="flex items-center justify-between">
-            <span className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px]">
-              Ngày nộp đơn: {date}
-            </span>
-            <div className="flex items-center gap-2">
-              <Buttonchild
-                kind="ghost"
-                className="flex items-center gap-2 text-sm px-3 py-1"
-              >
-                <IconDelete className="w-5 h-5" color="#fff" />
-                Xóa
-              </Buttonchild>
-              <Buttonchild
-                kind="primary"
-                className="flex items-center text-sm gap-2 px-3 py-1"
-                onClick={onClick}
-              >
-                <IconEye className="w-5 h-5" color="#fff" />
-                Xem chi tiết
-              </Buttonchild>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 };
 

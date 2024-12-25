@@ -12,7 +12,7 @@ const LayoutEmployer = () => {
   // Define panel title and content based on current route
   const panelContent = {
     "/company-profile": {
-      title: " Tạo hồ sơ của công ty",
+      title: "Tạo hồ sơ của công ty",
       children: "Điền thông tin đầy đủ của công ty.",
     },
     "/job-management": {
@@ -21,30 +21,42 @@ const LayoutEmployer = () => {
     },
     "/job-post": {
       title: "Tạo tin tuyển dụng",
-      children:
-        "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
+      children: "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
     },
-    "/job-management/detail": {
+    "/job-management/detail/:jobId": {
       title: "Danh sách ứng viên ứng tuyển",
       children: "Xem danh sách các ứng viên đã ứng tuyển vào bài đăng của bạn.",
     },
     "/candidate-detail": {
-      title: "Tạo tin tuyển dụng",
-      children:
-        "Điền thông tin vị trí tuyển dụng và các yêu cầu công việc cần thiết.",
+      title: "Thông tin chi tiết ứng viên",
+      children: "Xem thông tin chi tiết của ứng viên.",
     },
     "/payment": {
       title: "Ví thanh toán",
       children: "Xem chi tiết và lịch sử nạp tiền của bạn.",
     },
-    // Add more paths as needed
   };
 
-  // Set default content if the route is not explicitly defined
-  const { title, children } = panelContent[location.pathname] || {
-    title: "Employer Portal",
-    children: "Manage your activities and settings here.",
+  // Function to match current path with dynamic routes
+  const getMatchedRouteContent = () => {
+    for (const [route, content] of Object.entries(panelContent)) {
+      if (route.includes(":")) {
+        const regex = new RegExp(`^${route.replace(":jobId", "[^/]+")}$`);
+        if (regex.test(location.pathname)) {
+          return content;
+        }
+      } else if (route === location.pathname) {
+        return content;
+      }
+    }
+    return {
+      title: "Employer Portal",
+      children: "Manage your activities and settings here.",
+    };
   };
+
+  // Get the title and children for the current route
+  const { title, children } = getMatchedRouteContent();
 
   return (
     <Fragment>

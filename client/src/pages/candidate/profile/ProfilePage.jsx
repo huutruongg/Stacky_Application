@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import InputField from "@/components/fieldForm/InputField";
 import axiosInstance from "@/lib/authorizedAxios";
+import imgAvatar from "@/components/image/avatarImg.png";
 
 const ProfilePage = () => {
   const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ const ProfilePage = () => {
   const form = useForm({
     resolver: zodResolver(""),
     defaultValues: {
+      avatar: null,
       fullName: "",
       publicEmail: "",
       phoneNumber: "",
@@ -47,17 +49,33 @@ const ProfilePage = () => {
     getData();
   }, [form]);
 
+  const handleSubmit = async (data) => {
+    try {
+      const result = await axiosInstance.put(`/candidate/update-profile`, data);
+      console.log(result);
+    } catch (error) {
+      console.error("Error while fetching job data:", error);
+    }
+  };
+
+  const handleUploadAvatar = () => {
+    console.log("upload avatar");
+  };
+
   return (
     <div className="page-container grid grid-cols-12 gap-5 my-10">
       <div className="col-span-4 flex flex-col items-center justify-center bg-secondary rounded-xl gap-5">
         <div className="p-5 w-full flex flex-col items-center gap-2">
           <div className="relative w-28 h-28 rounded-full">
             <img
-              src={imgCompany}
+              src={data.avatarUrl || imgAvatar}
               alt=""
               className="overflow-hidden object-cover min-w-[112px] min-h-[112px] max-w-[112px] max-h-[112px] rounded-full"
             />
-            <div className="absolute bottom-[3px] right-[2px] bg-primary rounded-full p-[5px]">
+            <div
+              className="absolute bottom-[3px] right-[2px] bg-primary rounded-full p-[5px]"
+              onClick={handleUploadAvatar}
+            >
               <IconCamera className="w-5 h-5" color="#fff" />
             </div>
           </div>
