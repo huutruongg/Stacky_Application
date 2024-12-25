@@ -9,7 +9,7 @@ export const companyInfoSchema = z.object({
     .nullable(),
   orgName: z
     .string()
-    .min(1, "Tên công ty là bắt buộc")
+    .min(1, "Tên công ty không được để trống")
     .refine(
       (data) => data.trim() === data,
       "Tên công ty không được chứa khoảng trắng đầu và cuối"
@@ -19,15 +19,15 @@ export const companyInfoSchema = z.object({
     .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
   orgScale: z
     .string()
-    .min(1, "Quy mô công ty là bắt buộc")
+    .min(1, "Quy mô công ty không được để trống")
     .refine(
       (data) => data.trim() === data,
       "Tên công ty không được chứa khoảng trắng đầu và cuối"
     ),
-  orgIntroduction: z.string().min(1, "Giới thiệu công ty là bắt buộc"),
+  orgIntroduction: z.string().min(1, "Giới thiệu công ty không được để trống"),
   orgField: z
     .string()
-    .min(1, "Ngành nghề chính của công ty là bắt buộc")
+    .min(1, "Ngành nghề chính của công ty không được để trống")
     .refine(
       (data) => data.trim() === data,
       "Ngành nghề chính công ty không được chứa khoảng trắng đầu và cuối"
@@ -49,12 +49,12 @@ export const companyInfoSchema = z.object({
     .nullable(),
   orgAddress: z
     .string()
-    .min(1, "Địa điểm công ty là bắt buộc")
+    .min(1, "Địa điểm công ty không được để trống")
     .refine(
       (data) => data.trim() === data,
       "Địa điểm công ty không được chứa khoảng trắng đầu và cuối"
     ),
-  orgBenefits: z.string().min(1, "Lợi ích của công ty là bắt buộc"),
+  orgBenefits: z.string().min(1, "Lợi ích của công ty không được để trống"),
   orgCoverImage: z
     .string()
     .url("Vui lòng nhập một URL hợp lệ cho ảnh bìa.")

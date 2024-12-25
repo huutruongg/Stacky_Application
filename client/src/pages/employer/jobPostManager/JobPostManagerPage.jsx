@@ -73,26 +73,16 @@ const JobPostManagerPage = () => {
               >
                 <div className="flex justify-between gap-5">
                   <div className="border rounded-lg">
-                    <a href="" className="rounded-lg">
-                      <img
-                        src={item.jobImage ? item.jobImage : imgCompany}
-                        alt=""
-                        className="overflow-hidden object-cover min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] rounded-lg"
-                      />
-                    </a>
+                    <img
+                      src={item.jobImage ? item.jobImage : imgCompany}
+                      alt=""
+                      className="overflow-hidden object-cover min-w-[80px] min-h-[80px] max-w-[80px] max-h-[80px] rounded-lg"
+                    />
                   </div>
                   <div className="flex flex-col justify-around gap-1 w-full">
                     <div className="flex gap-1 items-center justify-between">
-                      <h3>
-                        <div
-                          href=""
-                          className="cursor-pointer line-clamp-1 text-ellipsis font-medium hover:decoration-primary hover:text-primary hover:underline"
-                          onClick={() => {
-                            navigate(`/job-detail/`);
-                          }}
-                        >
-                          {item.jobTitle}
-                        </div>
+                      <h3 className="line-clamp-1 text-ellipsis font-medium">
+                        {item.jobTitle}
                       </h3>
                       <div className="flex items-center justify-center gap-2">
                         <div className="bg-primary p-1 rounded-full">
@@ -105,12 +95,9 @@ const JobPostManagerPage = () => {
                       </div>
                     </div>
                     <div>
-                      <a
-                        href="/company"
-                        className="w-fit line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
-                      >
+                      <span className="line-clamp-1 text-sm text-ellipsis uppercase text-text3">
                         {item.orgName}
-                      </a>
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">

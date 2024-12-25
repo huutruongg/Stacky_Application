@@ -31,7 +31,7 @@ const CompanyInfoPage = () => {
         const result = await fetchData(
           `recruiter/get-company-info/${user.userId}`
         );
-        console.log(result);
+        // console.log(result);
         // Đảm bảo orgImages luôn là một mảng
         const orgImages = Array.isArray(result.orgImages)
           ? result.orgImages
@@ -71,7 +71,7 @@ const CompanyInfoPage = () => {
       };
 
       await axiosInstance.put("/recruiter/update-company-info", formData);
-      console.log(formData);
+      // console.log(formData);
 
       toast.success("Công ty đã được lưu thành công!");
     } catch (error) {

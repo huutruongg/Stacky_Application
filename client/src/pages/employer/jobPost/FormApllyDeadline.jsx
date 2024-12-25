@@ -12,8 +12,14 @@ import {
 } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import dayjs from "dayjs";
+import InputField from "@/components/fieldForm/InputField";
 
 const FormApllyDeadline = ({ form }) => {
+  const commonInputProps = {
+    className: "flex items-center",
+    classNameLabel:
+      "flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5",
+  };
   return (
     <div className="bg-secondary p-5 rounded-xl">
       <TitleField children={"Hạn nộp hồ sơ"} />
@@ -62,49 +68,13 @@ const FormApllyDeadline = ({ form }) => {
             </FormItem>
           )}
         />
-        <FormField
+        <InputField
           control={form.control}
-          name={`jobSchedule`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <div className="flex items-center">
-                  <Label
-                    htmlFor={`jobSchedule`}
-                    className="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5 ant-form-item-required"
-                  >
-                    Thời gian làm việc dự kiến
-                  </Label>
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      value={field.value ? dayjs(field.value) : null}
-                      onChange={(date) => {
-                        if (date && date.isValid()) {
-                          field.onChange(date.toDate());
-                        } else {
-                          field.onChange(null);
-                        }
-                      }}
-                      sx={{
-                        width: "100%",
-                        "& .MuiInputBase-root": {
-                          height: "48px",
-                          borderRadius: "12px",
-                        },
-                        "& .MuiOutlinedInput-notchedOutline": {
-                          border: "1px solid #424242",
-                        },
-                        "& .MuiInputBase-input": {
-                          paddingLeft: "24px",
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          name="jobSchedule"
+          placeholder="Thời gian làm việc"
+          labelName="Thời gian làm việc"
+          id="jobSchedule"
+          {...commonInputProps}
         />
       </div>
     </div>

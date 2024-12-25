@@ -160,9 +160,9 @@ const FormRegisterEmployer = () => {
             placeholder="Lĩnh vực"
             classNameLabel={"ant-form-item-required"}
             options={[
-              { value: "technology", label: "Công nghệ" },
-              { value: "finance", label: "Tài chính" },
-              { value: "education", label: "Giáo dục" },
+              { value: "technology", label: "Công Nghệ Thông Tin" },
+              // { value: "finance", label: "Tài chính" },
+              // { value: "education", label: "Giáo dục" },
             ]}
           />
           <SelectField

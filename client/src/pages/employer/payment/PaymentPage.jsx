@@ -14,7 +14,7 @@ const PaymentPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const urlParams = new URLSearchParams(window.location.search);
   const transId = urlParams.get("apptransid");
-  console.log(amount);
+  // console.log(amount);
   useEffect(() => {
     const getData = async () => {
       try {
@@ -34,7 +34,7 @@ const PaymentPage = () => {
         packageName: "Nạp tiền vào Stacky",
         amount: amount,
       });
-      console.log(response);
+      // console.log(response);
       if (response.data?.order_url) {
         window.open(response.data.order_url, "_blank");
       }

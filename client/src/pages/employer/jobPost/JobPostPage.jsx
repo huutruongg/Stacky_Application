@@ -36,7 +36,7 @@ const JobPostPage = () => {
     fetchData();
   }, [balanceData]);
 
-  console.log(balanceData);
+  // console.log(balanceData);
 
   const form = useForm({
     resolver: zodResolver(postJobSchema),
@@ -60,7 +60,7 @@ const JobPostPage = () => {
       jobDescription: "",
       workEnvironment: "",
       applicationDeadline: null,
-      jobSchedule: null,
+      jobSchedule: "",
     },
   });
 
@@ -102,7 +102,7 @@ const JobPostPage = () => {
       if (!data.jobDescription) missingFields.push("Mô tả công việc");
       if (!data.workEnvironment) missingFields.push("Môi trường làm việc");
       if (!data.applicationDeadline) missingFields.push("Hạn chót ứng tuyển");
-      if (!data.jobSchedule) missingFields.push("Lịch làm việc");
+      if (!data.jobSchedule) missingFields.push("Thời gian làm việc");
 
       if (missingFields.length > 0) {
         toast.error(

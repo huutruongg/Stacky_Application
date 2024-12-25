@@ -50,13 +50,13 @@ const HeadingEmployer = () => {
               Đăng việc làm
             </Button>
           </NavLink>
-          <button>
+          {/* <button>
             {language ? (
               <IconVietNamese></IconVietNamese>
             ) : (
               <IconEnglish></IconEnglish>
             )}
-          </button>
+          </button> */}
           {user ? (
             <div className="flex w-full items-center bg-secondary rounded-md">
               <div
@@ -108,7 +108,7 @@ const HeadingEmployer = () => {
               </button>
             </Link>
           )}
-          <div className="flex items-center">
+          {/* <div className="flex items-center">
             <button
               className={`w-10 uppercase transition hover:text-primary ${
                 !language ? "font-bold text-primary" : "text-gray-400"
@@ -126,7 +126,7 @@ const HeadingEmployer = () => {
             >
               VI
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </header>

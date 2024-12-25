@@ -15,6 +15,20 @@ const CvUploadedPage = () => {
   const indexOfLastItem = currentPage * newsPerPage;
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
+  const { countAccepted, countPending, countRejected } =
+    jobData?.reduce(
+      (acc, item) => {
+        if (item.status === "ACCEPTED") {
+          acc.countAccepted += 1;
+        } else if (item.status === "PENDING") {
+          acc.countPending += 1;
+        } else if (item.status === "REJECTED") {
+          acc.countRejected += 1;
+        }
+        return acc;
+      },
+      { countAccepted: 0, countPending: 0, countRejected: 0 }
+    ) || {};
 
   const handlePageChange = (page) => {
     setCurrentPage(page); // Cập nhật trang hiện tại
@@ -38,8 +52,6 @@ const CvUploadedPage = () => {
     getData();
   }, []);
 
-  console.log(jobData);
-
   return (
     <div className="page-container grid grid-cols-12 gap-7 my-10">
       <div className="grid col-start-1 col-end-9 h-fit rounded-xl bg-secondary">
@@ -57,13 +69,13 @@ const CvUploadedPage = () => {
               việc làm đã ứng tuyển:
             </p>
             <span className="text-sm font-semibold text-accepted rounded-md">
-              {"3"} Đã đăng bài
+              {countAccepted} Đã đăng bài
             </span>
             <span className="text-sm font-semibold text-primary rounded-md">
-              {"2"} Chờ xét duyệt
+              {countPending} Chờ xét duyệt
             </span>
             <span className="text-sm font-semibold text-rejected rounded-md">
-              {"2"} Không được duyệt
+              {countRejected} Không được duyệt
             </span>
           </div>
           <div className="flex flex-col gap-5">

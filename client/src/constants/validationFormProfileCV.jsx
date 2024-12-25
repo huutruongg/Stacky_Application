@@ -100,8 +100,8 @@ export const profileCVSchema = (hasExperience) =>
     languages: z
       .array(
         z.object({
-          language: z.string().min(1, "Ngôn ngữ là bắt buộc"),
-          level: z.string().min(1, "Trình độ ngôn ngữ là bắt buộc"),
+          language: z.string().min(1, "Ngôn ngữ không được để trống"),
+          level: z.string().min(1, "Trình độ ngôn ngữ không được để trống"),
         })
       )
       .optional(),

@@ -17,7 +17,7 @@ const ModalResetPassword = ({ modalClose }) => {
         privateEmail: z
           .string()
           .email("Email không hợp lệ")
-          .nonempty("Email là bắt buộc"),
+          .nonempty("Email không được để trống"),
       })
     ),
     defaultValues: {

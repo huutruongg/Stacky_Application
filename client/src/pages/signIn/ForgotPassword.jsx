@@ -39,7 +39,7 @@ const ForgotPassword = () => {
             message:
               "Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
           }),
-          confirmPassword: z.string().nonempty("Xác nhận mật khẩu là bắt buộc"),
+          confirmPassword: z.string().nonempty("Xác nhận mật khẩu không được để trống"),
         })
         .refine((data) => data.password === data.confirmPassword, {
           message: "Mật khẩu và xác nhận mật khẩu không khớp",

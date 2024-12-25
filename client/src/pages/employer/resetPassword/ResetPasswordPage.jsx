@@ -11,11 +11,13 @@ import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import IconEye from "@/components/icons/IconEye";
 import IconEyeHiden from "@/components/icons/IconEyeHiden";
+import useAuth from "@/hooks/useAuth";
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
 const ResetPasswordPage = () => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { userId } = useParams();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -39,7 +41,9 @@ const ResetPasswordPage = () => {
             message:
               "Mật khẩu phải có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
           }),
-          confirmPassword: z.string().nonempty("Xác nhận mật khẩu là bắt buộc"),
+          confirmPassword: z
+            .string()
+            .nonempty("Xác nhận mật khẩu không được để trống"),
         })
         .refine((data) => data.password === data.confirmPassword, {
           message: "Mật khẩu và xác nhận mật khẩu không khớp",
@@ -62,9 +66,11 @@ const ResetPasswordPage = () => {
       if (response.data.success) {
         toast.success("Đã đặt lại mật khẩu thành công!");
         setIsSuccess(true);
-        setTimeout(() => {
+        if (user) {
+          logout();
+        } else {
           navigate("/account.stacky.vn");
-        }, 1500);
+        }
       } else {
         setErrorMessage(response.data.message);
         toast.error(response.data.message);
@@ -108,11 +114,6 @@ const ResetPasswordPage = () => {
             </NavLink>
           </div>
         </div>
-        {isSuccess && (
-          <div className="text-green-600 mt-3">
-            Mật khẩu đã được đặt lại thành công!
-          </div>
-        )}
         {errorMessage && (
           <div className="text-red-600 mt-3">{errorMessage}</div>
         )}

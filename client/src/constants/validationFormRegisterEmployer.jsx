@@ -7,7 +7,7 @@ export const registerEmployerSchema = z
       .requiredEmail()
       .regex(/^[^\s]+$/, "Email không được chứa khoảng trắng"),
     password: baseSchemas.password(),
-    confirmPassword: z.string().min(1, "Xác nhận mật khẩu là bắt buộc"),
+    confirmPassword: z.string().min(1, "Xác nhận mật khẩu không được để trống"),
     phoneNumber: z
       .string()
       .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Số điện thoại không hợp lệ")

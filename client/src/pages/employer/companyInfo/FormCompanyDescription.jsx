@@ -18,7 +18,7 @@ const FormCompanyDescription = ({ form }) => {
   useEffect(() => {
     const orgCoverImage = form.getValues("orgCoverImage");
     const orgImages = form.getValues("orgImages");
-    console.log(orgImages);
+    // console.log(orgImages);
     if (orgCoverImage) {
       setCoverImage(orgCoverImage);
     }
