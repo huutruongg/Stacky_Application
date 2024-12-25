@@ -4,15 +4,15 @@ import TitleField from "@/components/titleField/TitleField";
 import React from "react";
 
 const ModalReviewJob = ({ jobData }) => {
-  // console.log(jobData);
+  console.log(jobData);
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <TitleField children={"Chi tiết tuyển dụng"}></TitleField>
       <div className="flex flex-col gap-5">
-        {jobData.jobImage ? (
+        {jobData?.jobImage ? (
           <div className="flex items-center justify-center h-[220px] w-full overflow-hidden">
             <img
-              src={jobData.jobImage}
+              src={jobData?.jobImage}
               alt=""
               className="overflow-hidden object-cover min-w-[400px] min-h-[220px] max-w-[400px] max-h-[220px] rounded-md"
             />
@@ -26,9 +26,9 @@ const ModalReviewJob = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             {jobData?.jobDescription
-              ? !jobData.jobDescription.includes("\n")
-                ? jobData.jobDescription
-                : jobData.jobDescription.split("\n").map((line, index) => (
+              ? !jobData?.jobDescription.includes("\n")
+                ? jobData?.jobDescription
+                : jobData?.jobDescription.split("\n").map((line, index) => (
                     <li key={index}>
                       {line.replace(/^-/, "").trim()}{" "}
                       {/* Loại bỏ ký tự '-' và khoảng trắng */}
@@ -43,20 +43,20 @@ const ModalReviewJob = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>Trình độ học vấn: {jobData.educationRequired}</span>
+              <span>Trình độ học vấn: {jobData?.educationRequired}</span>
             </li>
             <li>
-              <span>Kinh nghiệm làm việc: {jobData.yearsOfExperience}</span>
+              <span>Kinh nghiệm làm việc: {jobData?.yearsOfExperience}</span>
             </li>
             <li>
-              <span>Ngành nghề yêu cầu: {jobData.jobTitle}</span>
+              <span>Ngành nghề yêu cầu: {jobData?.jobTitle}</span>
             </li>
             <li>
-              <span>Kỹ năng chuyên môn: {jobData.professionalSkills}</span>
+              <span>Kỹ năng chuyên môn: {jobData?.professionalSkills}</span>
             </li>
-            {jobData.certificateRequired !== "" ? (
+            {jobData?.certificateRequired !== "" ? (
               <li>
-                <span>Chứng chỉ cần thiết: {jobData.certificateRequired}</span>
+                <span>Chứng chỉ cần thiết: {jobData?.certificateRequired}</span>
               </li>
             ) : (
               ""
@@ -72,7 +72,7 @@ const ModalReviewJob = ({ jobData }) => {
               {jobData?.languagesRequired?.map((item, index) => (
                 <li key={index}>
                   <span>
-                    {item.language}: {item.level}
+                    {item?.language}: {item?.level}
                   </span>
                 </li>
               ))}
@@ -87,9 +87,9 @@ const ModalReviewJob = ({ jobData }) => {
             {jobData?.jobBenefit !== "" ? (
               <div>
                 {jobData?.jobBenefit
-                  ? !jobData.jobBenefit.includes("\n")
-                    ? jobData.jobBenefit
-                    : jobData.jobBenefit.split("\n").map((line, index) => (
+                  ? !jobData?.jobBenefit.includes("\n")
+                    ? jobData?.jobBenefit
+                    : jobData?.jobBenefit.split("\n").map((line, index) => (
                         <li key={index}>
                           {line.replace(/^-/, "").trim()}{" "}
                           {/* Loại bỏ ký tự '-' và khoảng trắng */}
@@ -111,7 +111,7 @@ const ModalReviewJob = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>{jobData.location}</span>
+              <span>{jobData?.location}</span>
             </li>
           </div>
         </div>
@@ -121,7 +121,7 @@ const ModalReviewJob = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>{jobData.typeOfWork}</span>
+              <span>{jobData?.jobSchedule}</span>
             </li>
           </div>
         </div>

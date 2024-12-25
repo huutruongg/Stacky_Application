@@ -196,6 +196,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
         `/email/send-email-to-candidates`,
         {
           emails: selectedCandidates.map((candidate) => candidate.email),
+          jobPostId: data.jobId,
           subject: "Gửi mail",
           text: formData.text,
         }
@@ -205,7 +206,6 @@ const CandidateLists = ({ data, candidatesLimit }) => {
       setSelectedCandidates([]);
       toast.success("Gửi mail thành công");
       form.reset();
-      setTriggerRender((prev) => !prev);
     } catch (error) {
       console.log(error);
       toast.error("Gửi mail thất bại");

@@ -20,7 +20,7 @@ const CompanyListsPage = () => {
     indexOfFirstItem,
     indexOfLastItem
   );
-  console.log(companyData);
+  // console.log(companyData);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

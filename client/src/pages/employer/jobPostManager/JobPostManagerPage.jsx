@@ -8,6 +8,7 @@ import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import CandidateListSkeleton from "@/components/skeleton/CandidateListSkeleton";
 import IconPrice from "@/components/icons/IconPrice";
+import FormatDate from "@/components/format/FormatDate";
 
 const JobPostManagerPage = () => {
   const [data, setData] = useState([]);
@@ -19,6 +20,12 @@ const JobPostManagerPage = () => {
   const indexOfLastItem = currentPage * newsPerPage;
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = data.slice(indexOfFirstItem, indexOfLastItem);
+  const isPastDeadline = (applicationDeadline) => {
+    const deadline = new Date(applicationDeadline); // Chuyển đổi thành Date
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Chỉ giữ phần ngày, bỏ giờ
+    return deadline < today;
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -101,6 +108,21 @@ const JobPostManagerPage = () => {
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
+                        <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px] max-w-80 line-clamp-1 text-xs text-center">
+                          <span>
+                            {isPastDeadline(item.applicationDeadline) ? (
+                              <span className="text-red-500">
+                                Hạn nộp đã qua
+                              </span>
+                            ) : (
+                              <span>
+                                {FormatDate.formatDate(
+                                  item.applicationDeadline
+                                )}
+                              </span>
+                            )}
+                          </span>
+                        </div>
                         <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px] max-w-80 line-clamp-1 text-xs text-center">
                           <span>{item.location}</span>
                         </div>
