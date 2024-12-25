@@ -21,6 +21,7 @@ export const RolePermissions: Record<UserRoles, string[]> = {
         'searchCandidates',
         'searchCompanies',
         'deleteCandidate',
+        'syncJsonToMongoDB'
     ],
     [UserRoles.RECRUITER]: [
         'getAppliedJobs',

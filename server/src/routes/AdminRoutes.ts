@@ -46,5 +46,7 @@ export default class AdminRoutes extends BaseRoutes {
             this.adminController.searchCandidates);
         this.router.get('/search-companies', verifyToken, refreshToken, authenticate, authorize(['searchCompanies']),
             this.adminController.searchCompanies);
+        this.router.post('/sync-json-to-mongodb', verifyToken, refreshToken, authenticate, authorize(['syncJsonToMongoDB']),
+            this.adminController.syncJsonToMongoDB);
     }
 }

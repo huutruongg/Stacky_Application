@@ -1,12 +1,19 @@
 {
   "name": "stacky-api-application",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "server.local.ts",
   "scripts": {
     "start": "npm run build && node dist/index.js",
     "dev": "nodemon src/server.local.ts",
     "ngrok": "ngrok http --domain=happily-novel-chamois.ngrok-free.app 5050",
-    "inspect": "node --inspect --trace-gc -r ts-node/register src/server.local.ts"
+    "inspect": "node --inspect --trace-gc -r ts-node/register src/server.local.ts",
+    "json-server": "json-server --watch src/backup/db.json --port 3000",
+    "docker-run": "docker start comparison-api-container",
+    "docker-stop-only": "docker stop comparison-api-container",
+    "build-redis": "docker run -d --name redis-container -p 6379:6379 redis",
+    "redis-start": "docker start redis-container",
+    "redis-stop": "docker stop redis-container",
+    "mongo-to-json": "ts-node src/backup/syncToJsonServer.ts"
   },
   "keywords": [],
   "author": "",

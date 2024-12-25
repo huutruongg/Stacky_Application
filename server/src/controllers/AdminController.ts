@@ -2,6 +2,7 @@ import { log } from "console";
 import AdminService from "../services/AdminService";
 import { BaseController } from "./BaseController";
 import { Request, Response } from "express";
+import syncJsonToMongoDB from "../backup/syncJsonToMongoDB";
 
 export default class AdminController extends BaseController {
     private adminService: AdminService;
@@ -154,6 +155,16 @@ export default class AdminController extends BaseController {
             const query = req.query.q as string;
             const companies = await this.adminService.searchCompanies(query);
             this.sendResponse(res, 200, { success: true, companies });
+        } catch (error) {
+            log(error);
+            this.sendError(res, 500, 'Internal server error');
+        }
+    };
+
+    public syncJsonToMongoDB = async (req: Request, res: Response): Promise<void> => {
+        try {
+            await syncJsonToMongoDB();
+            this.sendResponse(res, 200, { success: true, message: 'Data synchronization from JSON Server to MongoDB completed.' });
         } catch (error) {
             log(error);
             this.sendError(res, 500, 'Internal server error');

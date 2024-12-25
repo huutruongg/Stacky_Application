@@ -1,0 +1,939 @@
+{
+    "revenuereports": [
+        {
+            "id": "676978e1d50d4dabef1ef798",
+            "year": "2024",
+            "month": "12",
+            "depositRevenue": 3700000,
+            "paymentRevenue": 700000,
+            "updatedAt": "2024-12-23T14:51:13.308Z",
+            "__v": 0
+        }
+    ],
+    "users": [
+        {
+            "id": "670b9a7c2fb89f987a631c78",
+            "privateEmail": "admin@gmail.com",
+            "password": "$2a$10$Pbmn6cNGHmnAqS7PSuQQEesy8RLx9Pmdn1szjU8FtctHnI25vBnWO",
+            "role": "ADMIN",
+            "createdAt": "2024-10-13T10:01:32.486Z",
+            "__v": 0
+        },
+        {
+            "id": "6769716fc3b9cdce672a2a2b",
+            "privateEmail": "tranducminh3@dtu.edu.vn",
+            "password": "$2a$10$j7JRseiDLTVHK.snW5Sxouzck8A.W94iBm3o32jGuuY0XqmeS8yhe",
+            "role": "RECRUITER",
+            "phoneNumber": "0345678922",
+            "createdAt": "2024-12-23T14:19:27.822Z",
+            "__v": 0
+        },
+        {
+            "id": "67697195e6a9135d4c8301d6",
+            "privateEmail": "conghuu1423@gmail.com",
+            "password": "$2a$10$XU6.3v9LX86qhtUkxTm9COMOuvNWldHKKWfba7dnKt644wwLog7s6",
+            "role": "RECRUITER",
+            "phoneNumber": "0795726580",
+            "createdAt": "2024-12-23T14:20:05.960Z",
+            "__v": 0
+        },
+        {
+            "id": "67697aadd50d4dabef1ef7c3",
+            "privateEmail": "ducminh231003@gmail.com",
+            "role": "CANDIDATE",
+            "createdAt": "2024-12-23T14:58:53.950Z",
+            "__v": 0,
+            "phoneNumber": "0343032993"
+        },
+        {
+            "id": "676a2e063aa89dee988fb591",
+            "privateEmail": "huutruong1410@gmail.com",
+            "role": "CANDIDATE",
+            "createdAt": "2024-12-24T03:44:06.782Z",
+            "__v": 0,
+            "phoneNumber": "0795726580"
+        },
+        {
+            "id": "676a46965b7ea3ed046ec7a8",
+            "privateEmail": "gpttpm3@gmail.com",
+            "role": "CANDIDATE",
+            "createdAt": "2024-12-24T05:28:54.939Z",
+            "__v": 0
+        },
+        {
+            "id": "676b7e83b52557dc0b42bff0",
+            "privateEmail": "ntl141123@gmail.com",
+            "role": "CANDIDATE",
+            "createdAt": "2024-12-25T03:39:47.817Z",
+            "__v": 0
+        },
+        {
+            "id": "676ba4c7e1cc46cb1c0cc0c1",
+            "privateEmail": "tranducminh345@gmail.com",
+            "password": "$2a$10$Mu6RyjFNaPR9Ntz.uWwGB.7iFbhynC8Zf330rj7TAPQN6rVtOOI9a",
+            "role": "RECRUITER",
+            "phoneNumber": "0384753413",
+            "createdAt": "2024-12-25T06:23:03.508Z",
+            "__v": 0
+        },
+        {
+            "id": "676c21c457f3cac24638e53e",
+            "privateEmail": "nguyenthuclinh2@dtu.edu.vn",
+            "password": "$2a$10$tNF7H.3NgUnWt4SBEdM5Zuzbnf27OB4vWFQvOhg1625rqMCrwAOrm",
+            "role": "RECRUITER",
+            "phoneNumber": "0767069676",
+            "createdAt": "2024-12-25T15:16:20.676Z",
+            "__v": 0
+        },
+        {
+            "id": "676c25b035d72de453adfb8b",
+            "privateEmail": "minhkrb3108@gmail.com",
+            "role": "CANDIDATE",
+            "createdAt": "2024-12-25T15:33:04.929Z",
+            "__v": 0,
+            "phoneNumber": "0913576245"
+        },
+        {
+            "id": "676c2c7b35d72de453adfc8f",
+            "privateEmail": "captone1.c1se16@gmail.com",
+            "password": "$2a$10$rvaJafcRgS6e6UmVhHxiHeXP.NJaVDYjtTh9FHM900MVZ5cdYlvAq",
+            "role": "RECRUITER",
+            "phoneNumber": "0913576245",
+            "createdAt": "2024-12-25T16:02:03.407Z",
+            "__v": 0
+        }
+    ],
+    "jobposts": [
+        {
+            "id": "676ac3628dc412a541a6c1cf",
+            "userId": "6769716fc3b9cdce672a2a2b",
+            "jobTitle": "Backend Developer",
+            "orgName": "Công ty lập trình phần mềm FPT Software",
+            "jobImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735050036612-LiemNT8-FAP-4.png",
+            "typeOfWork": "fullTime",
+            "location": "Đà Nẵng, VN.",
+            "jobSalary": "Thoả thuận",
+            "candidatesLimit": 10,
+            "educationRequired": "university",
+            "yearsOfExperience": "notRequired",
+            "typeOfIndustry": "IT",
+            "professionalSkills": "Proficiency in a backend programming language: Javascript, Typescript, or Python.\nBasic knowledge of frameworks: Spring Boot, Hibernate, ExpressJS,...\nFamiliarity with SQL databases (MySQL, PostgreSQL) and NoSQL databases (MongoDB, Redis).\nSkills in building and securing APIs (RESTful APIs, JWT, OAuth).\nBasic knowledge of version control tools: Git.\nStrong teamwork and problem-solving skills.",
+            "certificateRequired": "RESTful API, AWS Certificate,...",
+            "languagesRequired": [
+                {
+                    "language": "english",
+                    "level": "advanced",
+                    "_id": "676ac3628dc412a541a6c1d0"
+                },
+                {
+                    "language": "japanese",
+                    "level": "beginner",
+                    "_id": "676ac3628dc412a541a6c1d1"
+                }
+            ],
+            "jobBenefit": "- Competitive monthly allowance for interns.\n- Opportunity to work on real-world projects and enhance technical skills.\n- Access to training programs and mentoring by experienced developers.\n- Networking opportunities with professionals in the field.\n- Free snacks, coffee, and access to an engaging work environment.\n- Certificate of completion and recommendation letter upon successful internship.\n- Possibility of full-time employment based on performance.",
+            "leavePolicy": "Flexible working hours for interns to balance work and study. One day of paid leave per month during the internship period. Additional leave for medical or personal emergencies with prior approval. National holidays observed as per company policy.",
+            "jobDescription": "- Assist in developing backend features for the enterprise data management system.\n- Participate in building and optimizing RESTful APIs using Spring Boot.\n- Work with MySQL and MongoDB databases, including table design and query optimization.\n- Learn and apply containerization technologies such as Docker.\n- Contribute to writing technical documentation and progress reports for the management team.\n- Support in testing, debugging, and improving developed modules.",
+            "workEnvironment": "Collaborative and supportive team culture where interns are encouraged to contribute ideas and solutions. A modern, comfortable office with access to the latest development tools and technologies. A flexible work schedule, with options for remote work when necessary. Regular team-building activities and social events to foster a positive work atmosphere. Open-door policy with managers and mentors for continuous learning and feedback. Opportunities for professional growth through training and hands-on experience. A diverse, inclusive workplace that values different perspectives and backgrounds.",
+            "applicationDeadline": "2024-12-30T17:00:00.000Z",
+            "jobSchedule": "2024-12-31T17:00:00.000Z",
+            "staffLevel": "Intern",
+            "genderRequired": "men",
+            "postedAt": "2024-12-24T14:21:22.542Z",
+            "invisible": false,
+            "__v": 0
+        },
+        {
+            "id": "676c341b35d72de453adfe15",
+            "userId": "676c2c7b35d72de453adfc8f",
+            "jobTitle": "Game Development",
+            "orgName": "Sun Studio",
+            "jobImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735144139231-12313.png",
+            "typeOfWork": "fullTime",
+            "location": "Tầng 19, Tòa nhà AP Tower, 518B Điện Biên Phủ, Phường 21, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
+            "jobSalary": "Thỏa thuận",
+            "candidatesLimit": 5,
+            "educationRequired": "university",
+            "yearsOfExperience": "1-2Years",
+            "typeOfIndustry": "IT",
+            "professionalSkills": "Thành thạo Unity, C#, Python, C++",
+            "certificateRequired": "0",
+            "languagesRequired": [
+                {
+                    "language": "english",
+                    "level": "intermediate",
+                    "_id": "676c341b35d72de453adfe16"
+                },
+                {
+                    "language": "japanese",
+                    "level": "beginner",
+                    "_id": "676c341b35d72de453adfe17"
+                }
+            ],
+            "jobBenefit": "Chế độ đãi ngộ\n1. Lương và giờ làm việc\n\nLương: Hấp dẫn\nVị trí này sẽ làm việc tại văn phòng. Thời gian làm việc từ 9:00 - 18:30, từ thứ 2 đến thứ 6.\n2. Bảo hiểm và chế độ thưởng\n\nĐược tham gia đầy đủ BHXH/ BHYT/ BHTN theo quy định của luật lao động.\nNgoài ra bạn sẽ được tham gia bảo hiểm sức khỏe riêng PVI.\nPhụ cấp ăn trưa hàng tháng.\nThưởng cố định lương tháng 13.\nThưởng cuối năm không giới hạn, tùy thuộc vào doanh thu của công ty và mức độ đóng góp của bạn trong các dự án.\n3. Cân bằng cuộc sống & công việc\n\nNgoài những ngày nghỉ lễ theo quy định của nhà nước, chúng tôi có thêm rất nhiều ngày nghỉ được trả lương và nghỉ ốm.\n4. Nơi làm việc thoải mái\n\nTại văn phòng, chúng tôi có khu vực giải trí, cung cấp đồ ăn phụ và đồ uống miễn phí để giúp bạn làm việc thoải mái và cân bằng.\nGóc Thư viện sách cho các bạn thích đọc sách giấy.\n5. Phát triển chuyên môn và giáo dục\n\nChúng tôi hoàn trả chi phí cho việc tham gia vào các hội nghị và khóa học có liên quan, đồng thời thường xuyên tổ chức các chương trình đào tạo nâng cao nghiệp vụ.\nCông ty có chính sách hỗ trợ việc thăng tiến và phát triển sự nghiệp của nhân viên.\n6. Giải trí và gắn kết\n\nHàng tuần / tháng / năm, chúng tôi tổ chức nhiều sự kiện, bao gồm các cuộc thi, thử thách thể thao, tiệc, happy hours, team building, hackathons và sự kiện ngoại tuyến dành cho từng đội.\n7. Dự án trách nhiệm xã hội\n\nChúng tôi tiếp tục triển khai các dự án từ thiện và hỗ trợ ý tưởng của nhân viên trong các cuộc thi tài trợ.",
+            "leavePolicy": "1 năm 16 ngày",
+            "jobDescription": "Tạo các sản phẩm game 2D",
+            "workEnvironment": "Văn phòng",
+            "applicationDeadline": "2025-01-14T17:00:00.000Z",
+            "jobSchedule": "16/01/2025",
+            "staffLevel": "Developer",
+            "genderRequired": "men/women",
+            "postedAt": "2024-12-25T16:34:35.229Z",
+            "invisible": false,
+            "__v": 0
+        }
+    ],
+    "recruiters": [
+        {
+            "id": "6769716fc3b9cdce672a2a2d",
+            "userId": "6769716fc3b9cdce672a2a2b",
+            "orgName": "Công ty lập trình phần mềm FPT Software",
+            "orgField": "technology",
+            "orgScale": "Hơn 1000",
+            "orgTaxNumber": "1234567890",
+            "orgAddress": "Sơn Trà, Đà Nẵng",
+            "orgImages": [
+                "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1734964158482-images.jpg",
+                "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1734964162707-images_(1).jpg"
+            ],
+            "payments": [
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-23T14:51:12.925Z",
+                    "isDeposit": true,
+                    "_id": "676978e1d50d4dabef1ef796"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-23T14:58:45.323Z",
+                    "isDeposit": false,
+                    "_id": "67697aa5d50d4dabef1ef7af"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-24T07:17:42.661Z",
+                    "isDeposit": true,
+                    "_id": "676a601656c9bec17246f1eb"
+                },
+                {
+                    "payAmount": 50000,
+                    "transactionDate": "2024-12-24T07:18:30.542Z",
+                    "isDeposit": true,
+                    "_id": "676a604656c9bec17246f21a"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-24T14:21:21.999Z",
+                    "isDeposit": false,
+                    "_id": "676ac3628dc412a541a6c1c0"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-25T10:28:50.116Z",
+                    "isDeposit": false,
+                    "_id": "676bde6201439a4767f2ce96"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-25T10:29:31.212Z",
+                    "isDeposit": false,
+                    "_id": "676bde8b01439a4767f2cebf"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-25T10:31:56.508Z",
+                    "isDeposit": false,
+                    "_id": "676bdf1c82bf51ff03f85818"
+                },
+                {
+                    "payAmount": 50000,
+                    "transactionDate": "2024-12-25T14:31:31.784Z",
+                    "isDeposit": true,
+                    "_id": "676c1743b15233dde2172318"
+                }
+            ],
+            "__v": 0,
+            "orgBenefits": "FPT Software là công ty thành viên thuộc Tập đoàn FPT. Được thành lập từ năm 1999, FPT Software hiện là công ty chuyên cung cấp các dịch vụ và giải pháp phần mềm cho các khách hàng quốc tế, với hơn 28000 nhân viên, hiện diện tại 27 quốc gia trên toàn cầu. Nhiều năm liền, FPT Software được bình chọn là Nhà Tuyển dụng được yêu thích nhất và nằm trong TOP các công ty có môi trường làm việc tốt nhất châu Á.",
+            "orgCoverImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1734964153196-logo-fpt.png",
+            "orgEmail": "jjjj@gmail.com",
+            "orgFacebookLink": "http://localhost:5173/company-profile",
+            "orgImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1734964092374-download.png",
+            "orgIntroduction": "FPT Software là công ty thành viên thuộc Tập đoàn FPT. Được thành lập từ năm 1999, ",
+            "orgLinkedinLink": "http://localhost:5173/company-profile",
+            "orgYoutubeLink": "http://localhost:5173/company-profile",
+            "balance": "fe14a08bb57339ae5d0e247ad2b37c6f:bcec44edfc260775c871e687efd8ba38"
+        },
+        {
+            "id": "67697196e6a9135d4c8301d8",
+            "userId": "67697195e6a9135d4c8301d6",
+            "orgName": "FPT Software",
+            "orgField": "technology",
+            "orgScale": "Hơn 1000",
+            "orgTaxNumber": "123321123",
+            "orgAddress": "123 Lê Hữu Trác, Sơn Trà, Đà Nẵng, Việt Nam",
+            "orgImages": [],
+            "payments": [],
+            "__v": 0
+        },
+        {
+            "id": "6769720fc3b9cdce672a2a33",
+            "userId": "6769720fc3b9cdce672a2a31",
+            "orgName": "MGM company",
+            "orgField": "technology",
+            "orgScale": "1000-4999",
+            "orgTaxNumber": "8723480413",
+            "orgAddress": "Sơn Trà, Đà Nẵng",
+            "orgImages": [],
+            "payments": [],
+            "__v": 0
+        },
+        {
+            "id": "676ba4c7e1cc46cb1c0cc0c3",
+            "userId": "676ba4c7e1cc46cb1c0cc0c1",
+            "orgName": "Công ty Công nghệ thông tin CMC",
+            "orgField": "technology",
+            "orgScale": "1000-4999",
+            "orgTaxNumber": "0123456789",
+            "orgAddress": "Tòa nhà CMC Tower, số 11 phố Duy Tân, Phường Dịch Vọng Hậu, Quận Cầu Giấy, Hà Nội.",
+            "orgImages": [],
+            "payments": [],
+            "__v": 0
+        },
+        {
+            "id": "676c21c457f3cac24638e540",
+            "userId": "676c21c457f3cac24638e53e",
+            "orgName": "ABC",
+            "orgField": "technology",
+            "orgScale": "10-24",
+            "orgTaxNumber": "1234567890",
+            "orgAddress": "Đà Nẵng",
+            "orgImages": [],
+            "payments": [],
+            "__v": 0
+        },
+        {
+            "id": "676c2c7b35d72de453adfc91",
+            "userId": "676c2c7b35d72de453adfc8f",
+            "orgName": "Sun Studio",
+            "orgField": "technology",
+            "orgScale": "25-99",
+            "orgTaxNumber": "357951310822",
+            "orgAddress": "Tầng 19, Tòa nhà AP Tower, 518B Điện Biên Phủ, Phường 21, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
+            "orgImages": [
+                "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735142965981-32.png",
+                "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735143017962-22.png"
+            ],
+            "payments": [
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:14:37.837Z",
+                    "isDeposit": true,
+                    "_id": "676c2f6d35d72de453adfcb0"
+                },
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:15:17.705Z",
+                    "isDeposit": true,
+                    "_id": "676c2f9535d72de453adfcc6"
+                },
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:15:53.784Z",
+                    "isDeposit": true,
+                    "_id": "676c2fb935d72de453adfce4"
+                },
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:16:52.579Z",
+                    "isDeposit": true,
+                    "_id": "676c2ff435d72de453adfd0a"
+                },
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:22:40.653Z",
+                    "isDeposit": true,
+                    "_id": "676c315035d72de453adfd4d"
+                },
+                {
+                    "payAmount": 500000,
+                    "transactionDate": "2024-12-25T16:23:15.139Z",
+                    "isDeposit": true,
+                    "_id": "676c317335d72de453adfd83"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-25T16:27:57.565Z",
+                    "isDeposit": false,
+                    "_id": "676c328d35d72de453adfdc0"
+                },
+                {
+                    "payAmount": 100000,
+                    "transactionDate": "2024-12-25T16:34:34.901Z",
+                    "isDeposit": false,
+                    "_id": "676c341a35d72de453adfe00"
+                }
+            ],
+            "__v": 0,
+            "orgBenefits": "Benefits\n\n1. Salary and working hours\n\nSalary: Attractive\nThis position will work in the office. Working hours are from 9:00 - 18:30, from Monday to Friday.\n\n2. Insurance and bonus\n\nFull participation in social insurance/health insurance/unemployment insurance according to the provisions of the labor law.\nIn addition, you will participate in PVI's own health insurance.\nMonthly lunch allowance.\nFixed bonus of 13th month salary.\nUnlimited year-end bonus, depending on the company's revenue and your contribution to the projects.\n\n3. Work & life balance\n\nIn addition to public holidays, we have many paid holidays and sick leave.\n\n4. Comfortable workplace\n\nIn the office, we have an entertainment area, providing free snacks and drinks to help you work comfortably and in balance.\nBook Library Corner for those who like to read paper books.\n5. Professional Development and Education\n\nWe reimburse the cost of participating in relevant conferences and courses, and regularly organize professional development training programs.\nThe company has a policy of supporting employees' promotion and career development.\n6. Entertainment and Engagement\n\nWe organize a variety of events every week/month/year, including competitions, sports challenges, parties, happy hours, team building, hackathons and offline events for each team.\n7. Social Responsibility Projects\n\nWe continue to implement charity projects and support employee ideas in sponsorship competitions.",
+            "orgCoverImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735142843375-TopDev-131518faabf116d6999e3d24732603bd-1732672909.png",
+            "orgEmail": "captone1.c1se16@gmail.com",
+            "orgFacebookLink": "https://www.facebook.com/reel/1382886366005904",
+            "orgImage": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735142655391-123.png",
+            "orgIntroduction": "About Us\nFounded in 2018, Sun Studio is a web and mobile game developer with over 1 billion plays. Our mission is to create games that are accessible and enjoyable for everyone.\n\nCurrently, the company has nearly 60 members, dozens of collaborators with over 40 game titles and is a strategic partner of the world's leading web-games platforms such as: Facebook Instant Games, Yandex, Game Distribution, Glance Gaming....",
+            "orgLinkedinLink": "https://www.linkedin.com/in/ravena-o/",
+            "orgYoutubeLink": "https://www.youtube.com/watch?v=e4jkuP_Mm_A",
+            "balance": "a47be377814303723ad8f9b90f53eb01:aa639c10d9c0a32012de6514a9176341"
+        }
+    ],
+    "candidates": [
+        {
+            "id": "67697aaed50d4dabef1ef7c5",
+            "userId": "67697aadd50d4dabef1ef7c3",
+            "fullName": "Trần Đức Minh Quân",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676c22ac900ea9b0b654be38"
+                }
+            ],
+            "projects": [
+                {
+                    "projectName": " WEBSITE SHOP RICE ",
+                    "projectTime": "09/2021-10/2024",
+                    "urlRepo": "https://github.com/DucMinh-Henry/rice_3_man",
+                    "projectDescription": "Web application to sell rice online",
+                    "_id": "676c22ac900ea9b0b654be39"
+                }
+            ],
+            "educations": [
+                {
+                    "schoolName": "Duy Tân",
+                    "startDate": "2021-12-13T17:00:00.000Z",
+                    "finishDate": "2024-12-22T17:00:00.000Z",
+                    "fieldName": "Software engineering",
+                    "_id": "676c22ac900ea9b0b654be3a"
+                }
+            ],
+            "experiences": [],
+            "certifications": [],
+            "jobSaved": [
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "savedAt": "2024-12-25T14:38:05.255Z",
+                    "_id": "676c19c6900ea9b0b654bccf"
+                }
+            ],
+            "jobApplied": [
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "status": "ACCEPTED",
+                    "appliedAt": "2024-12-25T14:39:16.209Z",
+                    "_id": "676c1914900ea9b0b654bc8a"
+                }
+            ],
+            "__v": 0,
+            "oauthToken": {
+                "provider": "GITHUB",
+                "accessToken": "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",
+                "_id": "676c2426900ea9b0b654bec1"
+            },
+            "address": "sdfsdffsdf",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735137034769-IMG_1110.jpg",
+            "birthDate": "2003-10-22T17:00:00.000Z",
+            "gender": false,
+            "githubUrl": "https://github.com/DucMinh-Henry/rice_3_man",
+            "jobPosition": "Front-end",
+            "linkedinUrl": "https://www.linkedin.com/DucMinh-Henry/rice_3_man",
+            "personalDescription": " I love playing sport and listening to music",
+            "phoneNumber": "0343032993",
+            "professionalSkills": "FRONT-END\nHTML-CSS(SCSS), Javascript, ReactJS, TaiwindCSS\nWORKING SKILL\nUnderstanding about GIT (Github), Figma, Postman",
+            "publicEmail": "ducminh231@gmail.com"
+        },
+        {
+            "id": "676a2e063aa89dee988fb593",
+            "userId": "676a2e063aa89dee988fb591",
+            "fullName": "Trương Công Hữu",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038101"
+                },
+                {
+                    "language": "japanese",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038102"
+                }
+            ],
+            "projects": [
+                {
+                    "projectName": "HP Dashboard",
+                    "projectTime": "02/2024-05/2024",
+                    "urlRepo": "https://github.com/k1v4z/HpDashboard",
+                    "projectDescription": "Dashboard integrate two given database\nAn Application that shows the following summarized information\nThe total earnings by shareholder, gender, ethnicity, part-time, and full- time employee to date and the previous year, by department\nTotal number of vacation days taken by shareholder, gender, ethnicity, part-time, and fulltime employee to date and the previous year\nAverage benefits paid to shareholders and non-shareholders to date by benefits plan\nIn addition, management would like to be able to set alerts when the following conditions occur:\nAn employee is within a certain number of days of their hiring anniversary\nAn employee has accumulated more than a certain number of days of vacation\nEmployees make a change to their benefits plan that affects their payroll\nAll employees who have birthdays within the current month",
+                    "_id": "676ab43bbd03946754038103"
+                },
+                {
+                    "projectName": "Food Ordering System",
+                    "projectTime": "10/2024-12/2024",
+                    "urlRepo": "https://github.com/lehaiduy2003/Software-Architecture",
+                    "projectDescription": "This is a team project to end our course. It's a project that applies some quality attributes such as Security(refreshToken, revokeToken), Scalability(Micro-service), Availability(rate-limit), Performance(server caching).",
+                    "_id": "676ab43bbd03946754038104"
+                }
+            ],
+            "educations": [
+                {
+                    "schoolName": "Duy Tan University",
+                    "startDate": "2021-09-30T17:00:00.000Z",
+                    "finishDate": "2024-12-23T17:00:00.000Z",
+                    "fieldName": "Software Engineering",
+                    "_id": "676ab43bbd03946754038105"
+                }
+            ],
+            "experiences": [
+                {
+                    "companyName": "FPT Software",
+                    "startDate": "2024-09-04T17:00:00.000Z",
+                    "endDate": "2024-11-29T17:00:00.000Z",
+                    "jobPosition": "Intern Java Backend Developer",
+                    "previousJobDetails": "- Participated in developing backend modules for the internal data management system.\n- Learned and worked with Spring Boot to build RESTful APIs.\n- Integrated MySQL database into applications, optimized queries, and designed table structures.\n- Assisted in deploying applications to servers using Docker and Jenkins.\n- Wrote and executed unit tests to ensure code quality.\n- Attended team meetings, received feedback, and improved coding skills.\n- Learned and applied security principles in backend application development.",
+                    "_id": "676ab43bbd03946754038106"
+                }
+            ],
+            "certifications": [
+                {
+                    "certificateName": "AWS Certified Developer",
+                    "dateOfReceipt": "2024-12-01T17:00:00.000Z",
+                    "certificateDetail": "Developing and deploying applications on the AWS platform.\nDeep understanding of core AWS services such as Lambda, DynamoDB, S3, API Gateway, ECS, and more.\nProficient use of AWS CLI and SDK tools for integration and application development.\nOptimizing application performance and cost on AWS.\nSecuring applications through IAM, data encryption, and access control policies.",
+                    "_id": "676ab43bbd03946754038107"
+                }
+            ],
+            "jobSaved": [],
+            "jobApplied": [
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "status": "ACCEPTED",
+                    "appliedAt": "2024-12-25T12:13:12.716Z",
+                    "_id": "676bf6d8f5d255e5368f1557"
+                },
+                {
+                    "jobPostId": "676c341b35d72de453adfe15",
+                    "status": "PENDING",
+                    "appliedAt": "2024-12-25T16:45:15.988Z",
+                    "_id": "676c369bc84b97563abed04f"
+                }
+            ],
+            "__v": 0,
+            "oauthToken": {
+                "provider": "GITHUB",
+                "accessToken": "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",
+                "_id": "676c38b9c84b97563abed0f1"
+            },
+            "address": "318 Ton Dan St. An Khe, Thanh Khe, Da Nang, VN",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735046049072-ht.jpg",
+            "birthDate": "2003-10-13T17:00:00.000Z",
+            "gender": false,
+            "githubUrl": "https://github.com/huutruongg",
+            "jobPosition": "Backend Developer",
+            "linkedinUrl": "",
+            "personalDescription": "As a fourth-year student with a 3.4 GPA, I seek employment as a Backend NodeJS Developer. In second-\nyear, I successfully developed an e-commerce website using .NET technology. Currently, I am collaborating\n\nwith a team to refine an application capable of seamlessly integrating disparate systems, further enhancing my\nproficiency in Back-end development and teamwork. I hope to build on my previous experience and make a\nmeaningful contribution to the organization I am working for.",
+            "phoneNumber": "0795726580",
+            "professionalSkills": "I am proficient in some skills below:\n- Programming languages: Javascript, Typescript, Python\n- Database: \nMongoDB, MySQL, SQL Server\n- RESTful API\n- Tools: git/Github, Docker, Postman\n- IDE: VS Code, PyCharm, IntellliJ",
+            "publicEmail": "huutruong1410@gmail.com"
+        },
+        {
+            "id": "676a46975b7ea3ed046ec7aa",
+            "userId": "676a46965b7ea3ed046ec7a8",
+            "fullName": "Phước Thịnh Lê Văn",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676ab904bd0394675403823b"
+                }
+            ],
+            "projects": [],
+            "educations": [],
+            "experiences": [],
+            "certifications": [
+                {
+                    "certificateName": "Javascript Master",
+                    "dateOfReceipt": "2024-12-01T17:00:00.000Z",
+                    "certificateDetail": "Good at JS",
+                    "_id": "676ab904bd0394675403823c"
+                }
+            ],
+            "jobSaved": [
+                {
+                    "jobPostId": "67697aa5d50d4dabef1ef7b8",
+                    "savedAt": "2024-12-24T05:10:44.295Z",
+                    "_id": "676a47e45b7ea3ed046ec7be"
+                }
+            ],
+            "jobApplied": [
+                {
+                    "jobPostId": "67697aa5d50d4dabef1ef7b8",
+                    "status": "PENDING",
+                    "appliedAt": "2024-12-24T14:11:26.443Z",
+                    "_id": "676ac10e8dc412a541a6c18f"
+                },
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "status": "REJECTED",
+                    "appliedAt": "2024-12-24T14:34:56.120Z",
+                    "_id": "676ac6908dc412a541a6c38e"
+                }
+            ],
+            "__v": 0,
+            "oauthToken": {
+                "provider": "GOOGLE",
+                "accessToken": "ya29.a0ARW5m743iK3H6YlDlkoBgUXId0k_zY0Ly7Yyw25ElznUAKT5Y_p3fBsNyQeuV_asdU1SfLi8FFN77jK_pVJCSUXwucaBW-L11m565glCG-n5AlQGyCeI3EwBRieNaPsBsWQ9B8mhZlITZpInvXETLAiMnkpWjjPgc0MaCgYKAccSARESFQHGX2MiD9X98Kg6y5eNiCSjHpfNMQ0170",
+                "_id": "676bdf4282bf51ff03f85854"
+            },
+            "address": "Đà Nẵng, VN",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735047422473-429707_64a2dfef41295.jpg",
+            "birthDate": "2005-12-05T17:00:00.000Z",
+            "gender": false,
+            "githubUrl": "https://github.com/airbnb",
+            "jobPosition": "Frontend Developer",
+            "linkedinUrl": "",
+            "personalDescription": "Hi",
+            "phoneNumber": "0795726580",
+            "professionalSkills": "- Framework: Vue, React, Angular\n- Programming languages: Javascript\n- Database: MongoDB, MySQL, \n- RESTful API\n- Tools: git/Github, Docker",
+            "publicEmail": "gpttpm3@gmail.com"
+        },
+        {
+            "id": "676b7e83b52557dc0b42bff2",
+            "userId": "676b7e83b52557dc0b42bff0",
+            "fullName": "Linh Nguyễn",
+            "languages": [],
+            "projects": [],
+            "educations": [],
+            "experiences": [],
+            "certifications": [],
+            "jobSaved": [],
+            "jobApplied": [],
+            "__v": 0,
+            "oauthToken": {
+                "provider": "GOOGLE",
+                "accessToken": "ya29.a0ARW5m77xzKDCV8fIXi7ubrjTQAemCKUDh-E6Oy_taZ3tmFtdlF8lA78K3j1hiRXeTEalBq8qlbbVeMYXdZcgEkHGrvILV92o-o2vsolydOXopZ62N1oFTTsHHsah-bMIJlDjBIc4E3m3jum5xPAhBtv7HM3xmYQcVgaCgYKAScSARESFQHGX2MikKq14CtGUvS_hmDpa7VrWg0169",
+                "_id": "676c1e9402cd4d38fc3185c6"
+            }
+        },
+        {
+            "id": "676c25b135d72de453adfb8d",
+            "userId": "676c25b035d72de453adfb8b",
+            "fullName": "Trương Công Minh",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676c276d35d72de453adfbb0"
+                }
+            ],
+            "projects": [],
+            "educations": [
+                {
+                    "schoolName": "DuyTn",
+                    "startDate": "2020-09-19T17:00:00.000Z",
+                    "finishDate": "2024-05-24T17:00:00.000Z",
+                    "fieldName": "Software Engineering",
+                    "_id": "676c276d35d72de453adfbb1"
+                }
+            ],
+            "experiences": [],
+            "certifications": [],
+            "jobSaved": [
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "savedAt": "2024-12-25T15:32:34.602Z",
+                    "_id": "676c278b35d72de453adfbe9"
+                }
+            ],
+            "jobApplied": [
+                {
+                    "jobPostId": "676ac3628dc412a541a6c1cf",
+                    "status": "ACCEPTED",
+                    "appliedAt": "2024-12-25T15:42:03.935Z",
+                    "_id": "676c27cb35d72de453adfc0e"
+                }
+            ],
+            "__v": 0,
+            "oauthToken": {
+                "provider": "GOOGLE",
+                "accessToken": "ya29.a0ARW5m75Pht-gCBpTsSAz2DUx8MiNL_dkvl2tIjHn9ngCO3_sV6MS9f2EZ11aHjng4Csa27OcyfdFiYBhn1xiJltytz7sxsjZsCMNu5cM9rza2gmmdgJMpS_RXA4y-tC1AFiPrTSm8SSSd-4MUjJtx7PA6c2XvuwgkwaCgYKAc0SARMSFQHGX2Mi18hdkJqVHDj_ryzJxaXs8g0169",
+                "_id": "676c2b6835d72de453adfc77"
+            },
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735140842370-minh.png",
+            "publicEmail": "minhkrb3108@gmail.com",
+            "address": "Da nang",
+            "birthDate": "2002-08-30T17:00:00.000Z",
+            "gender": false,
+            "githubUrl": "https://github.com/minhkrb",
+            "jobPosition": "Game Developer",
+            "linkedinUrl": "",
+            "personalDescription": "Minh",
+            "phoneNumber": "0913576245",
+            "professionalSkills": "- 2 năm C#\n- 1 năm Unity\n- 4 năm C++"
+        }
+    ],
+    "notifications": [
+        {
+            "id": "676bf946f5d255e5368f1638",
+            "userId": "676b797aa20e0341fe0f7f4f",
+            "message": "ffff",
+            "jobTitle": "Backend Developer",
+            "unread": true,
+            "createdAt": "2024-12-25T12:23:34.702Z",
+            "__v": 0
+        },
+        {
+            "id": "676c1934900ea9b0b654bcab",
+            "userId": "676a2e063aa89dee988fb591",
+            "message": "hihi\n",
+            "jobTitle": "Backend Developer",
+            "unread": false,
+            "createdAt": "2024-12-25T14:39:48.328Z",
+            "__v": 0
+        },
+        {
+            "id": "676c1934900ea9b0b654bcac",
+            "userId": "67697aadd50d4dabef1ef7c3",
+            "message": "hihi\n",
+            "jobTitle": "Backend Developer",
+            "unread": false,
+            "createdAt": "2024-12-25T14:39:48.329Z",
+            "__v": 0
+        },
+        {
+            "id": "676c2b5e35d72de453adfc71",
+            "userId": "676c25b035d72de453adfb8b",
+            "message": "check gmail",
+            "jobTitle": "Backend Developer",
+            "unread": false,
+            "createdAt": "2024-12-25T15:57:18.911Z",
+            "__v": 0
+        }
+    ],
+    "applicants": [
+        {
+            "id": "676bf6d8f5d255e5368f155a",
+            "jobPostId": "676ac3628dc412a541a6c1cf",
+            "userId": "676a2e063aa89dee988fb591",
+            "fullName": "Trương Công Hữu",
+            "publicEmail": "huutruong1410@gmail.com",
+            "jobPosition": "Backend Developer",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735046049072-ht.jpg",
+            "birthDate": "2003-10-13T17:00:00.000Z",
+            "phoneNumber": "0795726580",
+            "address": "318 Ton Dan St. An Khe, Thanh Khe, Da Nang, VN",
+            "professionalSkills": "I am proficient in some skills below:\n- Programming languages: Javascript, Typescript, Python\n- Database: \nMongoDB, MySQL, SQL Server\n- RESTful API\n- Tools: git/Github, Docker, Postman\n- IDE: VS Code, PyCharm, IntellliJ",
+            "linkedinUrl": "",
+            "githubUrl": "https://github.com/huutruongg",
+            "personalDescription": "As a fourth-year student with a 3.4 GPA, I seek employment as a Backend NodeJS Developer. In second-\nyear, I successfully developed an e-commerce website using .NET technology. Currently, I am collaborating\n\nwith a team to refine an application capable of seamlessly integrating disparate systems, further enhancing my\nproficiency in Back-end development and teamwork. I hope to build on my previous experience and make a\nmeaningful contribution to the organization I am working for.",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038101"
+                },
+                {
+                    "language": "japanese",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038102"
+                }
+            ],
+            "projects": [
+                {
+                    "projectName": "HP Dashboard",
+                    "projectTime": "02/2024-05/2024",
+                    "urlRepo": "https://github.com/k1v4z/HpDashboard",
+                    "projectDescription": "Dashboard integrate two given database\nAn Application that shows the following summarized information\nThe total earnings by shareholder, gender, ethnicity, part-time, and full- time employee to date and the previous year, by department\nTotal number of vacation days taken by shareholder, gender, ethnicity, part-time, and fulltime employee to date and the previous year\nAverage benefits paid to shareholders and non-shareholders to date by benefits plan\nIn addition, management would like to be able to set alerts when the following conditions occur:\nAn employee is within a certain number of days of their hiring anniversary\nAn employee has accumulated more than a certain number of days of vacation\nEmployees make a change to their benefits plan that affects their payroll\nAll employees who have birthdays within the current month",
+                    "_id": "676ab43bbd03946754038103"
+                },
+                {
+                    "projectName": "Food Ordering System",
+                    "projectTime": "10/2024-12/2024",
+                    "urlRepo": "https://github.com/lehaiduy2003/Software-Architecture",
+                    "projectDescription": "This is a team project to end our course. It's a project that applies some quality attributes such as Security(refreshToken, revokeToken), Scalability(Micro-service), Availability(rate-limit), Performance(server caching).",
+                    "_id": "676ab43bbd03946754038104"
+                }
+            ],
+            "educations": [
+                {
+                    "schoolName": "Duy Tan University",
+                    "startDate": "2021-09-30T17:00:00.000Z",
+                    "finishDate": "2024-12-23T17:00:00.000Z",
+                    "fieldName": "Software Engineering",
+                    "_id": "676ab43bbd03946754038105"
+                }
+            ],
+            "experiences": [
+                {
+                    "companyName": "FPT Software",
+                    "startDate": "2024-09-04T17:00:00.000Z",
+                    "endDate": "2024-11-29T17:00:00.000Z",
+                    "jobPosition": "Intern Java Backend Developer",
+                    "previousJobDetails": "- Participated in developing backend modules for the internal data management system.\n- Learned and worked with Spring Boot to build RESTful APIs.\n- Integrated MySQL database into applications, optimized queries, and designed table structures.\n- Assisted in deploying applications to servers using Docker and Jenkins.\n- Wrote and executed unit tests to ensure code quality.\n- Attended team meetings, received feedback, and improved coding skills.\n- Learned and applied security principles in backend application development.",
+                    "_id": "676ab43bbd03946754038106"
+                }
+            ],
+            "certifications": [
+                {
+                    "certificateName": "AWS Certified Developer",
+                    "dateOfReceipt": "2024-12-01T17:00:00.000Z",
+                    "certificateDetail": "Developing and deploying applications on the AWS platform.\nDeep understanding of core AWS services such as Lambda, DynamoDB, S3, API Gateway, ECS, and more.\nProficient use of AWS CLI and SDK tools for integration and application development.\nOptimizing application performance and cost on AWS.\nSecuring applications through IAM, data encryption, and access control policies.",
+                    "_id": "676ab43bbd03946754038107"
+                }
+            ],
+            "aiAnalysistScore": {
+                "professionalSkills": 39,
+                "educations": 6,
+                "languages": 14,
+                "certifications": 10
+            },
+            "githubScore": 0,
+            "appliedAt": "2024-12-25T12:13:12.716Z",
+            "isSent": true,
+            "status": "ACCEPTED",
+            "__v": 0
+        },
+        {
+            "id": "676c190d900ea9b0b654bc7e",
+            "jobPostId": "676ac3628dc412a541a6c1cf",
+            "userId": "67697aadd50d4dabef1ef7c3",
+            "aiAnalysistScore": {
+                "professionalSkills": 0,
+                "educations": 0,
+                "languages": 0,
+                "certifications": 0
+            },
+            "githubScore": 0,
+            "isSent": false,
+            "status": "ACCEPTED",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "67697e09d50d4dabef1ef7da"
+                }
+            ],
+            "projects": [
+                {
+                    "projectName": " WEBSITE SHOP RICE ",
+                    "projectTime": "09/2021-10/2024",
+                    "urlRepo": "https://github.com/DucMinh-Henry/rice_3_man",
+                    "projectDescription": "Web application to sell rice online",
+                    "_id": "67697e09d50d4dabef1ef7db"
+                }
+            ],
+            "educations": [
+                {
+                    "schoolName": "Duy Tân",
+                    "startDate": "2021-12-13T17:00:00.000Z",
+                    "finishDate": "2024-12-22T17:00:00.000Z",
+                    "fieldName": "Software engineering",
+                    "_id": "67697e09d50d4dabef1ef7dc"
+                }
+            ],
+            "experiences": [],
+            "certifications": [],
+            "appliedAt": "2024-12-25T14:39:16.208Z",
+            "__v": 0,
+            "address": "sdfsdffsdf",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735137034769-IMG_1110.jpg",
+            "birthDate": "2003-10-22T17:00:00.000Z",
+            "fullName": "ducminh",
+            "githubUrl": "https://github.com/DucMinh-Henry/rice_3_man",
+            "jobPosition": "Front-end",
+            "linkedinUrl": "https://www.linkedin.com/DucMinh-Henry/rice_3_man",
+            "personalDescription": " I love playing sport and listening to music",
+            "phoneNumber": "0343032993",
+            "professionalSkills": "FRONT-END\nHTML-CSS(SCSS), Javascript, ReactJS, TaiwindCSS\nWORKING SKILL\nUnderstanding about GIT (Github), Figma, Postman",
+            "publicEmail": "ducminh231003@gmail.com"
+        },
+        {
+            "id": "676c3690c84b97563abed042",
+            "jobPostId": "676c341b35d72de453adfe15",
+            "userId": "676a2e063aa89dee988fb591",
+            "aiAnalysistScore": {
+                "professionalSkills": 0,
+                "educations": 0,
+                "languages": 0,
+                "certifications": 0
+            },
+            "githubScore": 70,
+            "isSent": false,
+            "status": "PENDING",
+            "languages": [
+                {
+                    "language": "english",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038101"
+                },
+                {
+                    "language": "japanese",
+                    "level": "beginner",
+                    "_id": "676ab43bbd03946754038102"
+                }
+            ],
+            "projects": [
+                {
+                    "projectName": "HP Dashboard",
+                    "projectTime": "02/2024-05/2024",
+                    "urlRepo": "https://github.com/k1v4z/HpDashboard",
+                    "projectDescription": "Dashboard integrate two given database\nAn Application that shows the following summarized information\nThe total earnings by shareholder, gender, ethnicity, part-time, and full- time employee to date and the previous year, by department\nTotal number of vacation days taken by shareholder, gender, ethnicity, part-time, and fulltime employee to date and the previous year\nAverage benefits paid to shareholders and non-shareholders to date by benefits plan\nIn addition, management would like to be able to set alerts when the following conditions occur:\nAn employee is within a certain number of days of their hiring anniversary\nAn employee has accumulated more than a certain number of days of vacation\nEmployees make a change to their benefits plan that affects their payroll\nAll employees who have birthdays within the current month",
+                    "_id": "676ab43bbd03946754038103"
+                },
+                {
+                    "projectName": "Food Ordering System",
+                    "projectTime": "10/2024-12/2024",
+                    "urlRepo": "https://github.com/lehaiduy2003/Software-Architecture",
+                    "projectDescription": "This is a team project to end our course. It's a project that applies some quality attributes such as Security(refreshToken, revokeToken), Scalability(Micro-service), Availability(rate-limit), Performance(server caching).",
+                    "_id": "676ab43bbd03946754038104"
+                }
+            ],
+            "educations": [
+                {
+                    "schoolName": "Duy Tan University",
+                    "startDate": "2021-09-30T17:00:00.000Z",
+                    "finishDate": "2024-12-23T17:00:00.000Z",
+                    "fieldName": "Software Engineering",
+                    "_id": "676ab43bbd03946754038105"
+                }
+            ],
+            "experiences": [
+                {
+                    "companyName": "FPT Software",
+                    "startDate": "2024-09-04T17:00:00.000Z",
+                    "endDate": "2024-11-29T17:00:00.000Z",
+                    "jobPosition": "Intern Java Backend Developer",
+                    "previousJobDetails": "- Participated in developing backend modules for the internal data management system.\n- Learned and worked with Spring Boot to build RESTful APIs.\n- Integrated MySQL database into applications, optimized queries, and designed table structures.\n- Assisted in deploying applications to servers using Docker and Jenkins.\n- Wrote and executed unit tests to ensure code quality.\n- Attended team meetings, received feedback, and improved coding skills.\n- Learned and applied security principles in backend application development.",
+                    "_id": "676ab43bbd03946754038106"
+                }
+            ],
+            "certifications": [
+                {
+                    "certificateName": "AWS Certified Developer",
+                    "dateOfReceipt": "2024-12-01T17:00:00.000Z",
+                    "certificateDetail": "Developing and deploying applications on the AWS platform.\nDeep understanding of core AWS services such as Lambda, DynamoDB, S3, API Gateway, ECS, and more.\nProficient use of AWS CLI and SDK tools for integration and application development.\nOptimizing application performance and cost on AWS.\nSecuring applications through IAM, data encryption, and access control policies.",
+                    "_id": "676ab43bbd03946754038107"
+                }
+            ],
+            "appliedAt": "2024-12-25T16:45:15.987Z",
+            "__v": 0,
+            "address": "318 Ton Dan St. An Khe, Thanh Khe, Da Nang, VN",
+            "avatarUrl": "https://storage.googleapis.com/stackydemo-95381.appspot.com/Recruiters/1735046049072-ht.jpg",
+            "birthDate": "2003-10-13T17:00:00.000Z",
+            "fullName": "Trương Công Hữu",
+            "githubUrl": "https://github.com/huutruongg",
+            "jobPosition": "Backend Developer",
+            "linkedinUrl": "",
+            "personalDescription": "As a fourth-year student with a 3.4 GPA, I seek employment as a Backend NodeJS Developer. In second-\nyear, I successfully developed an e-commerce website using .NET technology. Currently, I am collaborating\n\nwith a team to refine an application capable of seamlessly integrating disparate systems, further enhancing my\nproficiency in Back-end development and teamwork. I hope to build on my previous experience and make a\nmeaningful contribution to the organization I am working for.",
+            "phoneNumber": "0795726580",
+            "professionalSkills": "I am proficient in some skills below:\n- Programming languages: Javascript, Typescript, Python\n- Database: \nMongoDB, MySQL, SQL Server\n- RESTful API\n- Tools: git/Github, Docker, Postman\n- IDE: VS Code, PyCharm, IntellliJ",
+            "publicEmail": "huutruong1410@gmail.com"
+        }
+    ]
+}

@@ -145,6 +145,7 @@ export default class AdminService {
                     orgTaxNumber: 1,
                     orgAddress: 1,
                     orgWebsiteUrl: 1,
+                    orgImage: 1,
                     orgEmail: 1,
                     phoneNumber: { $arrayElemAt: ['$user.phoneNumber', 0] },
                     jobPostCount: { $size: '$jobPosts' }
