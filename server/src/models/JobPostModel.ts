@@ -23,7 +23,7 @@ const JobPostSchema: Schema = new Schema({
   jobDescription: { type: String, required: true },
   workEnvironment: { type: String },
   applicationDeadline: { type: Date, required: true },
-  jobSchedule: { type: Date, required: true },
+  jobSchedule: { type: String, required: true },
   staffLevel: { type: String, required: true },
   genderRequired: { type: String, required: true },
   postedAt: { type: Date, default: Date.now },

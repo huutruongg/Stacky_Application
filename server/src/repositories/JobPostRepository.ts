@@ -39,7 +39,7 @@ export default class JobPostRepository extends BaseRepository<IJobPost> {
             orgName,
             candidatesLimit: Number(data.candidatesLimit),
             applicationDeadline: new Date(data.applicationDeadline),
-            jobSchedule: new Date(data.jobSchedule),
+            jobSchedule: data.jobSchedule,
             postedAt: new Date(),
             invisible: false
         });
