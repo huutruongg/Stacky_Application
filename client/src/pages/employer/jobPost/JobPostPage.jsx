@@ -36,7 +36,7 @@ const JobPostPage = () => {
     fetchData();
   }, [balanceData]);
 
-  // console.log(balanceData);
+  console.log(balanceData);
 
   const form = useForm({
     resolver: zodResolver(postJobSchema),
@@ -124,6 +124,7 @@ const JobPostPage = () => {
       const result = await axiosInstance.get(`/payment/get-payment-info`);
       setBalanceData(result.data.balance);
       form.reset(); // Reset form sau khi tạo bài viết thành công
+      window.location.reload();
     } catch (error) {
       console.error("Unexpected Error:", error);
       toast.error("Có lỗi xảy ra. Vui lòng thử lại.");

@@ -6,6 +6,7 @@ import axiosInstance from "@/lib/authorizedAxios";
 import useAuth from "@/hooks/useAuth";
 import { useParams } from "react-router-dom";
 import PaginationDemo from "@/components/pagination/Pagination";
+import FormatDate from "@/components/format/FormatDate";
 
 const SearchJobPosition = () => {
   const { user } = useAuth();
@@ -109,9 +110,9 @@ const JobCard = ({ item }) => {
             <div className="flex items-center gap-5">
               <div
                 className="text-sm line-clamp-1 max-w-36 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl"
-                title={item?.location}
+                title={FormatDate.formatDate(item?.applicationDeadline)}
               >
-                <span>{item?.location}</span>
+                <span>{FormatDate.formatDate(item?.applicationDeadline)}</span>
               </div>
               <div
                 className="text-sm line-clamp-1 max-w-60 px-5 py-px text-text2 bg-[#EDEAF0] rounded-xl"
