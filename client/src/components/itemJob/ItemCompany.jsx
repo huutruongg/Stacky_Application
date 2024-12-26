@@ -4,7 +4,7 @@ import imgBackgroundOrg from "@/components/image/imgBackgroundOrg.jpg";
 import { NavLink } from "react-router-dom";
 
 const ItemCompany = ({ item }) => {
-  console.log(item);
+  // console.log(item);
   return (
     <NavLink
       to={`/company/${item.userId}`}

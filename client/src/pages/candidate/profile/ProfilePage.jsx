@@ -17,6 +17,7 @@ import InputField from "@/components/fieldForm/InputField";
 import axiosInstance from "@/lib/authorizedAxios";
 import { z } from "zod";
 import ImageUploader from "@/components/uploadImage/ImageUploader";
+import toast from "react-hot-toast";
 
 const schemas = z.object({
   publicEmail: z
@@ -99,7 +100,9 @@ const ProfilePage = () => {
     try {
       const result = await axiosInstance.put(`/candidate/update-profile`, data);
       console.log(result);
+      toast.success("Cập nhật thông tin thành công!");
     } catch (error) {
+      toast.error("Cập nhật thông tin thất bại!");
       console.error("Error while fetching job data:", error);
     }
   };

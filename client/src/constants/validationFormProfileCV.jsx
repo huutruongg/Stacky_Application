@@ -13,7 +13,7 @@ export const profileCVSchema = (hasExperience) =>
       .string()
       .nonempty("Vị trí ứng tuyển không được để trống")
       .regex(
-        /^[a-zA-ZÀ-ỹ\s]{2,50}$/,
+        /^[a-zA-Z0-9À-ỹ\s,.'()-]{2,50}$/,
         "Vị trí ứng tuyển phải có từ 2 đến 50 ký tự và chỉ được chứa ký tự chữ, số, khoảng trắng và một số ký tự đặc biệt (&,.()'-)"
       )
       .refine(

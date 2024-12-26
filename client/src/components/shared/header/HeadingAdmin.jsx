@@ -80,14 +80,14 @@ const HeadingAdmin = ({ isOpen, handleToggleNavbar }) => {
               </button>
             </Link>
           )}
-          <div className="flex items-center divide-x">
+          {/* <div className="flex items-center divide-x">
             <button className="text-gray-400 px-2 uppercase transition hover:text-primary">
               EN
             </button>
             <button className="font-bold px-2 uppercase transition hover:text-primary">
               VI
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </header>

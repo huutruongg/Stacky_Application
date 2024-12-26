@@ -104,7 +104,7 @@ const AccountManagerPage = () => {
   }
 
   return (
-    <div className="p-5 my-5 mr-5 bg-white rounded-md">
+    <div className="h-screen p-5 my-5 mr-5 bg-white rounded-md">
       <div className="flex items-center justify-between">
         <h3 className="text-2xl font-semibold">Quản lý Tài khoản</h3>
         <div className="relative flex items-center min-w-[500px] border border-text4 rounded-full p-1 mr-[400px]">

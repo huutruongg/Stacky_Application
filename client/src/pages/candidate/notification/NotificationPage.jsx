@@ -39,11 +39,11 @@ const NotificationPage = () => {
                   key={index}
                 >
                   <div className="flex flex-col gap-1 w-[90%]">
-                    <h3 className="font-medium">FPT software</h3>
-                    <p className="line-clamp-2 overflow-hidden text-ellipsis">
-                      {item?.message}
+                    <h3 className="font-medium text-primary">FPT software</h3>
+                    <p className="line-clamp-2 font-medium overflow-hidden text-ellipsis">
+                      {item?.jobTitle}
                     </p>
-                    <p className="line-clamp-2 overflow-hidden text-ellipsis">
+                    <p className="line-clamp-3 overflow-hidden text-ellipsis">
                       {item?.message}
                     </p>
                     <span>{FormatDate.formatDateTime(item?.createdAt)}</span>

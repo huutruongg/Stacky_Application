@@ -14,9 +14,15 @@ const CompanyListsPage = () => {
   const [companyData, setCompanyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(12);
+
+  const filteredCompanies = companyData.filter((company) => {
+    const searchTerm = searchInput.toLowerCase();
+    return company.orgName?.toLowerCase().includes(searchTerm);
+  });
+
   const indexOfLastItem = currentPage * newsPerPage;
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
-  const currentCompanyData = companyData.slice(
+  const currentCompanyData = filteredCompanies.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
@@ -24,19 +30,14 @@ const CompanyListsPage = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  console.log(searchInput);
 
-  const handleSearch = async () => {
-    try {
-      setIsLoading(true);
-      const result = await axiosInstance.get(
-        `/recruiter/get-list-company?search=${searchInput}`
-      );
-      setCompanyData(result.data.result);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSearch = () => {
+    const filteredCompanies = currentCompanyData.filter((company) =>
+      company.orgName.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    setCompanyData(filteredCompanies);
+    console.log(filteredCompanies);
   };
 
   useEffect(() => {
@@ -104,7 +105,7 @@ const CompanyListsPage = () => {
                   {searchInput && (
                     <IconClose
                       className="cursor-pointer hover:bg-secondary rounded-full w-6 h-6 ml-2 mr-5"
-                      onClick={handleClearInput}
+                      onClick={() => handleClearInput}
                     />
                   )}
                 </div>

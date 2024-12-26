@@ -44,11 +44,15 @@ const JobSummary = ({ jobData, isliked }) => {
 
   const handleSaveJob = async () => {
     try {
-      setIsLoading(true);
-      await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
-      toast.success("Lưu bài viết thành công");
-      setLiked(true);
-      refreshSavedJobs(); // Đảm bảo refresh sau khi lưu
+      if (user) {
+        setIsLoading(true);
+        await axiosInstance.post(`/job-post/save-job-post/${jobData._id}`);
+        toast.success("Lưu bài viết thành công");
+        setLiked(true);
+        refreshSavedJobs(); // Đảm bảo refresh sau khi lưu
+      } else {
+        toast.error("Vui lòng đăng nhập để lưu bài viết");
+      }
     } catch (error) {
       toast.error("Lưu bài viết thất bại");
     } finally {
@@ -119,7 +123,11 @@ const JobSummary = ({ jobData, isliked }) => {
         <ItemInfoJob
           icon={<IconHourglass></IconHourglass>}
           title={"Kinh nghiệm"}
-          children={jobData?.yearsOfExperience}
+          children={
+            jobData?.yearsOfExperience === "notRequired"
+              ? "Không yêu cầu"
+              : jobData?.yearsOfExperience
+          }
         ></ItemInfoJob>
       </div>
       <div className="flex items-center w-fit text-text2 p-2 rounded-xl bg-[#EFF0F3] gap-2 mb-5">

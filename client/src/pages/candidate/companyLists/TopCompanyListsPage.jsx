@@ -14,9 +14,18 @@ const TopCompanyListsPage = () => {
   const [companyData, setCompanyData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [newsPerPage, setNewsPerPage] = useState(12);
+
+  const filteredCompanies = companyData.filter((company) => {
+    const searchTerm = searchInput.toLowerCase();
+    return (
+      company.orgName?.toLowerCase().includes(searchTerm) ||
+      company.orgEmail?.toLowerCase().includes(searchTerm)
+    );
+  });
+
   const indexOfLastItem = currentPage * newsPerPage;
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
-  const currentCompanyData = companyData.slice(
+  const currentCompanyData = filteredCompanies.slice(
     indexOfFirstItem,
     indexOfLastItem
   );

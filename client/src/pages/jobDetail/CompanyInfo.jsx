@@ -52,7 +52,11 @@ const CompanyInfo = ({ data }) => {
         <ItemInfo
           icon={<IconField></IconField>}
           title={"Lĩnh vực:"}
-          children={dataCompany?.orgField}
+          children={
+            dataCompany?.orgField === "technology"
+              ? "Công Nghệ Thông Tin"
+              : dataCompany?.orgField
+          }
         ></ItemInfo>
         <ItemInfo
           icon={<IconLocation color={"#7F878F"}></IconLocation>}
