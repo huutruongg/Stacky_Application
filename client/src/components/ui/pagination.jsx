@@ -26,7 +26,7 @@ const PaginationContent = React.forwardRef(({ className, ...props }, ref) => (
 PaginationContent.displayName = "PaginationContent";
 
 const PaginationItem = React.forwardRef(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("flex items-center", className)} {...props} />
+  <li ref={ref} className={cn("flex items-center hover:cursor-pointer", className)} {...props} />
 ));
 PaginationItem.displayName = "PaginationItem";
 

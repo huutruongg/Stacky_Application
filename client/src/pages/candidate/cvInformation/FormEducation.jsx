@@ -119,12 +119,11 @@ const FormEducation = ({ form }) => {
                               value={field.value ? dayjs(field.value) : null}
                               onChange={(date) => {
                                 if (date && date.isValid()) {
-                                  field.onChange(date.toDate());
+                                  field.onChange(date.toDate()); // Cho phép tất cả các ngày
                                 } else {
-                                  field.onChange(null);
+                                  field.onChange(null); // Xóa giá trị nếu không hợp lệ
                                 }
                               }}
-                              maxDate={dayjs()}
                               sx={{
                                 width: "100%",
                                 "& .MuiInputBase-root": {
