@@ -5,15 +5,17 @@ import axiosInstance from "@/lib/authorizedAxios";
 import toast from "react-hot-toast";
 import { useJobSave } from "../context/JobSaveProvider";
 import IconHeartActive from "../icons/IconHeartActive";
+import useAuth from "@/hooks/useAuth";
 
 const ItemJobSuggest = ({ jobData, logined }) => {
+  const { user } = useAuth();
   const [liked, setLiked] = useState(jobData.isLiked);
   const { refreshSavedJobs } = useJobSave();
 
   console.log(jobData);
 
   const handleHeartClick = () => {
-    if (logined) {
+    if (user) {
       if (liked) {
         handleDeleteSaveJob();
       } else {

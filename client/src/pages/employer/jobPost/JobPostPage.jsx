@@ -98,7 +98,6 @@ const JobPostPage = () => {
       }
       if (!data.jobBenefit) missingFields.push("Lợi ích công việc");
       if (!data.jobDescription) missingFields.push("Mô tả công việc");
-      if (!data.workEnvironment) missingFields.push("Môi trường làm việc");
       if (!data.applicationDeadline) missingFields.push("Hạn chót ứng tuyển");
       if (!data.jobSchedule) missingFields.push("Thời gian làm việc");
 

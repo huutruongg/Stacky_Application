@@ -21,13 +21,13 @@ const CompanyInfo = ({ data }) => {
     getData();
   }, [data.userId]);
 
-  console.log(dataCompany);
+  console.log(data);
 
   return (
     <div className="bg-secondary rounded-xl p-5 text-sm">
       <div className="flex items-center gap-3 mb-4">
         <div className="border rounded-lg">
-          <a href="">
+          <a href={`/company/${data.userId}`}>
             <img
               src={dataCompany?.orgImage || imgCompany}
               alt=""
@@ -36,7 +36,7 @@ const CompanyInfo = ({ data }) => {
           </a>
         </div>
         <a
-          href=""
+          href={`/company/${data.userId}`}
           title={dataCompany?.orgName}
           className="self-stretch text-text1 line-clamp-3 font-medium text-[16px] uppercase leading-6 tracking-[-0.16px] h-[70px] w-full overflow-hidden text-ellipsis hover:decoration-primary hover:text-primary hover:underline"
         >

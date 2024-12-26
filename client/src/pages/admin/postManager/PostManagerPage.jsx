@@ -125,7 +125,7 @@ const PostManagerPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentPostData.map((post, index) => (
+            {filteredPosts.map((post, index) => (
               <TableRow className="font-medium" key={index}>
                 <TableCell className="text-center">{index + 1}</TableCell>
                 <TableCell className="text-center line-clamp-1 leading-10">

@@ -9,7 +9,7 @@ const ItemJobUploaded = ({ jobData }) => {
     <div className="flex flex-col gap-5 text-sm bg-white p-3 rounded-lg border hover:border hover:border-primary hover:bg-white">
       <div className="flex justify-between gap-5">
         <div className="border rounded-lg">
-          <a href="">
+          <a href={`/company/${jobData.userId}`}>
             <img
               src={jobData.jobImage ? jobData.jobImage : imgCompany}
               alt=""
@@ -23,20 +23,17 @@ const ItemJobUploaded = ({ jobData }) => {
               <span className="text-xs font-semibold">HOT</span>
             </div>
             <h3>
-              <div
-                href=""
-                className="line-clamp-1 overflow-hidden text-ellipsis"
-                onClick={() => {
-                  navigate(`/job-detail/${jobData._id}`);
-                }}
+              <a
+                href={`/job-detail/${jobData._id}`}
+                className="line-clamp-1 overflow-hidden font-medium text-ellipsis hover:text-primary hover:cursor-pointer"
               >
                 {jobData.jobTitle}
-              </div>
+              </a>
             </h3>
           </div>
           <div>
             <a
-              href="/company"
+              href={`/company/${jobData.userId}`}
               className="w-fit line-clamp-1 text-xs text-ellipsis text-text3 hover:decoration-text3 hover:underline"
             >
               {jobData.orgName.toUpperCase()}
