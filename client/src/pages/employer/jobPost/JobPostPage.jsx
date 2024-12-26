@@ -89,7 +89,6 @@ const JobPostPage = () => {
         missingFields.push("Kinh nghiệm làm việc yêu cầu");
       if (!data.typeOfIndustry) missingFields.push("Ngành nghề");
       if (!data.staffLevel) missingFields.push("Cấp bậc");
-      if (!data.certificateRequired) missingFields.push("Chứng chỉ yêu cầu");
       if (!data.professionalSkills) missingFields.push("Kỹ năng chuyên môn");
       if (
         !data.languagesRequired ||
@@ -98,7 +97,6 @@ const JobPostPage = () => {
         missingFields.push("Ngôn ngữ và trình độ yêu cầu");
       }
       if (!data.jobBenefit) missingFields.push("Lợi ích công việc");
-      if (!data.leavePolicy) missingFields.push("Chính sách nghỉ phép");
       if (!data.jobDescription) missingFields.push("Mô tả công việc");
       if (!data.workEnvironment) missingFields.push("Môi trường làm việc");
       if (!data.applicationDeadline) missingFields.push("Hạn chót ứng tuyển");

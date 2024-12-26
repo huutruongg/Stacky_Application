@@ -27,7 +27,7 @@ export const Modal = ({
         className={`${className} max-h-[90vh] overflow-y-auto custom-scrollbar`}
       >
         <DialogHeader className="flex p-5 items-center bg-secondary">
-          <DialogTitle className="w-fit text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]">
+          <DialogTitle className="flex items-center justify-center w-fit text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#48038C] to-[#00F0FF]">
             {title}
           </DialogTitle>
           <div className="flex justify-center items-center gap-5 leading-6 w-96">
