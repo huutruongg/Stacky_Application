@@ -43,7 +43,7 @@ const JobDescription = ({ jobData }) => {
             Mô tả công việc
           </h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobDescription
+            {jobData?.jobDescription
               .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
               .split("\n")
               .map((line, index) => (
@@ -60,33 +60,33 @@ const JobDescription = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>Trình độ học vấn: {jobData.educationRequired}</span>
+              <span>Trình độ học vấn: {jobData?.educationRequired}</span>
             </li>
             <li>
-              <span>Kinh nghiệm làm việc: {jobData.yearsOfExperience}</span>
+              <span>Kinh nghiệm làm việc: {jobData?.yearsOfExperience}</span>
             </li>
             <li>
-              <span>Ngành nghề yêu cầu: {jobData.jobTitle}</span>
+              <span>Ngành nghề yêu cầu: {jobData?.jobTitle}</span>
             </li>
             <li>
-              <span>Kỹ năng chuyên môn: {jobData.professionalSkills}</span>
+              <span>Kỹ năng chuyên môn: {jobData?.professionalSkills}</span>
             </li>
-            {jobData.certificateRequired !== "" ? (
+            {jobData?.certificateRequired !== "" ? (
               <li>
-                <span>Chứng chỉ cần thiết: {jobData.certificateRequired}</span>
+                <span>Chứng chỉ cần thiết: {jobData?.certificateRequired}</span>
               </li>
             ) : (
               ""
             )}
           </div>
         </div>
-        {jobData.languagesRequired.length > 0 ? (
+        {jobData?.languagesRequired.length > 0 ? (
           <div className="">
             <h3 className="text-text1 font-medium text-base mb-1">
               Yêu cầu ngoại ngữ
             </h3>
             <div className="text-text1 text-sm px-5">
-              {jobData.languagesRequired.map((item, index) => (
+              {jobData?.languagesRequired.map((item, index) => (
                 <li key={index}>
                   <span>
                     {item.language}: {item.level}
@@ -101,9 +101,9 @@ const JobDescription = ({ jobData }) => {
         <div className="">
           <h3 className="text-text1 font-medium text-base mb-1">Quyền lợi</h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobBenefit !== "" ? (
+            {jobData?.jobBenefit !== "" ? (
               <div>
-                {jobData.jobBenefit
+                {jobData?.jobBenefit
                   .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
                   .split("\n")
                   .map((line, index) => (
@@ -117,7 +117,7 @@ const JobDescription = ({ jobData }) => {
               ""
             )}
             <li>
-              <span>Chế độ nghĩ phép: {jobData.leavePolicy}</span>
+              <span>Chế độ nghĩ phép: {jobData?.leavePolicy}</span>
             </li>
           </div>
         </div>
@@ -127,7 +127,7 @@ const JobDescription = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>{jobData.location}</span>
+              <span>{jobData?.location}</span>
             </li>
           </div>
         </div>
@@ -137,7 +137,7 @@ const JobDescription = ({ jobData }) => {
           </h3>
           <div className="text-text1 text-sm px-5">
             <li>
-              <span>{jobData.typeOfWork}</span>
+              <span>{jobData?.jobSchedule}</span>
             </li>
           </div>
         </div>
@@ -155,7 +155,7 @@ const JobDescription = ({ jobData }) => {
         </div>
         <div className="">
           <span>
-            Hạn nộp hồ sơ: {FormatDate.formatDate(jobData.applicationDeadline)}
+            Hạn nộp hồ sơ: {FormatDate.formatDate(jobData?.applicationDeadline)}
           </span>
         </div>
         <div className="flex justify-center items-center gap-10 mt-5">

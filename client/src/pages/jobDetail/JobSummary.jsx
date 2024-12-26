@@ -126,7 +126,11 @@ const JobSummary = ({ jobData, isliked }) => {
           children={
             jobData?.yearsOfExperience === "notRequired"
               ? "Không yêu cầu"
-              : jobData?.yearsOfExperience
+              : jobData?.yearsOfExperience === "1-2Years"
+              ? "1 - 2 năm"
+              : jobData?.yearsOfExperience === "2-5Years"
+              ? "2 - 5 năm"
+              : "Trên 5 năm"
           }
         ></ItemInfoJob>
       </div>

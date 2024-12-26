@@ -12,8 +12,6 @@ const ItemJobSuggest = ({ jobData, logined }) => {
   const [liked, setLiked] = useState(jobData.isLiked);
   const { refreshSavedJobs } = useJobSave();
 
-  console.log(jobData);
-
   const handleHeartClick = () => {
     if (user) {
       if (liked) {

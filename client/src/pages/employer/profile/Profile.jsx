@@ -46,26 +46,30 @@ const Profile = () => {
     fetchCompanyInfo();
   }, [userId]);
 
+  console.log(companyInfo);
+
   useEffect(() => {
     if (companyInfo) {
       form.reset({
         name: companyInfo.orgName || "",
         email: companyInfo.orgEmail || "",
-        phoneNumber: companyInfo.orgPhoneNumber || "",
+        phoneNumber: companyInfo.phoneNumber || "",
       });
     }
   }, [companyInfo, form]);
 
   const onSubmit = async (data) => {
+    console.log(data);
+
     try {
-      const response = await axiosInstance.post(
-        `/recruiter/update-company-info/${userId}`,
+      const response = await axiosInstance.put(
+        `/recruiter/update-company-account`,
         data
       );
 
       if (response.data.success) {
         toast.success("Thông tin đã được cập nhật thành công!");
-        navigate("/account.stacky.vn");
+        // navigate("/account.stacky.vn");
       } else {
         toast.error(response.data.message);
       }
