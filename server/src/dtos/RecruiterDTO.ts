@@ -17,6 +17,7 @@ export class RecruiterDTO {
         public orgBenefits: string,
         public orgImage: string,
         public orgCoverImage: string,
-        public orgImages: string[]
+        public orgImages: string[],
+        public phoneNumber: string
     ) {}
 }

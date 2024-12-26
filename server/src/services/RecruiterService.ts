@@ -6,6 +6,7 @@ import { IImage } from "../interfaces/IImage";
 import { log } from "console";
 import { IPayment } from "../interfaces/IPayment";
 import RecruiterListDTO from "../dtos/RecruiterListDTO";
+import RecruiterModel from "../models/RecruiterModel";
 
 export default class RecruiterService {
   private recruiterRepository: RecruiterRepository;
@@ -19,27 +20,54 @@ export default class RecruiterService {
   };
 
   public getRecruiterByUserId = async (userId: string) => {
-    const data: IRecruiter | null = await this.recruiterRepository.findOne({ userId: new Types.ObjectId(userId) });
-    if (!data) return null;
+    try {
+      const result = await RecruiterModel.aggregate([
+        {
+          $match: { userId: new Types.ObjectId(userId) } // Match the recruiter by userId
+        },
+        {
+          $lookup: {
+            from: 'users', // Collection name for the User schema
+            localField: 'userId', // Field in RecruiterSchema
+            foreignField: '_id', // Field in UserSchema
+            as: 'userDetails' // Alias for the joined data
+          }
+        },
+        {
+          $unwind: '$userDetails' // Flatten the userDetails array
+        },
+        {
+          $project: {
+            _id: 1,
+            orgEmail: 1,
+            orgName: 1,
+            orgField: 1,
+            orgScale: 1,
+            orgTaxNumber: 1,
+            orgAddress: 1,
+            orgWebsiteUrl: 1,
+            orgFacebookLink: 1,
+            orgLinkedinLink: 1,
+            orgYoutubeLink: 1,
+            orgIntroduction: 1,
+            orgBenefits: 1,
+            orgImage: 1,
+            orgCoverImage: 1,
+            orgImages: 1,
+            phoneNumber: '$userDetails.phoneNumber' // Include phoneNumber from User schema
+          }
+        }
+      ]);
 
-    return new RecruiterDTO(
-      data._id as ObjectId,
-      data.orgEmail,
-      data.orgName,
-      data.orgField,
-      data.orgScale,
-      data.orgTaxNumber,
-      data.orgAddress,
-      data.orgWebsiteUrl,
-      data.orgFacebookLink,
-      data.orgLinkedinLink,
-      data.orgYoutubeLink,
-      data.orgIntroduction,
-      data.orgBenefits,
-      data.orgImage,
-      data.orgCoverImage,
-      data.orgImages as string[]
-    );
+      if (!result || result.length === 0) {
+        throw new Error('Recruiter not found');
+      }
+
+      return result[0];
+    } catch (error: any) {
+      console.error('Error fetching recruiter details:', error.message);
+      throw error;
+    }
   };
 
   public getRecruiterByEmail = async (email: string) => {
