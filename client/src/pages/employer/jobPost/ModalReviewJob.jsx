@@ -28,12 +28,15 @@ const ModalReviewJob = ({ jobData }) => {
             {jobData?.jobDescription
               ? !jobData?.jobDescription.includes("\n")
                 ? jobData?.jobDescription
-                : jobData?.jobDescription.split("\n").map((line, index) => (
-                    <li key={index}>
-                      {line.replace(/^-/, "").trim()}{" "}
-                      {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                    </li>
-                  ))
+                : jobData?.jobDescription
+                    .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
+                    .split("\n")
+                    .map((line, index) => (
+                      <li key={index}>
+                        {line.replace(/^-/, "").trim()}{" "}
+                        {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                      </li>
+                    ))
               : null}
           </div>
         </div>
@@ -89,12 +92,15 @@ const ModalReviewJob = ({ jobData }) => {
                 {jobData?.jobBenefit
                   ? !jobData?.jobBenefit.includes("\n")
                     ? jobData?.jobBenefit
-                    : jobData?.jobBenefit.split("\n").map((line, index) => (
-                        <li key={index}>
-                          {line.replace(/^-/, "").trim()}{" "}
-                          {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                        </li>
-                      ))
+                    : jobData?.jobBenefit
+                        .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
+                        .split("\n")
+                        .map((line, index) => (
+                          <li key={index}>
+                            {line.replace(/^-/, "").trim()}{" "}
+                            {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                          </li>
+                        ))
                   : ""}
               </div>
             ) : (

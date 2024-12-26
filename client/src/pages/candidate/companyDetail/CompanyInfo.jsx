@@ -45,12 +45,15 @@ const CompanyInfo = ({ companyData }) => {
               {companyData?.orgBenefits
                 ? !companyData.orgBenefits.includes("\n")
                   ? companyData.orgBenefits
-                  : companyData.orgBenefits.split("\n").map((line, index) => (
-                      <li key={index}>
-                        {line.replace(/^-/, "").trim()}{" "}
-                        {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                      </li>
-                    ))
+                  : companyData.orgBenefits
+                      .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
+                      .split("\n")
+                      .map((line, index) => (
+                        <li key={index}>
+                          {line.replace(/^-/, "").trim()}{" "}
+                          {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                        </li>
+                      ))
                 : null}
             </div>
           </div>

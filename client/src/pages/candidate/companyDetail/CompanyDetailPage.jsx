@@ -29,6 +29,7 @@ const CompanyDetailPage = () => {
     };
     getData();
   }, []);
+  console.log(companyData);
 
   return (
     <div className="page-container">
@@ -57,7 +58,7 @@ const CompanyDetailPage = () => {
             <span className="flex items-center flex-wrap max-w-full gap-x-[20px] gap-y-[16px] mb-1">
               {companyData?.orgField === "technology"
                 ? "Công Nghệ Thông Tin"
-                : dataCompany?.orgField}
+                : companyData?.orgField}
             </span>
             <div className="flex items-center gap-8 text-white text-[16px] mr-[16px]">
               <div className="flex gap-2 items-center">

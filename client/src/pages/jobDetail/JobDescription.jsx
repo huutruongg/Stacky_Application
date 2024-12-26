@@ -43,12 +43,15 @@ const JobDescription = ({ jobData }) => {
             Mô tả công việc
           </h3>
           <div className="text-text1 text-sm px-5">
-            {jobData.jobDescription.split("\n").map((line, index) => (
-              <li key={index}>
-                {line.replace(/^-/, "").trim()}{" "}
-                {/* Loại bỏ ký tự '-' và khoảng trắng */}
-              </li>
-            ))}
+            {jobData.jobDescription
+              .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
+              .split("\n")
+              .map((line, index) => (
+                <li key={index}>
+                  {line.replace(/^-/, "").trim()}{" "}
+                  {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                </li>
+              ))}
           </div>
         </div>
         <div className="">
@@ -100,12 +103,15 @@ const JobDescription = ({ jobData }) => {
           <div className="text-text1 text-sm px-5">
             {jobData.jobBenefit !== "" ? (
               <div>
-                {jobData.jobBenefit.split("\n").map((line, index) => (
-                  <li key={index}>
-                    {line.replace(/^-/, "").trim()}{" "}
-                    {/* Loại bỏ ký tự '-' và khoảng trắng */}
-                  </li>
-                ))}
+                {jobData.jobBenefit
+                  .replace(/\n\n/g, "\n") // Thay thế \n\n bằng \n để đảm bảo chỉ có 1 xuống dòng
+                  .split("\n")
+                  .map((line, index) => (
+                    <li key={index}>
+                      {line.replace(/^-/, "").trim()}{" "}
+                      {/* Loại bỏ ký tự '-' và khoảng trắng */}
+                    </li>
+                  ))}
               </div>
             ) : (
               ""
