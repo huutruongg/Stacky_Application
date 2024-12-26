@@ -6,11 +6,13 @@ import "swiper/css";
 import IconBack from "@/components/icons/IconBack";
 import IconNext from "@/components/icons/IconNext";
 import axiosInstance from "@/lib/authorizedAxios";
+import { useNavigate } from "react-router-dom";
 
 const HotEmployer = () => {
   const [companyData, setCompanyData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const swiperRef = useRef(null);
+  const navigate = useNavigate();
 
   const handlePrev = () => {
     if (swiperRef.current) {
@@ -75,7 +77,10 @@ const HotEmployer = () => {
           {limitedCompanyData.length > 0 ? (
             limitedCompanyData.map((item, index) => (
               <SwiperSlide key={index}>
-                <ItemEmployer url={item?.orgImage || ""} />
+                <ItemEmployer
+                  url={item?.orgImage || ""}
+                  onCLick={() => navigate(`/company/${item._id}`)}
+                />
               </SwiperSlide>
             ))
           ) : (
@@ -87,10 +92,13 @@ const HotEmployer = () => {
   );
 };
 
-const ItemEmployer = ({ url }) => {
+const ItemEmployer = ({ url, onCLick }) => {
   return (
-    <div className="flex flex-col items-center p-4 gap-2 bg-secondary rounded-lg w-[180px] h-[180px] cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border">
-      <img src={url} alt="Employer Logo" className="w-24" />
+    <div
+      className="flex flex-col items-center p-4 gap-2 bg-secondary rounded-lg w-[180px] h-[180px] cursor-pointer hover:bg-white hover:shadow-[0_10px_30px_rgba(91,6,170,0.2)] hover:border-primary border"
+      onClick={onCLick}
+    >
+      <img src={url} alt="Employer Logo" className="w-24 h-auto" />
     </div>
   );
 };

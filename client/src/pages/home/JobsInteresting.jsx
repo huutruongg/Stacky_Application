@@ -17,8 +17,6 @@ const JobsInteresting = () => {
   const indexOfFirstItem = indexOfLastItem - newsPerPage;
   const currentJobData = jobData.slice(indexOfFirstItem, indexOfLastItem);
 
-  console.log("User:", user);
-
   useEffect(() => {
     const getData = async () => {
       try {
@@ -59,7 +57,11 @@ const JobsInteresting = () => {
           [...Array(newsPerPage)].map((_, index) => <JobSkeleton key={index} />)
         ) : currentJobData.length > 0 ? (
           currentJobData.map((item, index) => (
-            <ItemJobSuggest logined={user ? true : false} jobData={item} key={index}></ItemJobSuggest>
+            <ItemJobSuggest
+              logined={user ? true : false}
+              jobData={item}
+              key={index}
+            ></ItemJobSuggest>
           ))
         ) : (
           <div>Không có dữ liệu</div>

@@ -15,6 +15,7 @@ import IconClose from "@/components/icons/IconClose";
 import axiosInstance from "@/lib/authorizedAxios";
 import FormatDate from "@/components/format/FormatDate";
 import toast from "react-hot-toast";
+import { AlertModal } from "@/components/shared/AlertModal";
 
 const PostManagerPage = () => {
   const [open, setOpen] = useState(false);
@@ -154,7 +155,10 @@ const PostManagerPage = () => {
                 <TableCell className="text-center">
                   <div
                     className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
-                    onClick={() => handleDeletePost(post._id)}
+                    onClick={() => {
+                      setSelectedPost(post); // Lưu candidate vào state
+                      setOpen(true); // Mở modal xóa
+                    }}
                   >
                     <IconDelete className="w-6 h-6" color={"#48038C"} />
                   </div>
@@ -168,6 +172,15 @@ const PostManagerPage = () => {
           dataBase={filteredPosts}
           currentPage={currentPage}
           onPageChange={handlePageChange}
+        />
+        <AlertModal
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          isLoading={isLoading}
+          onConfirm={() => {
+            handleDeletePost(selectedPost._id);
+            setOpen(false);
+          }}
         />
       </div>
     </div>

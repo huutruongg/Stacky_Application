@@ -22,14 +22,14 @@ const TopPostCompanyTable = ({ topPostCompany }) => {
       <TableBody>
         {topPostCompany?.map((item, index) => (
           <TableRow className="font-medium" key={index}>
-            <TableCell className="text-center">
+            <TableCell className="">
               <div className="flex items-center gap-2">
                 <img
                   src={item?.orgImage}
                   alt=""
                   className="overflow-hidden object-cover min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
                 />
-                <span className="text-justify">{item?.orgName}</span>
+                <span className="text-[12px]">{item?.orgName}</span>
               </div>
             </TableCell>
             <TableCell className="text-center">

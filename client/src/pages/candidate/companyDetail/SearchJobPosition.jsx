@@ -4,13 +4,11 @@ import IconPrice from "@/components/icons/IconPrice";
 import imgCompany from "@/components/image/imgCompany.png";
 import axiosInstance from "@/lib/authorizedAxios";
 import useAuth from "@/hooks/useAuth";
-import { useParams } from "react-router-dom";
 import PaginationDemo from "@/components/pagination/Pagination";
 import FormatDate from "@/components/format/FormatDate";
 
-const SearchJobPosition = () => {
+const SearchJobPosition = ({ companyId }) => {
   const { user } = useAuth();
-  const { id } = useParams();
   const [jobData, setJobData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,13 +23,15 @@ const SearchJobPosition = () => {
     setCurrentPage(page);
   };
 
+  // console.log(jobData);
+
   useEffect(() => {
     const getData = async () => {
       try {
         const result = await axiosInstance.get(
-          `/job-post/get-related-job-posts?jobTitle=&location=&yearsOfExperience=`
+          `/job-post/get-job-posted-by-recruiter/${companyId}`
         );
-        console.log(result.data.result);
+        // console.log(result.data.result);
         setJobData(result.data.result);
         setIsLoading(false);
       } catch (error) {
@@ -42,8 +42,6 @@ const SearchJobPosition = () => {
     };
     getData();
   }, [currentPage]);
-
-  console.log(jobData);
 
   return (
     <div className="">
@@ -78,7 +76,7 @@ const JobCard = ({ item }) => {
             <img
               src={item?.jobImage ? item?.jobImage : imgCompany}
               alt=""
-              className="overflow-hidden object-cover min-w-[100px] min-h-[100px] max-w-[100px] max-h-[100px] border rounded-md"
+              className="overflow-hidden object-contain min-w-[100px] min-h-[100px] max-w-[100px] max-h-[100px] border rounded-md"
             />
           </a>
         </div>

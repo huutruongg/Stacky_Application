@@ -98,7 +98,6 @@ const CompanyManagerPage = () => {
     );
   }
 
-  console.log("companyData", companyData);
   return (
     <div className="h-screen p-5 my-5 mr-5 bg-white rounded-md">
       <div className="flex items-center justify-between">
@@ -150,7 +149,10 @@ const CompanyManagerPage = () => {
                   <div className="flex justify-center items-center gap-5">
                     <div
                       className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
-                      onClick={() => handleDeleteCompany(company.userId)}
+                      onClick={() => {
+                        setSelectedCompany(company); // Lưu candidate vào state
+                        setOpen(true); // Mở modal xóa
+                      }}
                     >
                       <IconDelete className="w-6 h-6" color={"#48038C"} />
                     </div>
@@ -178,6 +180,10 @@ const CompanyManagerPage = () => {
             isOpen={open}
             onClose={() => setOpen(false)}
             isLoading={isLoading}
+            onConfirm={() => {
+              handleDeleteCompany(selectedCompany?.userId);
+              setOpen(false);
+            }}
           />
           <Modal
             isOpen={openReview}
@@ -192,7 +198,7 @@ const CompanyManagerPage = () => {
                 className="text-center px-10 disabled:opacity-50"
                 type="submit"
                 isLoading={isLoading}
-                onClick={() => handleDeleteCompany(selectedCompany.userId)}
+                onClick={() => setOpen(true)}
               >
                 Xoá tài khoản
               </Button>

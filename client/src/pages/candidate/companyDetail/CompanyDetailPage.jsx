@@ -29,7 +29,6 @@ const CompanyDetailPage = () => {
     };
     getData();
   }, []);
-  console.log(companyData);
 
   return (
     <div className="page-container">
@@ -46,7 +45,7 @@ const CompanyDetailPage = () => {
             <img
               src={companyData?.orgImage || imgCompany}
               alt=""
-              className="object-cover min-w-[100%] min-h-[100%] max-w-[100%] max-h-[100%]"
+              className="object-contain min-w-[100%] min-h-[100%] max-w-[100%] max-h-[100%]"
             />
           </div>
         </div>
@@ -86,7 +85,7 @@ const CompanyDetailPage = () => {
       <div className="grid grid-cols-12 gap-5 my-10">
         <div className="grid col-start-1 col-end-9 gap-5">
           <CompanyInfo companyData={companyData}></CompanyInfo>
-          <SearchJobPosition></SearchJobPosition>
+          <SearchJobPosition companyId={companyId}></SearchJobPosition>
         </div>
         <div className="grid col-start-9 col-end-13 gap-5 text-sm">
           <ContactInfo companyData={companyData}></ContactInfo>

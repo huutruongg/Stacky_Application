@@ -87,7 +87,7 @@ const AccountManagerPage = () => {
       setCandidateData(result.data.candidates);
       setOpenReview(false);
     } catch (error) {
-      toast.error("Xoá công ty thất bại");
+      toast.error("Xoá tài khoản thất bại");
     }
   };
 
@@ -146,7 +146,7 @@ const AccountManagerPage = () => {
                     <img
                       src={candidate.avatarUrl || imgAvatar}
                       alt=""
-                      className="overflow-hidden object-cover min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
+                      className="overflow-hidden object-fill min-w-[32px] min-h-[32px] max-w-[32px] max-h-[32px] border rounded-md"
                     />
                     <span>{candidate.fullName}</span>
                   </div>
@@ -159,12 +159,15 @@ const AccountManagerPage = () => {
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex justify-center items-center gap-5">
-                    <div
+                    <button
                       className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer"
-                      onClick={() => handleDeleteCandidate(candidate.userId)}
+                      onClick={() => {
+                        setSelectedCandidate(candidate); // Lưu candidate vào state
+                        setOpen(true); // Mở modal xóa
+                      }}
                     >
                       <IconDelete className="w-6 h-6" color={"#48038C"} />
-                    </div>
+                    </button>
                     <div className="p-1 bg-[#ead6fd] rounded-md hover:opacity-70 cursor-pointer">
                       <IconEye
                         className="w-6 h-6"
@@ -186,11 +189,6 @@ const AccountManagerPage = () => {
         />
         {/* Modal for Sending Email */}
         <div className="flex items-center justify-end w-full">
-          <AlertModal
-            isOpen={open}
-            onClose={() => setOpen(false)}
-            isLoading={isLoading}
-          />
           <Modal
             isOpen={openReview}
             onClose={onCloseReview}
@@ -204,7 +202,7 @@ const AccountManagerPage = () => {
                 className="text-center px-10 disabled:opacity-50"
                 type="submit"
                 isLoading={isLoading}
-                onClick={() => handleDeleteCandidate(selectedCandidate?.userId)}
+                onClick={() => setOpen(true)}
               >
                 Xoá tài khoản
               </Button>
@@ -212,6 +210,15 @@ const AccountManagerPage = () => {
           </Modal>
         </div>
       </div>
+      <AlertModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        isLoading={isLoading}
+        onConfirm={() => {
+          handleDeleteCandidate(selectedCandidate?.userId);
+          setOpen(false);
+        }}
+      />
     </div>
   );
 };

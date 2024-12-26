@@ -23,15 +23,13 @@ const ViewCompany = ({ companyData }) => {
     fetchData();
   }, []);
 
-  console.log(companyDetailData);
-
   return (
     <div className="p-5">
       <div className="flex items-center justify-around gap-5">
         <img
           src={companyDetailData?.orgImage || imgCompany}
           alt=""
-          className="overflow-hidden object-cover min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
+          className="overflow-hidden object-contain min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
         />
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
