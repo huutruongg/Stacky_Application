@@ -61,7 +61,7 @@ const ItemJobUploaded = ({ jobData }) => {
                 }`}
               >
                 {jobData.status === "ACCEPTED"
-                  ? "Đã đăng bài"
+                  ? "Đã xét duyệt"
                   : jobData.status === "PENDING"
                   ? "Chờ xét duyệt"
                   : "Không được duyệt"}

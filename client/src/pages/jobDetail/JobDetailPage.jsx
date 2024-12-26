@@ -59,7 +59,7 @@ const JobDetailPage = () => {
         <div className="grid col-start-1 col-end-9 gap-7 h-fit">
           <JobSummary jobData={data} isliked={isliked} />
           <JobDescription jobData={data} isliked={isliked} />
-          <JobContact jobData={data} />
+          {/* <JobContact jobData={data} /> */}
         </div>
         <div className="grid col-start-9 col-end-13 gap-7 h-fit">
           <CompanyInfo data={data} />

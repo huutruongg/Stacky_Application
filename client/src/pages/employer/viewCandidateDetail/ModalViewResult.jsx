@@ -51,13 +51,19 @@ const ScoreAnalysis = ({ data }) => {
 
 const SocialPlatforms = ({ data }) => (
   <ResultSection title="Nền tảng mạng xã hội">
-    <ItemResult title="Github:" content={data?.github || "Chưa cập nhật"} />
+    <ItemResult
+      title="Github:"
+      content={data?.githubScore > 0 ? "Đã cập nhật" : "Chưa cập nhật"}
+    />
     <ItemResult
       title="Điểm thu thập:"
       content={data?.githubScore || 0}
       icon={<IconResult className="w-4 h-4" />}
     />
-    <ItemResult title="Linkedin:" content={data?.linkedin || "Chưa cập nhật"} />
+    <ItemResult
+      title="Linkedin:"
+      content={data?.linkedinScore || "Chưa cập nhật"}
+    />
     <ItemResult
       title="Điểm thu thập:"
       content={data?.linkedinScore || "Chưa hỗ trợ"}
@@ -67,6 +73,8 @@ const SocialPlatforms = ({ data }) => (
 );
 
 const ModalViewResult = ({ data }) => {
+  console.log(data);
+  
   return (
     <div className="flex flex-col gap-10 mx-10 text-sm">
       <ScoreAnalysis data={data} />

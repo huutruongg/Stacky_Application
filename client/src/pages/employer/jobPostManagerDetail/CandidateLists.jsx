@@ -174,6 +174,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
 
       if (response.status === 200 || responseStatus.status === 200) {
         toast.success("Gửi thông báo thành công");
+        window.location.reload();
       } else {
         toast.error("Gửi thông báo thất bại");
       }
@@ -196,7 +197,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
         `/email/send-email-to-candidates`,
         {
           emails: selectedCandidates.map((candidate) => candidate.email),
-          jobPostId: data.jobId,
+          jobPostId: jobId,
           subject: "Gửi mail",
           text: formData.text,
         }
@@ -206,6 +207,7 @@ const CandidateLists = ({ data, candidatesLimit }) => {
       setSelectedCandidates([]);
       toast.success("Gửi mail thành công");
       form.reset();
+      window.location.reload();
     } catch (error) {
       console.log(error);
       toast.error("Gửi mail thất bại");

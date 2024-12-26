@@ -123,7 +123,7 @@ const JobPostManagerPage = () => {
                             )}
                           </span>
                         </div>
-                        <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px] max-w-80 line-clamp-1 text-xs text-center">
+                        <div className="px-5 text-text2 bg-[#EDEAF0] rounded-xl py-[2px] max-w-64 line-clamp-1 text-xs text-center">
                           <span>{item.location}</span>
                         </div>
                       </div>

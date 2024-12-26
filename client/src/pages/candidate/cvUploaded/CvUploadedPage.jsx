@@ -69,7 +69,7 @@ const CvUploadedPage = () => {
               việc làm đã ứng tuyển:
             </p>
             <span className="text-sm font-semibold text-accepted rounded-md">
-              {countAccepted} Đã đăng bài
+              {countAccepted} Đã được duyệt
             </span>
             <span className="text-sm font-semibold text-primary rounded-md">
               {countPending} Chờ xét duyệt

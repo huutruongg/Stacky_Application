@@ -1,13 +1,13 @@
 import FormatDate from "@/components/format/FormatDate";
 import React from "react";
-import imgCompany from "@/components/image/imgCompany.png";
+import imgAvatar from "@/components/image/avatarImg.png";
 
 const ViewAccount = ({ candidateData }) => {
   return (
     <div className="py-5 px-10">
       <div className="flex items-center justify-around gap-10">
         <img
-          src={candidateData?.avatarUrl || imgCompany}
+          src={candidateData?.avatarUrl || imgAvatar}
           alt=""
           className="overflow-hidden object-cover min-w-[144px] min-h-[144px] max-w-[144px] max-h-[144px] border rounded-md"
         />
