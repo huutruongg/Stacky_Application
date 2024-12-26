@@ -52,9 +52,9 @@ const FormRequirement = ({ form }) => {
             {...commonInputProps}
             options={[
               { value: "IT", label: "Công nghệ thông tin" },
-              { value: "marketing", label: "Tiếp thị" },
-              { value: "finance", label: "Tài chính" },
-              { value: "engineering", label: "Kỹ thuật" },
+              // { value: "marketing", label: "Tiếp thị" },
+              // { value: "finance", label: "Tài chính" },
+              // { value: "engineering", label: "Kỹ thuật" },
               { value: "other", label: "Khác" },
             ]}
           />
@@ -73,7 +73,8 @@ const FormRequirement = ({ form }) => {
           placeholder="Chứng chỉ cần thiết"
           labelName="Chứng chỉ cần thiết"
           id="certificateRequired"
-          {...commonInputProps}
+          className="flex items-center"
+          classNameLabel="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5"
         />
         <TextareaField
           control={form.control}

@@ -136,9 +136,6 @@ export const profileCVSchema = (hasExperience) =>
           finishDate: z
             .date()
             .nullable()
-            .refine((date) => !date || date <= new Date(), {
-              message: "Ngày kết thúc không được là ngày trong tương lai",
-            })
             .refine((date) => date !== null, {
               message: "Ngày kết thúc không được để trống",
             }),

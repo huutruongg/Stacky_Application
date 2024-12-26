@@ -83,13 +83,7 @@ export const postJobSchema = z.object({
       (data) => data.trim() === data,
       "Vị trí không được chứa khoảng trắng đầu và cuối"
     ),
-  certificateRequired: z
-    .string()
-    .min(1, "Chứng chỉ cần thiết không được để trống")
-    .refine(
-      (data) => data.trim() === data,
-      "Chứng chỉ không được chứa khoảng trắng đầu và cuối"
-    ),
+  certificateRequired: z.string().optional(),
   professionalSkills: z
     .string()
     .min(1, "Kỹ năng chuyên môn không được để trống")
