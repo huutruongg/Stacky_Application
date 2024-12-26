@@ -7,7 +7,6 @@ import { Request, Response } from "express";
 import authorize from "../middlewares/authorize";
 import authenticate from "../middlewares/authenticate";
 import refreshToken from "../middlewares/refreshToken";
-import verifyToken from "../middlewares/verifyToken";
 export default class GithubRoutes extends BaseRoutes {
     private githubController: GithubController;
     constructor(githubController: GithubController) {
@@ -18,9 +17,9 @@ export default class GithubRoutes extends BaseRoutes {
 
     private initializeRoutes() {
         this.router.get('/github-score', this.serveGithubPage);
-        this.router.get('/is-github-logged-in', verifyToken, refreshToken, authenticate, authorize(['isLoggedInGithub']),
+        this.router.get('/is-github-logged-in', refreshToken, authenticate, authorize(['isLoggedInGithub']),
             this.githubController.isLoggedInGithub);
-        this.router.get('/get-github-score', verifyToken, refreshToken, authenticate, authorize(['getGithubScore']),
+        this.router.get('/get-github-score', refreshToken, authenticate, authorize(['getGithubScore']),
             this.githubController.getGithubScore);
     }
 

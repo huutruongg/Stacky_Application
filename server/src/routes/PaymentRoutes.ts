@@ -3,7 +3,6 @@ import PaymentController from '../../src/controllers/PaymentController';
 import authenticate from '../middlewares/authenticate';
 import authorize from '../middlewares/authorize';
 import refreshToken from '../middlewares/refreshToken';
-import verifyToken from '../middlewares/verifyToken';
 import { UserRoles } from '../utils/roles';
 import { BaseRoutes } from './BaseRoutes';
 import { Request, Response } from 'express';
@@ -26,11 +25,11 @@ export default class PaymentRoutes extends BaseRoutes {
         this.router.post('/callback', this.paymentController.handleCallback);
         this.router.post('/check-status-transaction', this.paymentController.checkTransactionStatus);
         // Admin or recruiter routes for creating notifications
-        this.router.patch('/deposit-funds', verifyToken, refreshToken, authenticate, authorize(['deposit']),
+        this.router.patch('/deposit-funds', refreshToken, authenticate, authorize(['deposit']),
             this.paymentController.deposit);
-        this.router.patch('/pay-for-job-post', verifyToken, refreshToken, authenticate, authorize(['payForJobPost']),
+        this.router.patch('/pay-for-job-post', refreshToken, authenticate, authorize(['payForJobPost']),
             this.paymentController.payForJobPost);
-        this.router.get('/get-payment-info', verifyToken, refreshToken, authenticate, authorize(['getPaymentInfo']),
+        this.router.get('/get-payment-info', refreshToken, authenticate, authorize(['getPaymentInfo']),
             this.paymentController.getPaymentInfo);
     }
 

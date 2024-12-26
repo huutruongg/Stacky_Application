@@ -8,7 +8,6 @@ import { Provider } from "../enums/EProvider";
 import { RecruiterLoginSchema, RecruiterSignUpSchema } from "../utils/validations/AuthValidation";
 import { setAuthCookies } from "../middlewares/authenticate";
 import { log } from "console";
-import { addToBlacklist } from "../utils/blackListToken";
 import jwt from "jsonwebtoken";
 dotenv.config();
 
@@ -172,50 +171,50 @@ export default class AuthController extends BaseController {
 
   public logout = async (req: Request, res: Response) => {
     req.session.destroy(async (err: any) => {
-      if (err) {
-        return this.sendError(res, 500, "Logout failed");
-      }
+      // if (err) {
+      //   return this.sendError(res, 500, "Logout failed");
+      // }
 
-      const token = req.cookies["accessToken"];
+      // const token = req.cookies["accessToken"];
 
-      if (!token) {
-        res.clearCookie("refreshToken");
-        res.clearCookie("connect.sid", { path: "/" });
-        return this.sendResponse(res, 200, {
-          success: true,
-          message: "Logged out successfully",
-        });
-      }
+      // if (!token) {
+      //   res.clearCookie("refreshToken");
+      //   res.clearCookie("connect.sid", { path: "/" });
+      //   return this.sendResponse(res, 200, {
+      //     success: true,
+      //     message: "Logged out successfully",
+      //   });
+      // }
 
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET as string, {
-          ignoreExpiration: true,
-        }) as jwt.JwtPayload;
+      // try {
+      //   const decoded = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET as string, {
+      //     ignoreExpiration: true,
+      //   }) as jwt.JwtPayload;
 
-        const jti = decoded.jti;
-        const exp = decoded.exp;
+      //   const jti = decoded.jti;
+      //   const exp = decoded.exp;
 
-        if (jti && exp) {
-          await addToBlacklist(jti, exp);
-        }
-      } catch (err) {
-        if (err instanceof jwt.TokenExpiredError) {
-          try {
-            const decoded = jwt.decode(token) as jwt.JwtPayload;
+      //   if (jti && exp) {
+      //     await addToBlacklist(jti, exp);
+      //   }
+      // } catch (err) {
+      //   if (err instanceof jwt.TokenExpiredError) {
+      //     try {
+      //       const decoded = jwt.decode(token) as jwt.JwtPayload;
 
-            const jti = decoded?.jti;
-            const exp = decoded?.exp;
+      //       const jti = decoded?.jti;
+      //       const exp = decoded?.exp;
 
-            if (jti && exp) {
-              await addToBlacklist(jti, exp);
-            }
-          } catch (decodeError) {
-            log("Failed to decode expired token:", decodeError);
-          }
-        } else {
-          log("Failed to verify token:", err);
-        }
-      }
+      //       if (jti && exp) {
+      //         await addToBlacklist(jti, exp);
+      //       }
+      //     } catch (decodeError) {
+      //       log("Failed to decode expired token:", decodeError);
+      //     }
+      //   } else {
+      //     log("Failed to verify token:", err);
+      //   }
+      // }
 
       res.clearCookie("refreshToken");
       res.clearCookie("accessToken");
