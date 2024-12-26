@@ -31,6 +31,8 @@ const CvInformationPage = () => {
     const getData = async () => {
       try {
         const result = await fetchData(`candidate/get-candidate`);
+        console.log(result);
+
         const experienceExists = result.experiences?.length !== 0;
 
         setHasExperience(experienceExists);
@@ -40,7 +42,7 @@ const CvInformationPage = () => {
           jobPosition: result.jobPosition || "",
           publicEmail: result.publicEmail || "",
           phoneNumber: result.phoneNumber || "",
-          gender: result.gender ? "true" : "false",
+          gender: result.gender || "",
           avatarUrl: result.avatarUrl || "",
           birthDate: result.birthDate ? new Date(result.birthDate) : null,
           address: result.address || "",
@@ -113,7 +115,7 @@ const CvInformationPage = () => {
     try {
       await axiosInstance.put("/candidate/update-info", formattedData);
       toast.success("Cập nhật thành công.");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       toast.error("Cập nhật thất bại");
     }

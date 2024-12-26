@@ -76,7 +76,7 @@ export default class CandidateService {
             jobPosition: data.jobPosition,
             publicEmail: data.publicEmail,
             phoneNumber: data.phoneNumber,
-            gender: Boolean(data.gender),
+            gender: data.gender,
             birthDate: data.birthDate,
             avatarUrl: data.avatarUrl,
             address: data.address,

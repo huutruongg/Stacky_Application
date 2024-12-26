@@ -61,6 +61,7 @@ export const profileCVSchema = (hasExperience) =>
         }
       ),
     avatarUrl: z.string().optional().nullable(),
+    gender: z.string().nonempty("Giới tính không được để trống"),
     address: z
       .string()
       .regex(

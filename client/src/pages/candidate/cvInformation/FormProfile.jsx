@@ -17,13 +17,10 @@ import SelectField from "@/components/fieldForm/SelectField";
 
 const FormProfile = ({ form }) => {
   const [cvImage, setCvImage] = useState(null); // Changed to null
-  // console.log(cvImage);
 
   // Effect to set the cvImage from form value on load
   useEffect(() => {
     const avatarUrl = form.getValues("avatarUrl");
-    console.log(avatarUrl);
-
     if (avatarUrl) {
       setCvImage(avatarUrl); // Set the image preview if available
     }
@@ -83,7 +80,7 @@ const FormProfile = ({ form }) => {
           {/* Gender Field */}
           <SelectField
             control={form.control}
-            name="gender" // Adjust field name structure
+            name="gender"
             labelName={"Giới Tính"}
             placeholder="Chọn giới tính"
             {...commonInputProps}
