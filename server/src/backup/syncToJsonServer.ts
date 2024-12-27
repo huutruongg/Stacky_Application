@@ -68,7 +68,7 @@ const resetJsonServer = async () => {
 
 
 // Khởi chạy cron job
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
     console.log('Starting data sync job...');
     await connectDB();
     resetJsonServer();
