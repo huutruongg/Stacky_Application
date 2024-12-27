@@ -28,8 +28,6 @@ const ViewCandidateDetailPage = () => {
   });
   const form = {};
 
-  // console.log(dataCandidate);
-
   const onCloseReview = () => {
     setOpenReview(false);
   };
@@ -123,33 +121,35 @@ const ViewCandidateDetailPage = () => {
                 {dataCandidate?.personalDescription}
               </p>
             </div>
-            <div className="">
-              <h3 className="border-b mb-5 text-xl font-medium">
-                Kinh Nghiệm Làm Việc
-              </h3>
-              <div className="flex flex-col gap-4">
-                {dataCandidate?.experiences?.map((experience) => (
-                  <div className="flex flex-col gap-1" key={experience._id}>
-                    <div className="flex gap-5">
+            {dataCandidate?.experiences.length > 0 && (
+              <div className="">
+                <h3 className="border-b mb-5 text-xl font-medium">
+                  Kinh Nghiệm Làm Việc
+                </h3>
+                <div className="flex flex-col gap-4">
+                  {dataCandidate?.experiences?.map((experience) => (
+                    <div className="flex flex-col gap-1" key={experience._id}>
+                      <div className="flex gap-5">
+                        <span className="font-medium">
+                          {experience.companyName}
+                        </span>
+                        <span className="font-medium">|</span>
+                        <span className="font-medium">
+                          {FormatDate.formatDate(experience.startDate)} -{" "}
+                          {FormatDate.formatDate(experience.endDate)}
+                        </span>
+                      </div>
                       <span className="font-medium">
-                        {experience.companyName}
+                        {experience.jobPosition}
                       </span>
-                      <span className="font-medium">|</span>
-                      <span className="font-medium">
-                        {FormatDate.formatDate(experience.startDate)} -{" "}
-                        {FormatDate.formatDate(experience.endDate)}
+                      <span className="text-sm font-medium">
+                        {experience.previousJobDetails}
                       </span>
                     </div>
-                    <span className="font-medium">
-                      {experience.jobPosition}
-                    </span>
-                    <span className="text-sm font-medium">
-                      {experience.previousJobDetails}
-                    </span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
             <div className="">
               <h3 className="border-b mb-5 text-xl font-medium">Kĩ Năng</h3>
               <span className="text-sm text-justify">
@@ -227,20 +227,22 @@ const ViewCandidateDetailPage = () => {
                 ))}
               </div>
             </div>
-            <div className="">
-              <h3 className="border-b mb-5 text-xl font-medium">Chứng chỉ</h3>
-              {dataCandidate?.certifications?.map((certificate, index) => (
-                <div className="flex flex-col gap-1 text-sm" key={index}>
-                  <span className="font-medium">
-                    {FormatDate.formatDate(certificate.dateOfReceipt)}
-                  </span>
-                  <span className="font-medium">
-                    {certificate.certificateName}
-                  </span>
-                  <span>{certificate.certificateDetail}</span>
-                </div>
-              ))}
-            </div>
+            {dataCandidate?.certifications.length > 0 && (
+              <div className="">
+                <h3 className="border-b mb-5 text-xl font-medium">Chứng chỉ</h3>
+                {dataCandidate?.certifications?.map((certificate, index) => (
+                  <div className="flex flex-col gap-1 text-sm" key={index}>
+                    <span className="font-medium">
+                      {FormatDate.formatDate(certificate.dateOfReceipt)}
+                    </span>
+                    <span className="font-medium">
+                      {certificate.certificateName}
+                    </span>
+                    <span>{certificate.certificateDetail}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

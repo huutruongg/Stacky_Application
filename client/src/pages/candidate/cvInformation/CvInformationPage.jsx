@@ -17,11 +17,22 @@ import axiosInstance from "@/lib/authorizedAxios";
 import useAuth from "@/hooks/useAuth";
 import { fetchData } from "@/api/fetchData";
 import toast from "react-hot-toast";
+import { Modal } from "@/components/ui/modal";
+import ModalViewCV from "@/pages/jobDetail/ModalViewCV";
 
 const CvInformationPage = () => {
   const { user } = useAuth();
   const [hasExperience, setHasExperience] = useState(false);
   const [status, setStatus] = useState({ isLoading: true, error: null });
+  const [openReview, setOpenReview] = useState(false);
+
+  const handleOpenReview = () => {
+    setOpenReview(true);
+  };
+
+  const handleCloseReview = () => {
+    setOpenReview(false);
+  };
 
   const form = useForm({
     resolver: zodResolver(profileCVSchema(hasExperience)),
@@ -148,7 +159,7 @@ const CvInformationPage = () => {
           <FormLanguageAbility form={form} />
           <FormProject form={form} />
           <FormCertification form={form} />
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-10">
             <Button
               kind="primary"
               className="w-fit px-10 disabled:opacity-50"
@@ -156,9 +167,36 @@ const CvInformationPage = () => {
             >
               Lưu CV
             </Button>
+            <Button
+              kind="secondary"
+              className="w-fit px-10 disabled:opacity-50"
+              type="button"
+              onClick={handleOpenReview}
+            >
+              xem CV
+            </Button>
           </div>
         </form>
       </Form>
+      <Modal
+        isOpen={openReview}
+        onClose={handleCloseReview}
+        className="bg-white min-w-[900px] max-w-[1170px]"
+        title={`CV của bạn`}
+        description={`Nội dung CV của bạn. Nếu bạn chưa có CV, hãy tạo CV trước khi xem CV của bạn!`}
+      >
+        <ModalViewCV />
+        <div className="flex justify-center gap-5 py-5">
+          <Button
+            kind="secondary"
+            className="text-center px-10 disabled:opacity-50"
+            type="button"
+            onClick={handleCloseReview}
+          >
+            Trở về
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 };
