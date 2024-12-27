@@ -39,12 +39,12 @@ export const companyInfoSchema = z.object({
     .nullable(),
   orgLinkedinLink: z
     .string()
-    .url("Vui lòng nhập một URL hợp lệ cho LinkedIn.")
+    // .url("Vui lòng nhập một URL hợp lệ cho LinkedIn.")
     .optional()
     .nullable(),
   orgYoutubeLink: z
     .string()
-    .url("Vui lòng nhập một URL hợp lệ cho YouTube.")
+    // .url("Vui lòng nhập một URL hợp lệ cho YouTube.")
     .optional()
     .nullable(),
   orgAddress: z

@@ -44,14 +44,16 @@ const FormIntroduceCompany = ({ form }) => {
             name="orgLinkedinLink"
             placeholder="Nhập link LinkedIn"
             labelName="Link LinkedIn"
-            {...commonInputProps}
+            className="flex items-center"
+            classNameLabel="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5"
           />
           <InputField
             control={form.control}
             name="orgYoutubeLink"
             placeholder="Nhập link YouTube"
             labelName="Link YouTube"
-            {...commonInputProps}
+            className="flex items-center"
+            classNameLabel="flex items-center justify-between min-w-44 max-w-44 pr-3 leading-5"
           />
         </div>
       </div>
