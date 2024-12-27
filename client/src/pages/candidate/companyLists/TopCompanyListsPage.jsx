@@ -29,7 +29,6 @@ const TopCompanyListsPage = () => {
     indexOfFirstItem,
     indexOfLastItem
   );
-  console.log(companyData);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

@@ -42,7 +42,6 @@ const CvInformationPage = () => {
     const getData = async () => {
       try {
         const result = await fetchData(`candidate/get-candidate`);
-        console.log(result);
 
         const experienceExists = result.experiences?.length !== 0;
 
